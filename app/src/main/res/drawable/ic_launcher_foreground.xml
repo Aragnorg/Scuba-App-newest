@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Centered scuba diving mask and bubbles inside 66dp zone (21-87) -->
+    <!-- Scuba Mask Outer Frame -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,44 C32,38 38,34 54,34 C70,34 76,38 76,44 C76,52 72,62 64,65 C60,66.5 56.5,62 54,62 C51.5,62 48,66.5 44,65 C36,62 32,52 32,44 Z" />
+    <!-- Mask Lenses (Twin Lens Ocean Glass) -->
+    <path
+        android:fillColor="#022842"
+        android:pathData="M36,44 C36,40 40,37.5 48,37.5 C51,37.5 52,40 52,46 C52,53 47,59 43,59 C38,59 36,52 36,44 Z" />
+    <path
+        android:fillColor="#022842"
+        android:pathData="M56,46 C56,40 57,37.5 60,37.5 C68,37.5 72,40 72,44 C72,52 70,59 65,59 C61,59 56,53 56,46 Z" />
+    <!-- Lens reflection glints -->
+    <path
+        android:fillColor="#4DFFFFFF"
+        android:pathData="M39,40 L45,40 C43,45 40,49 39,52 L38,45 Z" />
+    <path
+        android:fillColor="#4DFFFFFF"
+        android:pathData="M59,40 L65,40 C63,45 60,49 59,52 L58,45 Z" />
+    <!-- Nose pocket -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M51.5,57 C51.5,55 56.5,55 56.5,57 C56.5,63 54.5,65 54,65 C53.5,65 51.5,63 51.5,57 Z" />
+    <!-- Mask Strap Clips -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M28,45 C28,43 32,43 32,47 C32,51 28,51 28,45 Z" />
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M76,43 C80,43 80,47 80,47 C80,51 76,51 76,43 Z" />
+    <!-- Rising Dive Bubbles -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,26 A4,4 0 1,0 54,18 A4,4 0 1,0 54,26 Z" />
+    <path
+        android:fillColor="#B2EBF2"
+        android:pathData="M65,31 A2.5,2.5 0 1,0 65,26 A2.5,2.5 0 1,0 65,31 Z" />
+    <path
+        android:fillColor="#E0F7FA"
+        android:pathData="M43,30 A2,2 0 1,0 43,26 A2,2 0 1,0 43,30 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,16 A1.5,1.5 0 1,0 58,13 A1.5,1.5 0 1,0 58,16 Z" />
+    <!-- Depth Gauge / Ocean waves indicator -->
+    <path
+        android:fillColor="#FF7A00"
+        android:pathData="M42,73 C46,71 50,71 54,73 C58,75 62,75 66,73 L66,75.5 C62,77.5 58,77.5 54,75.5 C50,73.5 46,73.5 42,75.5 Z" />
+</vector>

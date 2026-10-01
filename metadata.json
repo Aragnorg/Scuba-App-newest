@@ -1,0 +1,6 @@
+{
+  "name": "AquaLearn",
+  "description": "Diving academy for beginner divers with self-paced presentations, training videos, module quizzes, and full certification mock exams.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
