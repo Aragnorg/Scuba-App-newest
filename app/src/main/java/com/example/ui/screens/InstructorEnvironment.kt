@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Upload
@@ -50,6 +54,8 @@ import com.example.ui.components.LanguageSwitchButton
 import com.example.ui.components.UserAvatarView
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
+import com.example.ui.screens.documents.DocumentsVaultScreen
+import com.example.ui.screens.planning.DivePlanningScreen
 import com.example.ui.screens.profile.ProfileMenuModal
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.viewmodel.AquaViewModel
@@ -58,7 +64,9 @@ import com.example.ui.viewmodel.AquaViewModel
  * Dedicated Instructor Environment:
  * - Deploy course materials to students (Presentations, Videos, Quizzes)
  * - Monitor student progression roster with status filtering (Active students vs Students from the past)
- * - Preview the curriculum
+ * - Review and stamp student dive logs and present Center QR codes
+ * - Plan technical and recreational dives with gas calculator & emergency dossiers
+ * - Access and manage candidate certification documents & medical clearances
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +84,7 @@ fun InstructorEnvironment(
         com.example.util.DocumentExpirationHelper.hasUrgentExpirationAlerts(documents)
     }
 
-    // 0: Deploy Materials (Studio), 1: Student Roster & Progression, 2: Dive Approvals & Stamp, 3: Curriculum Preview
+    // 0: Studio (Deploy), 1: Students Roster, 2: Approvals & QR Code, 3: Dive Planning, 4: Documents Vault
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     var showProfileModal by remember { mutableStateOf(false) }
 
@@ -114,7 +122,8 @@ fun InstructorEnvironment(
                                 0 -> strings.tabDeploy
                                 1 -> strings.tabStudents
                                 2 -> strings.tabApprovals
-                                else -> strings.tabCurriculum
+                                3 -> strings.tabDivePlanning
+                                else -> strings.tabDocuments
                             },
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
@@ -211,12 +220,25 @@ fun InstructorEnvironment(
                     onClick = { selectedTab = 3 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 3) Icons.Filled.School else Icons.Outlined.School,
-                            contentDescription = strings.tabCurriculum
+                            imageVector = if (selectedTab == 3) Icons.Filled.Explore else Icons.Outlined.Explore,
+                            contentDescription = strings.tabDivePlanning
                         )
                     },
-                    label = { Text(strings.tabCurriculum, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                    modifier = Modifier.testTag("nav_instructor_preview")
+                    label = { Text(strings.tabDivePlanning, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    modifier = Modifier.testTag("nav_instructor_planning")
+                )
+
+                NavigationBarItem(
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 },
+                    icon = {
+                        Icon(
+                            imageVector = if (selectedTab == 4) Icons.Filled.Description else Icons.Outlined.Description,
+                            contentDescription = strings.tabDocuments
+                        )
+                    },
+                    label = { Text(strings.tabDocuments, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    modifier = Modifier.testTag("nav_instructor_documents")
                 )
             }
         }
@@ -231,10 +253,8 @@ fun InstructorEnvironment(
                     0 -> InstructorStudioScreen(viewModel = viewModel)
                     1 -> InstructorRosterScreen(viewModel = viewModel)
                     2 -> InstructorDivesScreen(viewModel = viewModel)
-                    3 -> HomeScreen(
-                        viewModel = viewModel,
-                        onNavigateToDocuments = { showProfileModal = true }
-                    )
+                    3 -> DivePlanningScreen(viewModel = viewModel)
+                    4 -> DocumentsVaultScreen(viewModel = viewModel)
                 }
             }
         }

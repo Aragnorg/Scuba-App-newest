@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -205,12 +206,11 @@ fun DivePlanningScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Scrollable Sub-Tabs
-                ScrollableTabRow(
+                // Sub-Tabs for Dive Planning
+                TabRow(
                     selectedTabIndex = selectedSubTab,
                     containerColor = Color.Transparent,
                     contentColor = OceanPrimary,
-                    edgePadding = 0.dp,
                     indicator = { tabPositions ->
                         TabRowDefaults.SecondaryIndicator(
                             Modifier.tabIndicatorOffset(tabPositions[selectedSubTab]),
@@ -227,7 +227,7 @@ fun DivePlanningScreen(
                             Text(
                                 strings.subTabDiveSpots,
                                 fontWeight = if (selectedSubTab == 0) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 12.sp
+                                fontSize = 11.sp
                             )
                         },
                         icon = { Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(16.dp)) },
@@ -240,7 +240,7 @@ fun DivePlanningScreen(
                             Text(
                                 strings.subTabEmergencyInfo,
                                 fontWeight = if (selectedSubTab == 1) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 12.sp
+                                fontSize = 11.sp
                             )
                         },
                         icon = { Icon(Icons.Default.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp)) },
@@ -253,7 +253,7 @@ fun DivePlanningScreen(
                             Text(
                                 strings.subTabGasPlanner,
                                 fontWeight = if (selectedSubTab == 2) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 12.sp
+                                fontSize = 11.sp
                             )
                         },
                         icon = { Icon(Icons.Default.Calculate, contentDescription = null, modifier = Modifier.size(16.dp)) },
@@ -266,24 +266,11 @@ fun DivePlanningScreen(
                             Text(
                                 strings.subTabPreDiveChecklist,
                                 fontWeight = if (selectedSubTab == 3) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 12.sp
+                                fontSize = 11.sp
                             )
                         },
                         icon = { Icon(Icons.Default.SafetyCheck, contentDescription = null, modifier = Modifier.size(16.dp)) },
                         modifier = Modifier.testTag("tab_planning_checklist")
-                    )
-                    Tab(
-                        selected = selectedSubTab == 4,
-                        onClick = { selectedSubTab = 4 },
-                        text = {
-                            Text(
-                                "AI Copilot",
-                                fontWeight = if (selectedSubTab == 4) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 12.sp
-                            )
-                        },
-                        icon = { Icon(Icons.Default.Water, contentDescription = null, modifier = Modifier.size(16.dp)) },
-                        modifier = Modifier.testTag("tab_planning_ai_copilot")
                     )
                 }
             }
@@ -309,7 +296,6 @@ fun DivePlanningScreen(
                 isImperial = isImperial
             )
             3 -> PreDiveBuddyChecklistTab()
-            4 -> AIWebPlannerTab()
         }
     }
 
@@ -888,7 +874,7 @@ private fun InteractiveDiveSiteCanvasMap(
     spot: DiveSpot,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .background(
                 Brush.radialGradient(
@@ -964,11 +950,13 @@ private fun InteractiveDiveSiteCanvasMap(
             }
         }
 
-        // Overlay Annotation labels in Box
+        // Overlay Annotation labels accurately positioned over Canvas markers
         spot.mapAnnotations.forEach { annotation ->
+            val labelStart = (maxWidth * (annotation.xPercent / 100f) - 20.dp).coerceAtLeast(4.dp)
+            val labelTop = (maxHeight * (annotation.yPercent / 100f) + 8.dp).coerceAtMost(maxHeight - 24.dp)
+
             Box(
-                modifier = Modifier
-                    .padding(start = (annotation.xPercent * 2.8f).dp, top = (annotation.yPercent * 1.8f).dp)
+                modifier = Modifier.padding(start = labelStart, top = labelTop)
             ) {
                 Surface(
                     shape = RoundedCornerShape(4.dp),
@@ -1801,32 +1789,5 @@ private fun dialPhoneNumber(context: Context, phone: String) {
         val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${phone.replace(" ", "")}"))
         context.startActivity(intent)
     } catch (_: Exception) {}
-}
-
-
-@Composable
-fun AIWebPlannerTab() {
-    androidx.compose.ui.viewinterop.AndroidView(
-        factory = { context ->
-            android.webkit.WebView(context).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.mediaPlaybackRequiresUserGesture = false
-                settings.allowFileAccess = true
-                settings.allowFileAccessFromFileURLs = true
-                settings.allowUniversalAccessFromFileURLs = true
-                
-                webViewClient = android.webkit.WebViewClient()
-                webChromeClient = object : android.webkit.WebChromeClient() {
-                    override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {
-                        request?.grant(request.resources)
-                    }
-                }
-                
-                loadUrl("file:///android_asset/ai_planner/index.html")
-            }
-        },
-        modifier = androidx.compose.ui.Modifier.fillMaxSize()
-    )
 }
 
