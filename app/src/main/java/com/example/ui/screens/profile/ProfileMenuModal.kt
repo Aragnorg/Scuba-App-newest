@@ -559,6 +559,29 @@ fun ProfileMenuModal(
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
+
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    // Button: Attach File / Document to Profile
+                                    OutlinedButton(
+                                        onClick = {
+                                            documentToEdit = null
+                                            showAddDocumentDialog = true
+                                        },
+                                        modifier = Modifier.fillMaxWidth().testTag("profile_quick_add_doc_btn"),
+                                        shape = RoundedCornerShape(10.dp)
+                                    ) {
+                                        Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = if (currentLanguage == AppLanguage.DE)
+                                                "📁 Datei / Dokument an Profil anhängen"
+                                            else
+                                                "📁 Attach File / Document to Profile",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
                             }
                         }

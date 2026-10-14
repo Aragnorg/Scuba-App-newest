@@ -186,6 +186,21 @@ fun AddEditDocumentDialog(
         }
     }
 
+    // Generic Document / PDF File Picker
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (_: Exception) {}
+            documentUri = uri.toString()
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -569,6 +584,29 @@ fun AddEditDocumentDialog(
                                 Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(strings.uploadFromGallery, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            OutlinedButton(
+                                onClick = {
+                                    filePickerLauncher.launch(
+                                        arrayOf("application/pdf", "image/*", "*/*")
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("doc_file_pick_btn"),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
+                                        "📄 PDF oder Datei vom Smartphone wählen"
+                                    else
+                                        "📄 Choose PDF or File from Device",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
 

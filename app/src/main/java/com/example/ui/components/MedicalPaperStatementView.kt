@@ -146,31 +146,73 @@ fun RealisticMedicalStatementPaper(
                 }
             }
         } else if (uri != null && (uri.startsWith("http") || uri.startsWith("content://") || uri.startsWith("file://"))) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                AsyncImage(
-                    model = uri,
-                    contentDescription = strings.paperDocumentScan,
+            val isPdf = uri.endsWith(".pdf", ignoreCase = true) || uri.contains("pdf", ignoreCase = true)
+            if (isPdf) {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .then(if (isThumbnail) Modifier.height(180.dp) else Modifier)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = if (isThumbnail) ContentScale.Crop else ContentScale.Fit
-                )
-                if (isThumbnail && onInspectClick != null) {
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        color = DepthNavy.copy(alpha = 0.85f)
+                        .clickable {
+                            try {
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                                    setDataAndType(android.net.Uri.parse(uri), "application/pdf")
+                                    addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(intent)
+                            } catch (_: Exception) {}
+                        },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = OceanPrimary.copy(alpha = 0.12f)),
+                    border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.4f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        Text("📄", fontSize = 28.sp)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "PDF-Dokument angehängt",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = OceanPrimary
+                            )
+                            Text(
+                                text = "Antippen, um die Datei auf dem Handy zu öffnen",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = strings.paperDocumentScan,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(if (isThumbnail) Modifier.height(180.dp) else Modifier)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = if (isThumbnail) ContentScale.Crop else ContentScale.Fit
+                    )
+                    if (isThumbnail && onInspectClick != null) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            color = DepthNavy.copy(alpha = 0.85f)
                         ) {
-                            Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Enlarge", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Enlarge", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
                 }
