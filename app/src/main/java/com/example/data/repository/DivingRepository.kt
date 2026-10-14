@@ -87,6 +87,10 @@ class DivingRepository(private val divingDao: DivingDao) {
         divingDao.insertMember(member)
     }
 
+    suspend fun insertMembers(members: List<OrganizationMemberEntity>) {
+        divingDao.insertMembers(members)
+    }
+
     suspend fun updateMember(member: OrganizationMemberEntity) {
         divingDao.updateMember(member)
     }
