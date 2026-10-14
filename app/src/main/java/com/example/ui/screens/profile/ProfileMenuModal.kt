@@ -560,6 +560,8 @@ fun ProfileMenuModal(
                                         )
                                     }
                                 }
+                            }
+                        }
                     }
 
                     // Diver Stats Counter Row
