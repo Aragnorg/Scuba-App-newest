@@ -15,6 +15,8 @@ import com.example.data.model.Flashcard
 import com.example.data.model.LearningVideoEntity
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
+import com.example.data.model.DiveEventEntity
+import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.QuizQuestion
@@ -333,19 +335,52 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentOrgMembers = MutableStateFlow<List<OrganizationMemberEntity>>(emptyList())
     val currentOrgMembers: StateFlow<List<OrganizationMemberEntity>> = _currentOrgMembers.asStateFlow()
 
+    private val _currentOrgEvents = MutableStateFlow<List<DiveEventEntity>>(emptyList())
+    val currentOrgEvents: StateFlow<List<DiveEventEntity>> = _currentOrgEvents.asStateFlow()
+
+    private val _selectedEvent = MutableStateFlow<DiveEventEntity?>(null)
+    val selectedEvent: StateFlow<DiveEventEntity?> = _selectedEvent.asStateFlow()
+
+    private val _selectedEventParticipants = MutableStateFlow<List<DiveEventParticipantEntity>>(emptyList())
+    val selectedEventParticipants: StateFlow<List<DiveEventParticipantEntity>> = _selectedEventParticipants.asStateFlow()
+
     private var orgMembersJob: kotlinx.coroutines.Job? = null
+    private var orgEventsJob: kotlinx.coroutines.Job? = null
+    private var eventParticipantsJob: kotlinx.coroutines.Job? = null
 
     fun selectOrganization(org: OrganizationEntity?) {
         _currentOrganization.value = org
         orgMembersJob?.cancel()
+        orgEventsJob?.cancel()
+        selectDiveEvent(null)
         if (org != null) {
             orgMembersJob = viewModelScope.launch {
                 repository.getMembersForOrganization(org.id).collect { members ->
                     _currentOrgMembers.value = members
                 }
             }
+            orgEventsJob = viewModelScope.launch {
+                repository.getAllEventsForOrganization(org.id).collect { events ->
+                    _currentOrgEvents.value = events
+                }
+            }
         } else {
             _currentOrgMembers.value = emptyList()
+            _currentOrgEvents.value = emptyList()
+        }
+    }
+
+    fun selectDiveEvent(event: DiveEventEntity?) {
+        _selectedEvent.value = event
+        eventParticipantsJob?.cancel()
+        if (event != null) {
+            eventParticipantsJob = viewModelScope.launch {
+                repository.getParticipantsForEvent(event.id).collect { participants ->
+                    _selectedEventParticipants.value = participants
+                }
+            }
+        } else {
+            _selectedEventParticipants.value = emptyList()
         }
     }
 
@@ -474,6 +509,228 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             repository.updateOrganization(
                 currentOrg.copy(activeMembersCount = maxOf(0, currentOrg.activeMembersCount - 1))
             )
+        }
+    }
+
+    // --- DiveOps Events & Trip Management ---
+    fun createDiveEvent(
+        title: String,
+        eventType: String,
+        siteName: String,
+        location: String,
+        eventDate: String,
+        meetingTime: String = "08:30",
+        departureTime: String = "09:00",
+        maxCapacity: Int = 12,
+        leadGuideName: String = "",
+        maxDepthMeters: Float = 20.0f,
+        requiredMinCert: String = "Open Water Diver",
+        emergencyBriefing: String = ""
+    ) {
+        val currentOrg = _currentOrganization.value ?: return
+        val newEvent = DiveEventEntity(
+            id = "evt_${UUID.randomUUID().toString().take(8)}",
+            orgId = currentOrg.id,
+            title = title.trim(),
+            eventType = eventType,
+            siteName = siteName.trim(),
+            location = location.trim(),
+            eventDate = eventDate.trim(),
+            meetingTime = meetingTime.trim(),
+            departureTime = departureTime.trim(),
+            maxCapacity = maxCapacity,
+            registeredCount = 0,
+            leadGuideName = leadGuideName.trim(),
+            leadGuideUserId = _currentUser.value?.id ?: "",
+            maxDepthMeters = maxDepthMeters,
+            requiredMinCert = requiredMinCert.trim(),
+            emergencyBriefing = emergencyBriefing.trim(),
+            status = "CONFIRMED",
+            createdAt = System.currentTimeMillis()
+        )
+        viewModelScope.launch {
+            repository.insertEvent(newEvent)
+            selectDiveEvent(newEvent)
+        }
+    }
+
+    fun updateEventStatus(eventId: String, newStatus: String) {
+        viewModelScope.launch {
+            repository.updateEventStatus(eventId, newStatus)
+            if (_selectedEvent.value?.id == eventId) {
+                _selectedEvent.value = _selectedEvent.value?.copy(status = newStatus)
+            }
+        }
+    }
+
+    fun deleteDiveEvent(eventId: String) {
+        viewModelScope.launch {
+            repository.deleteEvent(eventId)
+            if (_selectedEvent.value?.id == eventId) {
+                selectDiveEvent(null)
+            }
+        }
+    }
+
+    // --- 1-Click Check-In with Auto-Safety-Gate ---
+    fun checkInDiverForEvent(
+        event: DiveEventEntity,
+        member: OrganizationMemberEntity,
+        tankSelection: String = "12L Aluminum",
+        gasType: String = "Air 21%",
+        rentalGear: List<String> = emptyList(),
+        transferCarPoolNote: String = ""
+    ) {
+        // Auto-Safety-Gate Verification:
+        val issues = mutableListOf<String>()
+
+        // 1. TTU Expiry Check on Event Day
+        val rawTtu = member.ttuExpiryDate.trim()
+        if (rawTtu.isBlank()) {
+            issues.add("Keine TTU / ärztliches Tauchtauglichkeitsattest hinterlegt!")
+        } else {
+            val ttuInfo = com.example.util.DocumentExpirationHelper.computeDateExpiration(rawTtu, isGerman = true)
+            if (ttuInfo.level == com.example.util.ExpirationAlertLevel.EXPIRED) {
+                issues.add("TTU ist abgelaufen ($rawTtu)!")
+            } else if (rawTtu < event.eventDate) {
+                issues.add("TTU läuft vor dem Event-Tag ab ($rawTtu < ${event.eventDate})!")
+            }
+        }
+
+        // 2. Brevet vs Max Depth Check
+        val certLower = member.certLevel.lowercase()
+        val maxAllowedDepth = when {
+            certLower.contains("scuba diver") -> 12.0f
+            certLower.contains("open water") || certLower.contains("cmas *") || certLower.contains("owd") -> 18.0f
+            certLower.contains("advanced") || certLower.contains("cmas **") || certLower.contains("aowd") -> 30.0f
+            else -> 40.0f
+        }
+        if (event.maxDepthMeters > maxAllowedDepth) {
+            issues.add("Brevet '${member.certLevel}' (max ${maxAllowedDepth.toInt()}m) reicht nicht für geplante Maximaltiefe (${event.maxDepthMeters.toInt()}m)!")
+        }
+
+        // 3. Nitrox Gas MOD Calculation (PPO2 max = 1.4 bar)
+        val calculatedMod = when (gasType) {
+            "Nitrox 32%" -> 33.7f
+            "Nitrox 36%" -> 28.8f
+            "Nitrox 40%" -> 25.0f
+            else -> 56.6f
+        }
+        if (event.maxDepthMeters > calculatedMod) {
+            issues.add("Geplante Tiefe (${event.maxDepthMeters.toInt()}m) überschreitet MOD von $gasType (${calculatedMod.toInt()}m)!")
+        }
+
+        val passed = issues.isEmpty()
+        val issuesJson = JSONArray(issues).toString()
+
+        val newParticipant = DiveEventParticipantEntity(
+            id = "part_${UUID.randomUUID().toString().take(8)}",
+            eventId = event.id,
+            memberId = member.id,
+            diverName = member.fullName,
+            diverEmail = member.email,
+            diverCertLevel = member.certLevel,
+            diverTotalDives = member.totalLoggedDives,
+            checkInStatus = if (passed) "SAFETY_CHECKED" else "REGISTERED",
+            safetyGatePassed = passed,
+            safetyGateIssuesJson = issuesJson,
+            tankSelection = tankSelection,
+            gasType = gasType,
+            modMeters = calculatedMod,
+            rentalGearJson = JSONArray(rentalGear).toString(),
+            transferCarPoolNote = transferCarPoolNote.trim(),
+            buddyTeamId = null,
+            groupGuideName = null,
+            tankPressureStartBar = 200,
+            tankPressureEndBar = 50,
+            checkInTimestamp = System.currentTimeMillis()
+        )
+
+        viewModelScope.launch {
+            repository.insertParticipant(newParticipant)
+            val updatedCount = event.registeredCount + 1
+            repository.updateEventRegisteredCount(event.id, updatedCount)
+            if (_selectedEvent.value?.id == event.id) {
+                _selectedEvent.value = _selectedEvent.value?.copy(registeredCount = updatedCount)
+            }
+        }
+    }
+
+    fun updateParticipantCheckInStatus(participantId: String, newStatus: String) {
+        viewModelScope.launch {
+            repository.updateParticipantCheckInStatus(participantId, newStatus)
+        }
+    }
+
+    fun assignBuddyTeam(participantId: String, buddyTeamId: String?, groupGuideName: String? = null) {
+        viewModelScope.launch {
+            repository.updateBuddyTeamAssignment(participantId, buddyTeamId, groupGuideName)
+        }
+    }
+
+    fun recordDiverSurfaced(participantId: String, pressureOut: Int, timeOut: String) {
+        viewModelScope.launch {
+            repository.recordWaterEntryExit(
+                id = participantId,
+                timeIn = null,
+                timeOut = timeOut,
+                pressureOut = pressureOut,
+                status = "SURFACED_OK"
+            )
+        }
+    }
+
+    fun recordDiverSplash(participantId: String, timeIn: String) {
+        viewModelScope.launch {
+            repository.recordWaterEntryExit(
+                id = participantId,
+                timeIn = timeIn,
+                timeOut = null,
+                pressureOut = 200,
+                status = "IN_WATER"
+            )
+        }
+    }
+
+    fun removeParticipantFromEvent(participantId: String, eventId: String) {
+        viewModelScope.launch {
+            repository.deleteParticipant(participantId)
+            val event = _selectedEvent.value
+            if (event != null && event.id == eventId) {
+                val newCount = maxOf(0, event.registeredCount - 1)
+                repository.updateEventRegisteredCount(eventId, newCount)
+                _selectedEvent.value = event.copy(registeredCount = newCount)
+            }
+        }
+    }
+
+    // --- Smart Buddy Matching Auto-Suggest Engine ---
+    fun autoSuggestBuddyTeams(eventId: String) {
+        val participants = _selectedEventParticipants.value
+        val safeParticipants = participants.filter { it.safetyGatePassed }
+        if (safeParticipants.isEmpty()) return
+
+        val sorted = safeParticipants.sortedByDescending { it.diverTotalDives }
+        val teamNames = listOf("Team Alpha", "Team Bravo", "Team Charlie", "Team Delta", "Team Echo", "Team Foxtrot")
+
+        viewModelScope.launch {
+            var teamIndex = 0
+            var left = 0
+            var right = sorted.size - 1
+
+            while (left <= right && teamIndex < teamNames.size) {
+                val currentTeam = teamNames[teamIndex]
+                if (left == right) {
+                    repository.updateBuddyTeamAssignment(sorted[left].id, currentTeam, null)
+                    left++
+                } else {
+                    repository.updateBuddyTeamAssignment(sorted[left].id, currentTeam, null)
+                    repository.updateBuddyTeamAssignment(sorted[right].id, currentTeam, null)
+                    left++
+                    right--
+                }
+                teamIndex++
+            }
         }
     }
 

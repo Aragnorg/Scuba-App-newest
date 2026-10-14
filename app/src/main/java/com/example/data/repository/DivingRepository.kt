@@ -8,6 +8,8 @@ import com.example.data.model.Flashcard
 import com.example.data.model.LearningVideoEntity
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
+import com.example.data.model.DiveEventEntity
+import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.StudentRosterEntity
@@ -99,6 +101,74 @@ class DivingRepository(private val divingDao: DivingDao) {
 
     suspend fun deleteMember(id: String) {
         divingDao.deleteMember(id)
+    }
+
+    // --- DiveOps Events & Trips Flows ---
+    fun getAllEventsForOrganization(orgId: String): Flow<List<DiveEventEntity>> =
+        divingDao.getAllEventsForOrganization(orgId)
+
+    fun getUpcomingEventsForOrganization(orgId: String): Flow<List<DiveEventEntity>> =
+        divingDao.getUpcomingEventsForOrganization(orgId)
+
+    fun getEventById(id: String): Flow<DiveEventEntity?> =
+        divingDao.getEventById(id)
+
+    suspend fun getEventByIdDirect(id: String): DiveEventEntity? =
+        divingDao.getEventByIdDirect(id)
+
+    suspend fun insertEvent(event: DiveEventEntity) {
+        divingDao.insertEvent(event)
+    }
+
+    suspend fun updateEvent(event: DiveEventEntity) {
+        divingDao.updateEvent(event)
+    }
+
+    suspend fun updateEventStatus(id: String, status: String) {
+        divingDao.updateEventStatus(id, status)
+    }
+
+    suspend fun updateEventRegisteredCount(id: String, count: Int) {
+        divingDao.updateEventRegisteredCount(id, count)
+    }
+
+    suspend fun deleteEvent(id: String) {
+        divingDao.deleteParticipantsForEvent(id)
+        divingDao.deleteEvent(id)
+    }
+
+    // --- DiveOps Participants & Manifest Flows ---
+    fun getParticipantsForEvent(eventId: String): Flow<List<DiveEventParticipantEntity>> =
+        divingDao.getParticipantsForEvent(eventId)
+
+    fun getParticipantById(id: String): Flow<DiveEventParticipantEntity?> =
+        divingDao.getParticipantById(id)
+
+    suspend fun getParticipantByIdDirect(id: String): DiveEventParticipantEntity? =
+        divingDao.getParticipantByIdDirect(id)
+
+    suspend fun insertParticipant(participant: DiveEventParticipantEntity) {
+        divingDao.insertParticipant(participant)
+    }
+
+    suspend fun updateParticipant(participant: DiveEventParticipantEntity) {
+        divingDao.updateParticipant(participant)
+    }
+
+    suspend fun updateParticipantCheckInStatus(id: String, status: String) {
+        divingDao.updateParticipantCheckInStatus(id, status)
+    }
+
+    suspend fun updateBuddyTeamAssignment(id: String, buddyTeamId: String?, groupGuideName: String?) {
+        divingDao.updateBuddyTeamAssignment(id, buddyTeamId, groupGuideName)
+    }
+
+    suspend fun recordWaterEntryExit(id: String, timeIn: String?, timeOut: String?, pressureOut: Int, status: String) {
+        divingDao.recordWaterEntryExit(id, timeIn, timeOut, pressureOut, status)
+    }
+
+    suspend fun deleteParticipant(id: String) {
+        divingDao.deleteParticipant(id)
     }
 
     // Dive Logbook Flows & Operations
@@ -1552,6 +1622,184 @@ class DivingRepository(private val divingDao: DivingDao) {
 
             (clubMembers + centerMembers).forEach { member ->
                 divingDao.insertMember(member)
+            }
+
+            // 1. Initial Club Outing Event (Delphin Bodensee e.V.)
+            val clubEvent = DiveEventEntity(
+                id = "evt_delphin_spring_lake",
+                orgId = "org_club_delphin",
+                title = "Bodensee Steilwand-Tauchen & Clubausfahrt",
+                eventType = "CLUB_OUTING",
+                siteName = "Überlingen - Parkhaus Post Steilwand",
+                location = "Überlingen am Bodensee",
+                eventDate = "2026-10-25",
+                meetingTime = "09:30",
+                departureTime = "10:15",
+                maxCapacity = 12,
+                registeredCount = 3,
+                leadGuideName = "Adrian Scheid (TL2)",
+                leadGuideUserId = "usr_adrian_instructor",
+                maxDepthMeters = 30.0f,
+                requiredMinCert = "CMAS ** / AOWD",
+                emergencyBriefing = "Bodensee Kaltwasser-Tauchgang: Zwei getrennte Kaltwasser-Reglersysteme (DIN 300) zwingend erforderlich. Druckkammer Überlingen (Helios Spital) 5 Minuten entfernt. O2-Notfallkoffer am Vereins-Transporter.",
+                status = "CONFIRMED",
+                createdAt = System.currentTimeMillis() - (5 * 86400000L)
+            )
+
+            // Participants for Club Event
+            val clubParticipants = listOf(
+                DiveEventParticipantEntity(
+                    id = "part_club_adrian",
+                    eventId = "evt_delphin_spring_lake",
+                    memberId = "mem_delphin_adrian",
+                    diverName = "Adrian Scheid",
+                    diverEmail = "adrian.scheid01@gmail.com",
+                    diverCertLevel = "CMAS *** / PADI OWSI",
+                    diverTotalDives = 340,
+                    checkInStatus = "SAFETY_CHECKED",
+                    safetyGatePassed = true,
+                    safetyGateIssuesJson = "[]",
+                    tankSelection = "12L Steel Doppelpack",
+                    gasType = "Air 21%",
+                    modMeters = 56.0f,
+                    transferCarPoolNote = "Fährt Vereins-Transporter",
+                    buddyTeamId = "Team Alpha (Kaltwasser)",
+                    groupGuideName = "Adrian Scheid",
+                    tankPressureStartBar = 210,
+                    tankPressureEndBar = 60
+                ),
+                DiveEventParticipantEntity(
+                    id = "part_club_marcus",
+                    eventId = "evt_delphin_spring_lake",
+                    memberId = "mem_delphin_marcus",
+                    diverName = "Marcus Vance",
+                    diverEmail = "m.vance@diveclub.net",
+                    diverCertLevel = "CMAS ** / Silver",
+                    diverTotalDives = 185,
+                    checkInStatus = "SAFETY_CHECKED",
+                    safetyGatePassed = true,
+                    safetyGateIssuesJson = "[]",
+                    tankSelection = "15L Steel",
+                    gasType = "Air 21%",
+                    modMeters = 56.0f,
+                    transferCarPoolNote = "Fahrgemeinschaft mit Adrian",
+                    buddyTeamId = "Team Alpha (Kaltwasser)",
+                    groupGuideName = "Adrian Scheid",
+                    tankPressureStartBar = 205,
+                    tankPressureEndBar = 55
+                ),
+                DiveEventParticipantEntity(
+                    id = "part_club_leo",
+                    eventId = "evt_delphin_spring_lake",
+                    memberId = "mem_delphin_leo",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
+                    diverCertLevel = "Open Water Diver (18m)",
+                    diverTotalDives = 24,
+                    checkInStatus = "REGISTERED",
+                    safetyGatePassed = false,
+                    safetyGateIssuesJson = "[\"TTU ist seit 10.08.2025 abgelaufen!\", \"Brevet Open Water Diver (18m) reicht nicht für geplante 30m Steilwand!\"]",
+                    tankSelection = "12L Steel",
+                    gasType = "Air 21%",
+                    modMeters = 56.0f,
+                    rentalGearJson = "[\"Kaltwasser-Reglerset DIN\", \"7mm Halbtrockenanzug M\", \"12L Stahlflasche\"]",
+                    transferCarPoolNote = "Benötigt Mitfahrgelegenheit ab Bahnhof Überlingen",
+                    buddyTeamId = null,
+                    groupGuideName = null,
+                    tankPressureStartBar = 200,
+                    tankPressureEndBar = 50
+                )
+            )
+
+            // 2. Initial Dive Center Boat Trip (Blue Horizon Resort)
+            val centerEvent = DiveEventEntity(
+                id = "evt_bh_ras_mohammed",
+                orgId = "org_center_blue_horizon",
+                title = "Ras Mohammed Shark & Yolanda Wall Boat Safari",
+                eventType = "BOAT_TRIP",
+                siteName = "Shark Reef & Yolanda Wreck",
+                location = "Ras Mohammed National Park, Red Sea",
+                eventDate = "2026-10-22",
+                meetingTime = "07:30",
+                departureTime = "08:00",
+                maxCapacity = 16,
+                registeredCount = 3,
+                leadGuideName = "Sarah Connor",
+                leadGuideUserId = "usr_sarah",
+                maxDepthMeters = 26.0f,
+                requiredMinCert = "Advanced Open Water Diver",
+                emergencyBriefing = "Tages-Bootsausfahrt auf M/Y Blue Horizon. Strömungstauchgang (Drift) mit Schlauchboot-Abholung (Zodiac). Signalboje (SMB) pro Buddy-Team Pflicht. Dekompressionskammer Sharm El Sheikh VHF Kanal 16. O2-Notfallkoffer und DAN Sauerstoff-Set auf dem Hauptdeck.",
+                status = "CONFIRMED",
+                createdAt = System.currentTimeMillis() - (7 * 86400000L)
+            )
+
+            // Participants for Dive Center Event
+            val centerParticipants = listOf(
+                DiveEventParticipantEntity(
+                    id = "part_bh_sarah",
+                    eventId = "evt_bh_ras_mohammed",
+                    memberId = "mem_bh_sarah",
+                    diverName = "Sarah Connor",
+                    diverEmail = "sarah.c@ocean.net",
+                    diverCertLevel = "PADI MSDT #412093",
+                    diverTotalDives = 780,
+                    checkInStatus = "ON_BOARD",
+                    safetyGatePassed = true,
+                    safetyGateIssuesJson = "[]",
+                    tankSelection = "12L Aluminum EANx32",
+                    gasType = "Nitrox 32%",
+                    modMeters = 33.7f,
+                    buddyTeamId = "Guide Team",
+                    groupGuideName = "Sarah Connor",
+                    tankPressureStartBar = 215,
+                    tankPressureEndBar = 55
+                ),
+                DiveEventParticipantEntity(
+                    id = "part_bh_adrian",
+                    eventId = "evt_bh_ras_mohammed",
+                    memberId = "mem_bh_adrian",
+                    diverName = "Adrian Scheid",
+                    diverEmail = "adrian.scheid01@gmail.com",
+                    diverCertLevel = "PADI Course Director / MSDT",
+                    diverTotalDives = 1450,
+                    checkInStatus = "ON_BOARD",
+                    safetyGatePassed = true,
+                    safetyGateIssuesJson = "[]",
+                    tankSelection = "12L Aluminum EANx32",
+                    gasType = "Nitrox 32%",
+                    modMeters = 33.7f,
+                    buddyTeamId = "Team Blue Horizon 1",
+                    groupGuideName = "Sarah Connor",
+                    tankPressureStartBar = 210,
+                    tankPressureEndBar = 60
+                ),
+                DiveEventParticipantEntity(
+                    id = "part_bh_leo",
+                    eventId = "evt_bh_ras_mohammed",
+                    memberId = "mem_bh_leo",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
+                    diverCertLevel = "Advanced Open Water Diver",
+                    diverTotalDives = 28,
+                    checkInStatus = "SAFETY_CHECKED",
+                    safetyGatePassed = true,
+                    safetyGateIssuesJson = "[]",
+                    tankSelection = "12L Aluminum EANx32",
+                    gasType = "Nitrox 32%",
+                    modMeters = 33.7f,
+                    rentalGearJson = "[\"Jacket Size M\", \"Regulator DIN 300\", \"Fins 42-43\"]",
+                    transferCarPoolNote = "Hotel Shuttle ab Mövenpick Naama Bay",
+                    buddyTeamId = "Team Blue Horizon 1",
+                    groupGuideName = "Sarah Connor",
+                    tankPressureStartBar = 205,
+                    tankPressureEndBar = 50
+                )
+            )
+
+            divingDao.insertEvent(clubEvent)
+            divingDao.insertEvent(centerEvent)
+            (clubParticipants + centerParticipants).forEach { participant ->
+                divingDao.insertParticipant(participant)
             }
         }
     }

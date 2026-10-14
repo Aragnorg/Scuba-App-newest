@@ -434,3 +434,79 @@ data class OrganizationMemberEntity(
     val isTechRole: Boolean
         get() = role in listOf("OWNER", "ADMIN", "TECH_MANAGER")
 }
+
+@Entity(tableName = "dive_events")
+data class DiveEventEntity(
+    @PrimaryKey val id: String,
+    val orgId: String,
+    val title: String,
+    val eventType: String = "BOAT_TRIP", // "BOAT_TRIP", "SHORE_DIVE", "COURSE_TRAINING", "CLUB_OUTING"
+    val siteName: String,
+    val location: String,
+    val eventDate: String, // "YYYY-MM-DD"
+    val meetingTime: String = "08:30",
+    val departureTime: String = "09:00",
+    val maxCapacity: Int = 12,
+    val registeredCount: Int = 0,
+    val leadGuideName: String = "",
+    val leadGuideUserId: String = "",
+    val maxDepthMeters: Float = 20.0f,
+    val requiredMinCert: String = "Open Water Diver",
+    val emergencyBriefing: String = "",
+    val status: String = "PLANNING", // "PLANNING", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+    val createdAt: Long = System.currentTimeMillis()
+) {
+    val isBoatTrip: Boolean get() = eventType == "BOAT_TRIP"
+    val isShoreDive: Boolean get() = eventType == "SHORE_DIVE"
+    val isCourse: Boolean get() = eventType == "COURSE_TRAINING"
+    val isClubOuting: Boolean get() = eventType == "CLUB_OUTING"
+}
+
+@Entity(tableName = "dive_event_participants")
+data class DiveEventParticipantEntity(
+    @PrimaryKey val id: String,
+    val eventId: String,
+    val memberId: String,
+    val diverName: String,
+    val diverEmail: String,
+    val diverCertLevel: String = "Open Water Diver",
+    val diverTotalDives: Int = 0,
+    val checkInStatus: String = "REGISTERED", // "REGISTERED", "SAFETY_CHECKED", "ON_BOARD", "IN_WATER", "SURFACED_OK", "ABSENT"
+    val safetyGatePassed: Boolean = true,
+    val safetyGateIssuesJson: String = "[]",
+    val tankSelection: String = "12L Aluminum",
+    val gasType: String = "Air 21%",
+    val modMeters: Float = 0f,
+    val rentalGearJson: String = "[]",
+    val transferCarPoolNote: String = "",
+    val buddyTeamId: String? = null,
+    val groupGuideName: String? = null,
+    val tankPressureStartBar: Int = 200,
+    val tankPressureEndBar: Int = 50,
+    val timeIn: String? = null,
+    val timeOut: String? = null,
+    val checkInTimestamp: Long = System.currentTimeMillis()
+) {
+    fun parseSafetyIssues(): List<String> {
+        val list = mutableListOf<String>()
+        try {
+            val arr = JSONArray(safetyGateIssuesJson)
+            for (i in 0 until arr.length()) {
+                list.add(arr.getString(i))
+            }
+        } catch (_: Exception) {}
+        return list
+    }
+
+    fun parseRentalGear(): List<String> {
+        val list = mutableListOf<String>()
+        try {
+            val arr = JSONArray(rentalGearJson)
+            for (i in 0 until arr.length()) {
+                list.add(arr.getString(i))
+            }
+        } catch (_: Exception) {}
+        return list
+    }
+}
+

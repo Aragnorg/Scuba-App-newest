@@ -17,6 +17,8 @@ import com.example.data.model.UserProgressEntity
 
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
+import com.example.data.model.DiveEventEntity
+import com.example.data.model.DiveEventParticipantEntity
 
 @Database(
     entities = [
@@ -30,9 +32,11 @@ import com.example.data.model.OrganizationMemberEntity
         DiveLogEntity::class,
         DiverDocumentEntity::class,
         OrganizationEntity::class,
-        OrganizationMemberEntity::class
+        OrganizationMemberEntity::class,
+        DiveEventEntity::class,
+        DiveEventParticipantEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class AquaDatabase : RoomDatabase() {

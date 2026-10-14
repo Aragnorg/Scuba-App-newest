@@ -14,6 +14,8 @@ import com.example.data.model.QuizEntity
 import com.example.data.model.StudentRosterEntity
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
+import com.example.data.model.DiveEventEntity
+import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.UserAccountEntity
 import com.example.data.model.UserProgressEntity
 import kotlinx.coroutines.flow.Flow
@@ -364,5 +366,73 @@ interface DivingDao {
 
     @Query("DELETE FROM organization_members WHERE id = :id")
     suspend fun deleteMember(id: String)
+
+    // --- DiveOps Engine: Events, Boat Trips, Shore Excursions ---
+    @Query("SELECT * FROM dive_events WHERE orgId = :orgId ORDER BY eventDate DESC, departureTime ASC")
+    fun getAllEventsForOrganization(orgId: String): Flow<List<DiveEventEntity>>
+
+    @Query("SELECT * FROM dive_events WHERE orgId = :orgId AND status != 'COMPLETED' AND status != 'CANCELLED' ORDER BY eventDate ASC, departureTime ASC")
+    fun getUpcomingEventsForOrganization(orgId: String): Flow<List<DiveEventEntity>>
+
+    @Query("SELECT * FROM dive_events WHERE id = :id LIMIT 1")
+    fun getEventById(id: String): Flow<DiveEventEntity?>
+
+    @Query("SELECT * FROM dive_events WHERE id = :id LIMIT 1")
+    suspend fun getEventByIdDirect(id: String): DiveEventEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvent(event: DiveEventEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvents(events: List<DiveEventEntity>)
+
+    @Update
+    suspend fun updateEvent(event: DiveEventEntity)
+
+    @Query("UPDATE dive_events SET status = :status WHERE id = :id")
+    suspend fun updateEventStatus(id: String, status: String)
+
+    @Query("UPDATE dive_events SET registeredCount = :count WHERE id = :id")
+    suspend fun updateEventRegisteredCount(id: String, count: Int)
+
+    @Query("DELETE FROM dive_events WHERE id = :id")
+    suspend fun deleteEvent(id: String)
+
+    // --- DiveOps Check-in, Manifest & Participants ---
+    @Query("SELECT * FROM dive_event_participants WHERE eventId = :eventId ORDER BY checkInTimestamp ASC")
+    fun getParticipantsForEvent(eventId: String): Flow<List<DiveEventParticipantEntity>>
+
+    @Query("SELECT * FROM dive_event_participants WHERE id = :id LIMIT 1")
+    fun getParticipantById(id: String): Flow<DiveEventParticipantEntity?>
+
+    @Query("SELECT * FROM dive_event_participants WHERE id = :id LIMIT 1")
+    suspend fun getParticipantByIdDirect(id: String): DiveEventParticipantEntity?
+
+    @Query("SELECT * FROM dive_event_participants WHERE eventId = :eventId AND memberId = :memberId LIMIT 1")
+    suspend fun getParticipantByEventAndMember(eventId: String, memberId: String): DiveEventParticipantEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertParticipant(participant: DiveEventParticipantEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertParticipants(participants: List<DiveEventParticipantEntity>)
+
+    @Update
+    suspend fun updateParticipant(participant: DiveEventParticipantEntity)
+
+    @Query("UPDATE dive_event_participants SET checkInStatus = :status WHERE id = :id")
+    suspend fun updateParticipantCheckInStatus(id: String, status: String)
+
+    @Query("UPDATE dive_event_participants SET buddyTeamId = :buddyTeamId, groupGuideName = :groupGuideName WHERE id = :id")
+    suspend fun updateBuddyTeamAssignment(id: String, buddyTeamId: String?, groupGuideName: String?)
+
+    @Query("UPDATE dive_event_participants SET timeIn = :timeIn, timeOut = :timeOut, tankPressureEndBar = :pressureOut, checkInStatus = :status WHERE id = :id")
+    suspend fun recordWaterEntryExit(id: String, timeIn: String?, timeOut: String?, pressureOut: Int, status: String)
+
+    @Query("DELETE FROM dive_event_participants WHERE id = :id")
+    suspend fun deleteParticipant(id: String)
+
+    @Query("DELETE FROM dive_event_participants WHERE eventId = :eventId")
+    suspend fun deleteParticipantsForEvent(eventId: String)
 }
 
