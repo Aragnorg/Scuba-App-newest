@@ -90,8 +90,8 @@ fun AquaApp(viewModel: AquaViewModel = viewModel()) {
                     quiz = activeQz!!
                 )
             }
-            // 3. Multi-Tenant DiveOps & OrgFlow Mission Control Mode
-            currentOrg != null -> {
+            // 3. Multi-Tenant DiveOps & OrgFlow Mission Control Mode (Exclusively available in Leadership / Instructor profile)
+            currentOrg != null && currentUser?.role == "INSTRUCTOR" -> {
                 DiveOpsScreen(viewModel = viewModel)
             }
             // 4. Environment Segregation based on Account Role

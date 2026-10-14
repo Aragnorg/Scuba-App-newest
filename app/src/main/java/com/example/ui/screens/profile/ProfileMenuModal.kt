@@ -322,7 +322,7 @@ fun ProfileMenuModal(
                                                 Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
-                                                    text = if (currentUser?.role == "INSTRUCTOR") "Certified Instructor" else strings.diverStatusActive,
+                                                    text = if (currentUser?.role == "INSTRUCTOR") strings.instructorLabel else strings.diverStatusActive,
                                                     fontSize = 10.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = SeaGreen
@@ -422,6 +422,84 @@ fun ProfileMenuModal(
                         val isImperial by viewModel.isImperial.collectAsState()
                         var wifiOnly by remember { mutableStateOf(true) }
                         var dailyReminder by remember { mutableStateOf(true) }
+
+                        // Profile / Role Switcher Card (Diver vs Leadership/Orga)
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 14.dp)
+                                .testTag("profile_role_switcher_card"),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (currentUser?.role == "INSTRUCTOR") OceanPrimary.copy(alpha = 0.08f) else SeaGreen.copy(alpha = 0.08f)
+                            ),
+                            border = BorderStroke(
+                                1.dp,
+                                if (currentUser?.role == "INSTRUCTOR") OceanPrimary.copy(alpha = 0.35f) else SeaGreen.copy(alpha = 0.35f)
+                            )
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = if (currentLanguage == AppLanguage.DE) "Aktives Profil:" else "Active Profile:",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Text(
+                                            text = if (currentUser?.role == "INSTRUCTOR") strings.instructorLabel else strings.studentLabel,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = if (currentUser?.role == "INSTRUCTOR") OceanPrimary else SeaGreen
+                                        )
+                                    }
+                                    Button(
+                                        onClick = {
+                                            val targetRole = if (currentUser?.role == "INSTRUCTOR") "STUDENT" else "INSTRUCTOR"
+                                            viewModel.switchUserRole(targetRole)
+                                            onDismiss()
+                                        },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = if (currentUser?.role == "INSTRUCTOR") SeaGreen else OceanPrimary
+                                        ),
+                                        shape = RoundedCornerShape(10.dp),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                    ) {
+                                        Text(
+                                            text = if (currentUser?.role == "INSTRUCTOR") {
+                                                if (currentLanguage == AppLanguage.DE) "Zu Taucher wechseln" else "Switch to Diver"
+                                            } else {
+                                                if (currentLanguage == AppLanguage.DE) "Zu Leitung wechseln" else "Switch to Leadership"
+                                            },
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = if (currentUser?.role == "INSTRUCTOR") {
+                                        if (currentLanguage == AppLanguage.DE)
+                                            "Leitungs- & Vereinsmodus: Voller Zugriff auf Basis- & Vereinsverwaltung (DiveOps), Material, TÜV, Ausfahrten & Schüler."
+                                        else
+                                            "Leadership & Club mode: Full access to Dive Center & Club operations (DiveOps), assets, TÜV, trips & students."
+                                    } else {
+                                        if (currentLanguage == AppLanguage.DE)
+                                            "Standard-Taucherprofil: Fokus auf persönliches Logbuch, eigene Kurse, Brevets und TTU-Akte."
+                                        else
+                                            "Standard diver profile: Focus on personal logbook, enrolled courses, certifications and medical file."
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
 
                         Card(
                             modifier = Modifier

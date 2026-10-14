@@ -292,6 +292,18 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         _authSuccess.value = null
     }
 
+    fun switchUserRole(newRole: String) {
+        val user = _currentUser.value ?: return
+        val updated = user.copy(role = newRole)
+        _currentUser.value = updated
+        if (newRole != "INSTRUCTOR") {
+            selectOrganization(null)
+        }
+        viewModelScope.launch {
+            repository.updateUserAccount(updated)
+        }
+    }
+
     val allModules: StateFlow<List<CourseModuleEntity>> = repository.allModules
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

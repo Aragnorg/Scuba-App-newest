@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.components.LanguageSwitchButton
 import com.example.ui.components.UserAvatarView
-import com.example.ui.components.WorkspaceSwitcherPill
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.screens.logbook.LogbookScreen
@@ -160,12 +159,6 @@ fun StudentEnvironment(
                     }
                 },
                 actions = {
-                    // Workspace / Organization Switcher
-                    WorkspaceSwitcherPill(
-                        viewModel = viewModel,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-
                     // Quick Profile & Documents Button
                     IconButton(
                         onClick = { showProfileModal = true },

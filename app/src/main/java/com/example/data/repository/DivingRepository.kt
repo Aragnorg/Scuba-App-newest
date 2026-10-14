@@ -653,6 +653,10 @@ class DivingRepository(private val divingDao: DivingDao) {
         return divingDao.getLatestVerifiedAccount()
     }
 
+    suspend fun updateUserAccount(account: UserAccountEntity) {
+        divingDao.updateUserAccount(account)
+    }
+
     private fun hashPassword(password: String): String {
         return try {
             val md = java.security.MessageDigest.getInstance("SHA-256")

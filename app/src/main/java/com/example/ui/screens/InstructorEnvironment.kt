@@ -136,7 +136,7 @@ fun InstructorEnvironment(
                             color = OceanPrimary.copy(alpha = 0.15f)
                         ) {
                             Text(
-                                text = "🤿 $instructorName",
+                                text = "🏢 ${strings.instructorLabel} • $instructorName",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
