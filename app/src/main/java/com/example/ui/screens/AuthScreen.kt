@@ -411,6 +411,7 @@ fun LoginForm(
                 onClick = { onLogin(email.trim(), password) },
                 enabled = email.isNotBlank() && password.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                shape = RoundedCornerShape(14.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
@@ -659,6 +660,7 @@ fun RegisterForm(
                 onClick = { onRegister(email.trim(), password, fullName, selectedRole) },
                 enabled = email.isNotBlank() && passwordLengthOk && passwordsMatch && agreeMedicalDeclaration,
                 colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                shape = RoundedCornerShape(14.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)

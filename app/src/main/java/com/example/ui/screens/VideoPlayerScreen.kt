@@ -400,22 +400,27 @@ fun VideoPlayerScreen(
                                 }
                             }
 
-                            Button(
-                                onClick = {
-                                    GoogleDriveHelper.openInGoogleDriveOrBrowser(context, video.videoUrlOrUri)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isDriveUrl) SeaGreen else OceanPrimary
-                                ),
+                            Box(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp)
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (isDriveUrl) "In Google Drive / Videoplayer abspielen" else "Video öffnen",
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Button(
+                                    onClick = {
+                                        GoogleDriveHelper.openInGoogleDriveOrBrowser(context, video.videoUrlOrUri)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (isDriveUrl) SeaGreen else OceanPrimary
+                                    ),
+                                    shape = RoundedCornerShape(20.dp),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                                ) {
+                                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (isDriveUrl) "In Google Drive / Player abspielen" else "Video öffnen",
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
                             }
                         }
                     }
@@ -559,20 +564,26 @@ fun VideoPlayerScreen(
                 }
 
                 // Mark Completed Button
-                Button(
-                    onClick = {
-                        viewModel.seekVideo(video.durationSeconds)
-                        viewModel.closeVideo()
-                    },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .testTag("mark_video_completed_button"),
-                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                        .navigationBarsPadding(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = "Complete")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(strings.markVideoCompleted)
+                    Button(
+                        onClick = {
+                            viewModel.seekVideo(video.durationSeconds)
+                            viewModel.closeVideo()
+                        },
+                        modifier = Modifier.testTag("mark_video_completed_button"),
+                        shape = RoundedCornerShape(24.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = "Complete", modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(strings.markVideoCompleted, fontWeight = FontWeight.SemiBold)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

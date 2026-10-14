@@ -173,6 +173,8 @@ fun PresentationViewerScreen(
                     OutlinedButton(
                         onClick = { viewModel.prevSlide() },
                         enabled = safeIndex > 0,
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                         modifier = Modifier.testTag("prev_slide_button")
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.previousButton)
@@ -203,6 +205,8 @@ fun PresentationViewerScreen(
                                 viewModel.markPresentationComplete()
                                 viewModel.closePresentation()
                             },
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
                             modifier = Modifier.testTag("finish_presentation_button")
                         ) {
@@ -213,6 +217,8 @@ fun PresentationViewerScreen(
                     } else {
                         Button(
                             onClick = { viewModel.nextSlide() },
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                             modifier = Modifier.testTag("next_slide_button")
                         ) {
@@ -268,9 +274,10 @@ fun PresentationViewerScreen(
                                 GoogleDriveHelper.openInGoogleDriveOrBrowser(context, docUri)
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(16.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                         ) {
-                            Text("Öffnen", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            Text("Öffnen", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
                         }
                     }
                 }

@@ -219,20 +219,25 @@ fun DiveOpsDocsTab(
 
                     Spacer(modifier = Modifier.height(12.dp))
                     val context = LocalContext.current
-                    OutlinedButton(
-                        onClick = {
-                            GoogleDriveHelper.openInGoogleDriveOrBrowser(context, "https://drive.google.com")
-                        },
+                    Box(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Cloud, contentDescription = null, modifier = Modifier.size(16.dp), tint = primaryAccentColor)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (isGerman) "☁️ Geteilten Vereins-Google-Drive öffnen" else "☁️ Open Club Google Drive",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        OutlinedButton(
+                            onClick = {
+                                GoogleDriveHelper.openInGoogleDriveOrBrowser(context, "https://drive.google.com")
+                            },
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                        ) {
+                            Icon(Icons.Default.Cloud, contentDescription = null, modifier = Modifier.size(16.dp), tint = primaryAccentColor)
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isGerman) "Vereins-Drive öffnen" else "Open Club Drive",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
             }

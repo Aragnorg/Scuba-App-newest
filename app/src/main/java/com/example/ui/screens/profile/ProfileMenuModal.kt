@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
@@ -35,6 +36,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.HourglassTop
@@ -541,46 +543,47 @@ fun ProfileMenuModal(
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(8.dp))
 
-                                    // Button: Edit Full Profile & Test Data
-                                    Button(
-                                        onClick = { showEditFullProfileDialog = true },
-                                        modifier = Modifier.fillMaxWidth().testTag("edit_full_profile_btn"),
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                                    // Action Buttons Row: Compact & Balanced
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Text(
-                                            text = if (currentLanguage == AppLanguage.DE)
-                                                "✏️ Vollständiges Profil bearbeiten & befüllen"
-                                            else
-                                                "✏️ Edit Complete Profile & Sample Data",
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(6.dp))
-
-                                    // Button: Attach File / Document to Profile
-                                    OutlinedButton(
-                                        onClick = {
-                                            documentToEdit = null
-                                            showAddDocumentDialog = true
-                                        },
-                                        modifier = Modifier.fillMaxWidth().testTag("profile_quick_add_doc_btn"),
-                                        shape = RoundedCornerShape(10.dp)
-                                    ) {
-                                        Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = if (currentLanguage == AppLanguage.DE)
-                                                "📁 Datei / Dokument an Profil anhängen"
-                                            else
-                                                "📁 Attach File / Document to Profile",
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                        Button(
+                                            onClick = { showEditFullProfileDialog = true },
+                                            modifier = Modifier.weight(1f).testTag("edit_full_profile_btn"),
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
+                                        ) {
+                                            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(15.dp))
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = if (currentLanguage == AppLanguage.DE) "Profil bearbeiten" else "Edit Profile",
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                maxLines = 1
+                                            )
+                                        }
+                                        OutlinedButton(
+                                            onClick = {
+                                                documentToEdit = null
+                                                showAddDocumentDialog = true
+                                            },
+                                            modifier = Modifier.weight(1f).testTag("profile_quick_add_doc_btn"),
+                                            shape = RoundedCornerShape(12.dp),
+                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
+                                        ) {
+                                            Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(15.dp), tint = OceanPrimary)
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = if (currentLanguage == AppLanguage.DE) "Datei anhängen" else "Attach File",
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                maxLines = 1
+                                            )
+                                        }
                                     }
                                 }
                             }

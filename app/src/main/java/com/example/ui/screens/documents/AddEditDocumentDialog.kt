@@ -550,26 +550,43 @@ fun AddEditDocumentDialog(
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Action Buttons: Take Photo (Camera) / Upload / Preset Sample
-                        Column(
+                        // Modern, compact 3-way Attachment Selector Row (Non-stretched, well proportioned)
+                        Text(
+                            text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "Datei / Nachweis anhängen:" else "Attach Proof / File:",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Button(
+                            // 1. Kamera
+                            OutlinedButton(
                                 onClick = { cameraLauncher.launch(null) },
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .weight(1f)
                                     .testTag("doc_camera_capture_btn"),
                                 shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (category == "MEDICAL_FORM") SeaGreen else OceanPrimary
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
                                 )
                             ) {
-                                Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(strings.takePhotoCamera, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp), tint = OceanPrimary)
+                                    Spacer(modifier = Modifier.height(3.dp))
+                                    Text(
+                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "Kamera" else "Camera",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1
+                                    )
+                                }
                             }
 
+                            // 2. Galerie
                             OutlinedButton(
                                 onClick = {
                                     photoPickerLauncher.launch(
@@ -577,15 +594,27 @@ fun AddEditDocumentDialog(
                                     )
                                 },
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .weight(1f)
                                     .testTag("doc_gallery_pick_btn"),
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                )
                             ) {
-                                Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(strings.uploadFromGallery, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp), tint = OceanSecondary)
+                                    Spacer(modifier = Modifier.height(3.dp))
+                                    Text(
+                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "Galerie" else "Gallery",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1
+                                    )
+                                }
                             }
 
+                            // 3. PDF / Datei / Drive
                             OutlinedButton(
                                 onClick = {
                                     filePickerLauncher.launch(
@@ -593,20 +622,24 @@ fun AddEditDocumentDialog(
                                     )
                                 },
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .weight(1f)
                                     .testTag("doc_file_pick_btn"),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
-                                        "📄 PDF oder Datei vom Smartphone wählen"
-                                    else
-                                        "📄 Choose PDF or File from Device",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
+                                shape = RoundedCornerShape(12.dp),
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
                                 )
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(18.dp), tint = SeaGreen)
+                                    Spacer(modifier = Modifier.height(3.dp))
+                                    Text(
+                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "PDF / Datei" else "PDF / File",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1
+                                    )
+                                }
                             }
                         }
 
