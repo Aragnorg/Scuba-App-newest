@@ -30,6 +30,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Movie
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.filled.Quiz
 import androidx.compose.material.icons.filled.Slideshow
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.Visibility
+import com.example.util.GoogleDriveHelper
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -382,6 +384,22 @@ fun PresentationsList(
                                         color = if (pres.isInstructorUploaded) OceanPrimary else OceanSecondary
                                     )
                                 }
+                                if (GoogleDriveHelper.isGoogleDriveUrl(pres.documentUri)) {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = AquaCyan.copy(alpha = 0.2f)
+                                    ) {
+                                        Text(
+                                            text = "☁️ Google Drive",
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = OceanPrimary
+                                        )
+                                    }
+                                }
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
                                     shape = RoundedCornerShape(4.dp),
@@ -537,6 +555,22 @@ fun VideosList(
                                         fontWeight = FontWeight.Bold,
                                         color = if (vid.isInstructorUploaded) OceanPrimary else OceanSecondary
                                     )
+                                }
+                                if (GoogleDriveHelper.isGoogleDriveUrl(vid.videoUrlOrUri)) {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = SeaGreen.copy(alpha = 0.2f)
+                                    ) {
+                                        Text(
+                                            text = "☁️ Google Drive",
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SeaGreen
+                                        )
+                                    }
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
@@ -764,6 +798,7 @@ fun CreatePresentationDialog(
     var description by remember { mutableStateOf("") }
     var selectedModuleId by remember { mutableStateOf(modules.firstOrNull()?.id ?: "mod_physics") }
     var selectedDocumentUri by remember { mutableStateOf<String?>(null) }
+    var googleDriveUrlText by remember { mutableStateOf("") }
     var expandedDropdown by remember { mutableStateOf(false) }
 
     // Slides in deck
@@ -840,6 +875,23 @@ fun CreatePresentationDialog(
                         }
                     }
                 }
+
+                // Google Drive / Cloud Presentation Link
+                OutlinedTextField(
+                    value = googleDriveUrlText,
+                    onValueChange = { googleDriveUrlText = it },
+                    label = { Text("☁️ Google Drive / Slides Link") },
+                    placeholder = { Text("https://drive.google.com/... oder docs.google.com/presentation/...") },
+                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null, tint = OceanPrimary) },
+                    modifier = Modifier.fillMaxWidth(),
+                    supportingText = {
+                        if (GoogleDriveHelper.isGoogleDriveUrl(googleDriveUrlText)) {
+                            Text("✓ Google Drive / Slides Link erkannt", color = SeaGreen, fontWeight = FontWeight.Bold)
+                        } else {
+                            Text("Optional: Freigabelink zu Präsentation oder PDF einfügen")
+                        }
+                    }
+                )
 
                 OutlinedTextField(
                     value = title,
@@ -947,12 +999,13 @@ fun CreatePresentationDialog(
         confirmButton = {
             Button(
                 onClick = {
+                    val finalUri = googleDriveUrlText.ifBlank { selectedDocumentUri }
                     onSave(
                         selectedModuleId,
                         title.ifBlank { "Instructor Deck" },
                         description.ifBlank { "Presentation for students." },
                         slides,
-                        selectedDocumentUri
+                        finalUri
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
@@ -989,6 +1042,7 @@ fun CreateVideoDialog(
     var description by remember { mutableStateOf("") }
     var durationMinutesText by remember { mutableStateOf("4") }
     var videoUriText by remember { mutableStateOf("") }
+    var googleDriveUrlText by remember { mutableStateOf("") }
     var selectedModuleId by remember { mutableStateOf(modules.firstOrNull()?.id ?: "mod_physics") }
     var expandedDropdown by remember { mutableStateOf(false) }
 
@@ -1020,7 +1074,7 @@ fun CreateVideoDialog(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Video Picker Card
+                // Video Picker Card (Local Device)
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1055,6 +1109,23 @@ fun CreateVideoDialog(
                         }
                     }
                 }
+
+                // Google Drive / Cloud Video Option
+                OutlinedTextField(
+                    value = googleDriveUrlText,
+                    onValueChange = { googleDriveUrlText = it },
+                    label = { Text("☁️ Google Drive Video-Link (Cloud Stream)") },
+                    placeholder = { Text("https://drive.google.com/file/d/...") },
+                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null, tint = OceanSecondary) },
+                    modifier = Modifier.fillMaxWidth(),
+                    supportingText = {
+                        if (GoogleDriveHelper.isGoogleDriveUrl(googleDriveUrlText)) {
+                            Text("✓ Google Drive Video erkannt (Streaming aktiv)", color = SeaGreen, fontWeight = FontWeight.Bold)
+                        } else {
+                            Text("Freigabelink zu deinem MP4-Video in Google Drive einfügen")
+                        }
+                    }
+                )
 
                 OutlinedTextField(
                     value = title,
@@ -1125,12 +1196,13 @@ fun CreateVideoDialog(
                         "Maintain steady breathing throughout skill execution.",
                         "Buddy observes and signals confirmation."
                     )
+                    val finalVideoUri = googleDriveUrlText.ifBlank { videoUriText.ifBlank { "scuba://video/uploaded_${System.currentTimeMillis()}" } }
                     onSave(
                         selectedModuleId,
                         title.ifBlank { "Training Video" },
                         description.ifBlank { "Diver training video." },
                         durationMin,
-                        videoUriText.ifBlank { "scuba://video/uploaded_${System.currentTimeMillis()}" },
+                        finalVideoUri,
                         chapters,
                         takeaways
                     )

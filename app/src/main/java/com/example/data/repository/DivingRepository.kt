@@ -2667,6 +2667,32 @@ class DivingRepository(private val divingDao: DivingDao) {
                 lastSlideRead = 0,
                 isCompleted = false,
                 isInstructorUploaded = false
+            ),
+            PresentationDeckEntity(
+                id = "pres_gdrive_briefing",
+                moduleId = "mod_environment",
+                title = "See-Briefing & Notfallplan (Google Drive / Slides)",
+                description = "Vereins-Präsentation aus Google Drive: Tauchplatzregeln, Einstiegsstellen und Rettungskette.",
+                slidesJson = JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("slideNumber", 1)
+                        put("title", "Tauchplatz Seeordnung & Briefing")
+                        put("subtitle", "Google Drive / Slides Präsentationsdeck")
+                        put("bulletPoints", JSONArray().apply {
+                            put("Einstieg nur über den markierten Steg")
+                            put("Bojenpflicht im gesamten Seegebiet")
+                            put("Maximale Tiefe 20m beachten")
+                        })
+                        put("diagramType", "GENERAL_CHECKLIST")
+                        put("instructorNotes", "Briefing vor jedem Tauchgang für alle Teilnehmer verpflichtend.")
+                        put("keyTakeaway", "Sicherheit und Umweltschutz haben oberste Priorität.")
+                    })
+                }.toString(),
+                documentUri = "https://docs.google.com/presentation/d/1demo_dive_club_briefing_slides/view",
+                totalSlides = 1,
+                lastSlideRead = 0,
+                isCompleted = false,
+                isInstructorUploaded = true
             )
         )
         divingDao.insertPresentations(presentations)
@@ -2795,6 +2821,38 @@ class DivingRepository(private val divingDao: DivingDao) {
                 watchedSeconds = 0,
                 isCompleted = false,
                 isInstructorUploaded = false
+            ),
+            LearningVideoEntity(
+                id = "vid_gdrive_skills",
+                moduleId = "mod_environment",
+                title = "Buoyancy Control & Trim Mastery (Google Drive Stream)",
+                description = "Schulungsvideo aus dem Vereins-Google-Drive: Perfektes Tarieren und Tauchhaltung unter Wasser.",
+                durationSeconds = 240,
+                videoUrlOrUri = "https://drive.google.com/file/d/1demo_buoyancy_mastery_stream/view?usp=sharing",
+                chaptersJson = JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("timeSec", 0)
+                        put("title", "Briefing am Steg")
+                        put("summary", "Ausrüstungs-Check und Tarierziele")
+                    })
+                    put(JSONObject().apply {
+                        put("timeSec", 60)
+                        put("title", "Horizontale Wasserlage")
+                        put("summary", "Trim & Flossenschlag-Technik")
+                    })
+                    put(JSONObject().apply {
+                        put("timeSec", 150)
+                        put("title", "Hovering ohne Handbewegungen")
+                        put("summary", "Feinjustierung über die Lungenatmung")
+                    })
+                }.toString(),
+                takeawaysJson = JSONArray().apply {
+                    put("Lunge als primäre Feintarierung nutzen.")
+                    put("Bleimenge vor dem Abtauchen exakt prüfen.")
+                }.toString(),
+                watchedSeconds = 0,
+                isCompleted = false,
+                isInstructorUploaded = true
             )
         )
         divingDao.insertVideos(videos)

@@ -27,6 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Check
@@ -34,10 +35,13 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Subtitles
+import androidx.compose.ui.platform.LocalContext
+import com.example.util.GoogleDriveHelper
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -223,6 +227,21 @@ fun VideoPlayerScreen(
                         color = AquaCyan,
                         style = MaterialTheme.typography.labelSmall
                     )
+                    if (GoogleDriveHelper.isGoogleDriveUrl(video.videoUrlOrUri)) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = SeaGreen.copy(alpha = 0.85f)
+                        ) {
+                            Text(
+                                text = "☁️ Google Drive Video Stream",
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
                 }
 
                 // Big play/pause overlay click
@@ -345,6 +364,63 @@ fun VideoPlayerScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // Google Drive / Cloud Video Card
+                val isDriveUrl = GoogleDriveHelper.isGoogleDriveUrl(video.videoUrlOrUri)
+                val isWebUrl = video.videoUrlOrUri.startsWith("http://") || video.videoUrlOrUri.startsWith("https://")
+                val context = LocalContext.current
+
+                if (isDriveUrl || isWebUrl) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDriveUrl) SeaGreen.copy(alpha = 0.12f) else OceanPrimary.copy(alpha = 0.12f)
+                        ),
+                        border = BorderStroke(1.dp, if (isDriveUrl) SeaGreen.copy(alpha = 0.4f) else OceanPrimary.copy(alpha = 0.4f))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(if (isDriveUrl) "☁️" else "🌐", fontSize = 26.sp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = if (isDriveUrl) "Google Drive Lehrvideo" else "Web Training Video",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = if (isDriveUrl) "Aus dem Vereins-Google-Drive bereitgestellt" else "Externes Online-Video",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            Button(
+                                onClick = {
+                                    GoogleDriveHelper.openInGoogleDriveOrBrowser(context, video.videoUrlOrUri)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isDriveUrl) SeaGreen else OceanPrimary
+                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (isDriveUrl) "In Google Drive / Videoplayer abspielen" else "Video öffnen",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+
                 // Description Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),

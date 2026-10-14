@@ -1,7 +1,10 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.ui.platform.LocalContext
+import com.example.util.GoogleDriveHelper
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -230,6 +233,49 @@ fun PresentationViewerScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val context = LocalContext.current
+            val docUri = presentation.documentUri
+            val isDriveDoc = GoogleDriveHelper.isGoogleDriveUrl(docUri)
+
+            if (!docUri.isNullOrBlank()) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    color = if (isDriveDoc) AquaCyan.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.1f),
+                    border = BorderStroke(1.dp, if (isDriveDoc) AquaCyan.copy(alpha = 0.5f) else OceanPrimary.copy(alpha = 0.3f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(if (isDriveDoc) "☁️" else "📄", fontSize = 24.sp)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isDriveDoc) "Google Drive / Slides Vorlage" else "Angehängtes Dokument / Skript",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = if (isDriveDoc) "Original-Präsentation aus Vereins-Drive öffnen" else "Dokument auf Smartphone öffnen",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                GoogleDriveHelper.openInGoogleDriveOrBrowser(context, docUri)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Öffnen", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+
             // Main Slide Content Card
             Card(
                 modifier = Modifier

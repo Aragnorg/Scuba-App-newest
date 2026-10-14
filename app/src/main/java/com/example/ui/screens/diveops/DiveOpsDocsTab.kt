@@ -34,11 +34,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.platform.LocalContext
+import com.example.util.GoogleDriveHelper
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -213,6 +216,24 @@ fun DiveOpsDocsTab(
                             modifier = Modifier.weight(1f)
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    val context = LocalContext.current
+                    OutlinedButton(
+                        onClick = {
+                            GoogleDriveHelper.openInGoogleDriveOrBrowser(context, "https://drive.google.com")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Icon(Icons.Default.Cloud, contentDescription = null, modifier = Modifier.size(16.dp), tint = primaryAccentColor)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (isGerman) "☁️ Geteilten Vereins-Google-Drive öffnen" else "☁️ Open Club Google Drive",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
@@ -335,13 +356,16 @@ fun DiveOpsDocsTab(
             strings = strings,
             primaryAccentColor = primaryAccentColor,
             onDismiss = { showUploadDialog = false },
-            onConfirm = { title, cat, vis, reqAck, summary ->
+            onConfirm = { title, cat, vis, reqAck, summary, driveUri ->
                 viewModel.uploadOrganizationDocument(
                     title = title,
                     category = cat,
                     visibility = vis,
                     requiresAcknowledgment = reqAck,
-                    contentSummary = summary
+                    contentSummary = summary,
+                    fileUri = driveUri,
+                    fileName = if (driveUri.isNotBlank()) "Google_Drive_Doc" else "Dokument",
+                    fileSizeBytes = 0L
                 )
                 showUploadDialog = false
             }
@@ -543,6 +567,22 @@ private fun DocumentCard(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            if (GoogleDriveHelper.isGoogleDriveUrl(doc.fileUri)) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = SeaGreen.copy(alpha = 0.15f)
+                                ) {
+                                    Text(
+                                        text = "☁️ Google Drive",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = SeaGreen,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 9.sp,
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -707,13 +747,14 @@ private fun UploadOrganizationDocumentDialog(
     strings: com.example.ui.i18n.Strings,
     primaryAccentColor: Color,
     onDismiss: () -> Unit,
-    onConfirm: (title: String, category: String, visibility: String, requiresAck: Boolean, summary: String) -> Unit
+    onConfirm: (title: String, category: String, visibility: String, requiresAck: Boolean, summary: String, fileUri: String) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("WAIVER") }
     var visibility by remember { mutableStateOf("ALL_MEMBERS") }
     var requiresAcknowledgment by remember { mutableStateOf(false) }
     var contentSummary by remember { mutableStateOf("") }
+    var googleDriveLink by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -738,6 +779,24 @@ private fun UploadOrganizationDocumentDialog(
                     placeholder = { Text(if (isGerman) "z. B. Haftungsausschluss Saison 2026" else "e.g. Liability Waiver 2026") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
+                )
+
+                // Google Drive Link Option
+                OutlinedTextField(
+                    value = googleDriveLink,
+                    onValueChange = { googleDriveLink = it },
+                    label = { Text("☁️ Google Drive Link (optional)") },
+                    placeholder = { Text("https://drive.google.com/...") },
+                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null, tint = primaryAccentColor) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    supportingText = {
+                        if (GoogleDriveHelper.isGoogleDriveUrl(googleDriveLink)) {
+                            Text("✓ Google Drive Link erkannt", color = SeaGreen, fontWeight = FontWeight.Bold)
+                        } else {
+                            Text(if (isGerman) "Freigabelink zu PDF/Datei im Vereins-Drive" else "Link to file in club Google Drive")
+                        }
+                    }
                 )
 
                 // Category Selection
@@ -816,7 +875,7 @@ private fun UploadOrganizationDocumentDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(title, category, visibility, requiresAcknowledgment, contentSummary) },
+                onClick = { onConfirm(title, category, visibility, requiresAcknowledgment, contentSummary, googleDriveLink) },
                 enabled = title.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor)
             ) {
@@ -903,6 +962,28 @@ private fun ViewDocumentPreviewDialog(
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(12.dp)
                     )
+                }
+
+                if (doc.fileUri.isNotBlank()) {
+                    val context = LocalContext.current
+                    val isDrive = GoogleDriveHelper.isGoogleDriveUrl(doc.fileUri)
+                    Button(
+                        onClick = {
+                            GoogleDriveHelper.openInGoogleDriveOrBrowser(context, doc.fileUri)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isDrive) SeaGreen else OceanPrimary
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Icon(if (isDrive) Icons.Default.Cloud else Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (isDrive) "☁️ Auf Google Drive öffnen" else "📄 Datei öffnen",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         },
