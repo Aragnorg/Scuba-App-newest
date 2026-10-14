@@ -567,3 +567,46 @@ data class RentalTransactionEntity(
     val createdAt: Long = System.currentTimeMillis()
 )
 
+@Entity(tableName = "organization_documents")
+data class OrganizationDocumentEntity(
+    @PrimaryKey val id: String,
+    val orgId: String,
+    val title: String,
+    val category: String, // "WAIVER", "RULES", "CONSTITUTION", "PROTOCOL", "EMERGENCY_PLAN", "PRICE_LIST", "MAP", "OTHER"
+    val fileUri: String = "",
+    val fileName: String = "",
+    val fileSizeBytes: Long = 0,
+    val mimeType: String = "application/pdf",
+    val visibility: String = "ALL_MEMBERS", // "PUBLIC", "ALL_MEMBERS", "DIVE_LEADERS_ONLY", "ADMINS_ONLY"
+    val requiresAcknowledgment: Boolean = false, // Check-in Mandatory Safety Document
+    val acknowledgmentCount: Int = 0,
+    val version: String = "1.0",
+    val documentContentSummary: String = "",
+    val uploadedByName: String = "",
+    val uploadedByUserId: String = "",
+    val createdAt: Long = System.currentTimeMillis()
+) {
+    val isMandatory: Boolean get() = requiresAcknowledgment
+    val isWaiver: Boolean get() = category == "WAIVER"
+    val isRules: Boolean get() = category == "RULES"
+    val isConstitution: Boolean get() = category == "CONSTITUTION"
+    val isProtocol: Boolean get() = category == "PROTOCOL"
+    val isEmergencyPlan: Boolean get() = category == "EMERGENCY_PLAN"
+    val isMap: Boolean get() = category == "MAP"
+}
+
+@Entity(tableName = "document_signatures")
+data class DocumentSignatureEntity(
+    @PrimaryKey val id: String,
+    val orgId: String,
+    val documentId: String,
+    val documentTitle: String,
+    val memberId: String,
+    val signerName: String,
+    val signerEmail: String,
+    val signatureType: String = "CHECKBOX_CONFIRMED", // "CHECKBOX_CONFIRMED", "DIGITAL_SIGNATURE"
+    val signatureDataJson: String = "",
+    val signedTimestamp: Long = System.currentTimeMillis(),
+    val ipOrDeviceNote: String = "AquaLearn Verified App Signature"
+)
+

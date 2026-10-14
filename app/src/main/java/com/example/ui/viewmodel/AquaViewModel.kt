@@ -19,6 +19,8 @@ import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.InventoryItemEntity
 import com.example.data.model.RentalTransactionEntity
+import com.example.data.model.OrganizationDocumentEntity
+import com.example.data.model.DocumentSignatureEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.QuizQuestion
@@ -346,6 +348,12 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentOrgActiveRentals = MutableStateFlow<List<RentalTransactionEntity>>(emptyList())
     val currentOrgActiveRentals: StateFlow<List<RentalTransactionEntity>> = _currentOrgActiveRentals.asStateFlow()
 
+    private val _currentOrgDocuments = MutableStateFlow<List<OrganizationDocumentEntity>>(emptyList())
+    val currentOrgDocuments: StateFlow<List<OrganizationDocumentEntity>> = _currentOrgDocuments.asStateFlow()
+
+    private val _currentOrgSignatures = MutableStateFlow<List<DocumentSignatureEntity>>(emptyList())
+    val currentOrgSignatures: StateFlow<List<DocumentSignatureEntity>> = _currentOrgSignatures.asStateFlow()
+
     private val _selectedEvent = MutableStateFlow<DiveEventEntity?>(null)
     val selectedEvent: StateFlow<DiveEventEntity?> = _selectedEvent.asStateFlow()
 
@@ -356,6 +364,8 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     private var orgEventsJob: kotlinx.coroutines.Job? = null
     private var orgInventoryJob: kotlinx.coroutines.Job? = null
     private var orgRentalsJob: kotlinx.coroutines.Job? = null
+    private var orgDocumentsJob: kotlinx.coroutines.Job? = null
+    private var orgSignaturesJob: kotlinx.coroutines.Job? = null
     private var eventParticipantsJob: kotlinx.coroutines.Job? = null
 
     fun selectOrganization(org: OrganizationEntity?) {
@@ -364,6 +374,8 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         orgEventsJob?.cancel()
         orgInventoryJob?.cancel()
         orgRentalsJob?.cancel()
+        orgDocumentsJob?.cancel()
+        orgSignaturesJob?.cancel()
         selectDiveEvent(null)
         if (org != null) {
             orgMembersJob = viewModelScope.launch {
@@ -386,11 +398,23 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                     _currentOrgActiveRentals.value = rentals
                 }
             }
+            orgDocumentsJob = viewModelScope.launch {
+                repository.getAllDocumentsForOrganization(org.id).collect { docs ->
+                    _currentOrgDocuments.value = docs
+                }
+            }
+            orgSignaturesJob = viewModelScope.launch {
+                repository.getAllSignaturesForOrganization(org.id).collect { sigs ->
+                    _currentOrgSignatures.value = sigs
+                }
+            }
         } else {
             _currentOrgMembers.value = emptyList()
             _currentOrgEvents.value = emptyList()
             _currentOrgInventory.value = emptyList()
             _currentOrgActiveRentals.value = emptyList()
+            _currentOrgDocuments.value = emptyList()
+            _currentOrgSignatures.value = emptyList()
         }
     }
 
@@ -605,72 +629,81 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         rentalGear: List<String> = emptyList(),
         transferCarPoolNote: String = ""
     ) {
-        // Auto-Safety-Gate Verification:
-        val issues = mutableListOf<String>()
-
-        // 1. TTU Expiry Check on Event Day
-        val rawTtu = member.ttuExpiryDate.trim()
-        if (rawTtu.isBlank()) {
-            issues.add("Keine TTU / ärztliches Tauchtauglichkeitsattest hinterlegt!")
-        } else {
-            val ttuInfo = com.example.util.DocumentExpirationHelper.computeDateExpiration(rawTtu, isGerman = true)
-            if (ttuInfo.level == com.example.util.ExpirationAlertLevel.EXPIRED) {
-                issues.add("TTU ist abgelaufen ($rawTtu)!")
-            } else if (rawTtu < event.eventDate) {
-                issues.add("TTU läuft vor dem Event-Tag ab ($rawTtu < ${event.eventDate})!")
-            }
-        }
-
-        // 2. Brevet vs Max Depth Check
-        val certLower = member.certLevel.lowercase()
-        val maxAllowedDepth = when {
-            certLower.contains("scuba diver") -> 12.0f
-            certLower.contains("open water") || certLower.contains("cmas *") || certLower.contains("owd") -> 18.0f
-            certLower.contains("advanced") || certLower.contains("cmas **") || certLower.contains("aowd") -> 30.0f
-            else -> 40.0f
-        }
-        if (event.maxDepthMeters > maxAllowedDepth) {
-            issues.add("Brevet '${member.certLevel}' (max ${maxAllowedDepth.toInt()}m) reicht nicht für geplante Maximaltiefe (${event.maxDepthMeters.toInt()}m)!")
-        }
-
-        // 3. Nitrox Gas MOD Calculation (PPO2 max = 1.4 bar)
-        val calculatedMod = when (gasType) {
-            "Nitrox 32%" -> 33.7f
-            "Nitrox 36%" -> 28.8f
-            "Nitrox 40%" -> 25.0f
-            else -> 56.6f
-        }
-        if (event.maxDepthMeters > calculatedMod) {
-            issues.add("Geplante Tiefe (${event.maxDepthMeters.toInt()}m) überschreitet MOD von $gasType (${calculatedMod.toInt()}m)!")
-        }
-
-        val passed = issues.isEmpty()
-        val issuesJson = JSONArray(issues).toString()
-
-        val newParticipant = DiveEventParticipantEntity(
-            id = "part_${UUID.randomUUID().toString().take(8)}",
-            eventId = event.id,
-            memberId = member.id,
-            diverName = member.fullName,
-            diverEmail = member.email,
-            diverCertLevel = member.certLevel,
-            diverTotalDives = member.totalLoggedDives,
-            checkInStatus = if (passed) "SAFETY_CHECKED" else "REGISTERED",
-            safetyGatePassed = passed,
-            safetyGateIssuesJson = issuesJson,
-            tankSelection = tankSelection,
-            gasType = gasType,
-            modMeters = calculatedMod,
-            rentalGearJson = JSONArray(rentalGear).toString(),
-            transferCarPoolNote = transferCarPoolNote.trim(),
-            buddyTeamId = null,
-            groupGuideName = null,
-            tankPressureStartBar = 200,
-            tankPressureEndBar = 50,
-            checkInTimestamp = System.currentTimeMillis()
-        )
-
         viewModelScope.launch {
+            // Auto-Safety-Gate Verification:
+            val issues = mutableListOf<String>()
+
+            // 1. TTU Expiry Check on Event Day
+            val rawTtu = member.ttuExpiryDate.trim()
+            if (rawTtu.isBlank()) {
+                issues.add("Keine TTU / ärztliches Tauchtauglichkeitsattest hinterlegt!")
+            } else {
+                val ttuInfo = com.example.util.DocumentExpirationHelper.computeDateExpiration(rawTtu, isGerman = true)
+                if (ttuInfo.level == com.example.util.ExpirationAlertLevel.EXPIRED) {
+                    issues.add("TTU ist abgelaufen ($rawTtu)!")
+                } else if (rawTtu < event.eventDate) {
+                    issues.add("TTU läuft vor dem Event-Tag ab ($rawTtu < ${event.eventDate})!")
+                }
+            }
+
+            // 2. Brevet vs Max Depth Check
+            val certLower = member.certLevel.lowercase()
+            val maxAllowedDepth = when {
+                certLower.contains("scuba diver") -> 12.0f
+                certLower.contains("open water") || certLower.contains("cmas *") || certLower.contains("owd") -> 18.0f
+                certLower.contains("advanced") || certLower.contains("cmas **") || certLower.contains("aowd") -> 30.0f
+                else -> 40.0f
+            }
+            if (event.maxDepthMeters > maxAllowedDepth) {
+                issues.add("Brevet '${member.certLevel}' (max ${maxAllowedDepth.toInt()}m) reicht nicht für geplante Maximaltiefe (${event.maxDepthMeters.toInt()}m)!")
+            }
+
+            // 3. Nitrox Gas MOD Calculation (PPO2 max = 1.4 bar)
+            val calculatedMod = when (gasType) {
+                "Nitrox 32%" -> 33.7f
+                "Nitrox 36%" -> 28.8f
+                "Nitrox 40%" -> 25.0f
+                else -> 56.6f
+            }
+            if (event.maxDepthMeters > calculatedMod) {
+                issues.add("Geplante Tiefe (${event.maxDepthMeters.toInt()}m) überschreitet MOD von $gasType (${calculatedMod.toInt()}m)!")
+            }
+
+            // 4. Mandatory Documents & Waivers Check
+            val mandatoryDocs = repository.getMandatoryDocumentsDirect(event.orgId)
+            for (doc in mandatoryDocs) {
+                val sig = repository.getSignatureForMemberAndDocument(doc.id, member.id)
+                if (sig == null) {
+                    issues.add("Pflichtdokument '${doc.title}' (${doc.category}) noch nicht bestätigt/unterzeichnet!")
+                }
+            }
+
+            val passed = issues.isEmpty()
+            val issuesJson = JSONArray(issues).toString()
+
+            val newParticipant = DiveEventParticipantEntity(
+                id = "part_${UUID.randomUUID().toString().take(8)}",
+                eventId = event.id,
+                memberId = member.id,
+                diverName = member.fullName,
+                diverEmail = member.email,
+                diverCertLevel = member.certLevel,
+                diverTotalDives = member.totalLoggedDives,
+                checkInStatus = if (passed) "SAFETY_CHECKED" else "REGISTERED",
+                safetyGatePassed = passed,
+                safetyGateIssuesJson = issuesJson,
+                tankSelection = tankSelection,
+                gasType = gasType,
+                modMeters = calculatedMod,
+                rentalGearJson = JSONArray(rentalGear).toString(),
+                transferCarPoolNote = transferCarPoolNote.trim(),
+                buddyTeamId = null,
+                groupGuideName = null,
+                tankPressureStartBar = 200,
+                tankPressureEndBar = 50,
+                checkInTimestamp = System.currentTimeMillis()
+            )
+
             repository.insertParticipant(newParticipant)
             val updatedCount = event.registeredCount + 1
             repository.updateEventRegisteredCount(event.id, updatedCount)
@@ -907,6 +940,78 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                 filterHours = newFilterHours,
                 airAnalysisDate = newAirDate
             )
+        }
+    }
+
+    // --- Modul 4: Organization Document Vault & Signatures ---
+    fun uploadOrganizationDocument(
+        title: String,
+        category: String,
+        visibility: String,
+        requiresAcknowledgment: Boolean,
+        contentSummary: String,
+        fileUri: String = "",
+        fileName: String = "",
+        fileSizeBytes: Long = 0
+    ) {
+        val org = _currentOrganization.value ?: return
+        val newDoc = OrganizationDocumentEntity(
+            id = "doc_${UUID.randomUUID().toString().take(8)}",
+            orgId = org.id,
+            title = title.trim(),
+            category = category,
+            visibility = visibility,
+            fileUri = fileUri,
+            fileName = fileName.ifBlank { "${title.trim().lowercase().replace(' ', '_')}.pdf" },
+            fileSizeBytes = if (fileSizeBytes > 0) fileSizeBytes else 245000L,
+            mimeType = "application/pdf",
+            requiresAcknowledgment = requiresAcknowledgment,
+            uploadedByMemberId = _currentOrgMembers.value.firstOrNull { it.role == "OWNER" || it.role == "ADMIN" }?.id ?: "admin",
+            uploadedByName = _currentOrgMembers.value.firstOrNull { it.role == "OWNER" || it.role == "ADMIN" }?.fullName ?: "Administrator",
+            contentSummary = contentSummary.trim(),
+            createdAt = System.currentTimeMillis(),
+            acknowledgmentCount = 0
+        )
+        viewModelScope.launch {
+            repository.insertOrganizationDocument(newDoc)
+        }
+    }
+
+    fun signDocument(
+        documentId: String,
+        memberId: String,
+        signerName: String,
+        signerEmail: String,
+        signatureType: String = "CHECKBOX_CONFIRMED",
+        touchPathPointsJson: String? = null,
+        deviceVerificationNote: String = "Mobile Verified (Aqua App)"
+    ) {
+        val org = _currentOrganization.value ?: return
+        viewModelScope.launch {
+            val doc = repository.getOrganizationDocumentByIdDirect(documentId) ?: return@launch
+            val existing = repository.getSignatureForMemberAndDocument(documentId, memberId)
+            val newSig = DocumentSignatureEntity(
+                id = existing?.id ?: "sig_${UUID.randomUUID().toString().take(8)}",
+                documentId = documentId,
+                orgId = org.id,
+                memberId = memberId,
+                signerName = signerName,
+                signerEmail = signerEmail,
+                signedTimestamp = System.currentTimeMillis(),
+                signatureType = signatureType,
+                touchPathPointsJson = touchPathPointsJson,
+                deviceVerificationNote = deviceVerificationNote
+            )
+            repository.insertDocumentSignature(newSig)
+            if (existing == null) {
+                repository.updateDocumentAcknowledgmentCount(documentId, doc.acknowledgmentCount + 1)
+            }
+        }
+    }
+
+    fun deleteOrganizationDocument(documentId: String) {
+        viewModelScope.launch {
+            repository.deleteOrganizationDocument(documentId)
         }
     }
 

@@ -12,6 +12,8 @@ import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.InventoryItemEntity
 import com.example.data.model.RentalTransactionEntity
+import com.example.data.model.OrganizationDocumentEntity
+import com.example.data.model.DocumentSignatureEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.StudentRosterEntity
@@ -241,6 +243,58 @@ class DivingRepository(private val divingDao: DivingDao) {
 
     suspend fun completeRentalReturn(id: String, returnDate: String, status: String, condition: String, damageNotes: String) {
         divingDao.completeRentalReturn(id, returnDate, status, condition, damageNotes)
+    }
+
+    // --- Modul 4: Organization Documents & Signatures Repository Methods ---
+    fun getAllDocumentsForOrganization(orgId: String): Flow<List<OrganizationDocumentEntity>> =
+        divingDao.getAllDocumentsForOrganization(orgId)
+
+    fun getDocumentsByVisibility(orgId: String, visibility: String): Flow<List<OrganizationDocumentEntity>> =
+        divingDao.getDocumentsByVisibility(orgId, visibility)
+
+    fun getMandatoryDocumentsForOrganization(orgId: String): Flow<List<OrganizationDocumentEntity>> =
+        divingDao.getMandatoryDocumentsForOrganization(orgId)
+
+    suspend fun getMandatoryDocumentsDirect(orgId: String): List<OrganizationDocumentEntity> =
+        divingDao.getMandatoryDocumentsDirect(orgId)
+
+    fun getOrganizationDocumentById(id: String): Flow<OrganizationDocumentEntity?> =
+        divingDao.getOrganizationDocumentById(id)
+
+    suspend fun getOrganizationDocumentByIdDirect(id: String): OrganizationDocumentEntity? =
+        divingDao.getOrganizationDocumentByIdDirect(id)
+
+    suspend fun insertOrganizationDocument(doc: OrganizationDocumentEntity) {
+        divingDao.insertOrganizationDocument(doc)
+    }
+
+    suspend fun updateOrganizationDocument(doc: OrganizationDocumentEntity) {
+        divingDao.updateOrganizationDocument(doc)
+    }
+
+    suspend fun updateDocumentAcknowledgmentCount(id: String, count: Int) {
+        divingDao.updateDocumentAcknowledgmentCount(id, count)
+    }
+
+    suspend fun deleteOrganizationDocument(id: String) {
+        divingDao.deleteSignaturesForDocument(id)
+        divingDao.deleteOrganizationDocument(id)
+    }
+
+    fun getAllSignaturesForOrganization(orgId: String): Flow<List<DocumentSignatureEntity>> =
+        divingDao.getAllSignaturesForOrganization(orgId)
+
+    fun getSignaturesForDocument(documentId: String): Flow<List<DocumentSignatureEntity>> =
+        divingDao.getSignaturesForDocument(documentId)
+
+    fun getSignaturesForMember(orgId: String, memberId: String): Flow<List<DocumentSignatureEntity>> =
+        divingDao.getSignaturesForMember(orgId, memberId)
+
+    suspend fun getSignatureForMemberAndDocument(documentId: String, memberId: String): DocumentSignatureEntity? =
+        divingDao.getSignatureForMemberAndDocument(documentId, memberId)
+
+    suspend fun insertDocumentSignature(signature: DocumentSignatureEntity) {
+        divingDao.insertDocumentSignature(signature)
     }
 
     // Dive Logbook Flows & Operations
@@ -2099,6 +2153,206 @@ class DivingRepository(private val divingDao: DivingDao) {
             clubInventory.forEach { divingDao.insertInventoryItem(it) }
             centerInventory.forEach { divingDao.insertInventoryItem(it) }
             initialRentals.forEach { divingDao.insertRentalTransaction(it) }
+
+            // 4. Initial Organization Documents & Digital Signatures (Phase 4)
+            val clubDocuments = listOf(
+                OrganizationDocumentEntity(
+                    id = "doc_delphin_satzung",
+                    orgId = "org_club_delphin",
+                    title = "Vereinssatzung Tauchclub Delphin e.V.",
+                    category = "CONSTITUTION",
+                    fileName = "Satzung_TC_Delphin_e_V_2026.pdf",
+                    fileSizeBytes = 245000L,
+                    visibility = "ALL_MEMBERS",
+                    requiresAcknowledgment = true,
+                    acknowledgmentCount = 2,
+                    version = "3.2",
+                    documentContentSummary = "Offizielle Vereinssatzung: Rechte und Pflichten der Mitglieder, Gemeinnützigkeit, Beitragsordnung, Organe des Vereins und Beschlussfähigkeit der Jahreshauptversammlung.",
+                    uploadedByName = "Adrian Scheid (Vorstand)"
+                ),
+                OrganizationDocumentEntity(
+                    id = "doc_delphin_seeordnung",
+                    orgId = "org_club_delphin",
+                    title = "Gewässer- & Tauchplatzordnung Starnberger See",
+                    category = "RULES",
+                    fileName = "Gewässerordnung_Starnberger_See.pdf",
+                    fileSizeBytes = 180000L,
+                    visibility = "ALL_MEMBERS",
+                    requiresAcknowledgment = true,
+                    acknowledgmentCount = 2,
+                    version = "2.0",
+                    documentContentSummary = "Regelungen zum Tauchen am Vereinssteg: Schutz der Schilf- und Flachwasserzonen, Bojenpflicht bei Freiwasser-Querung und Sicherheitsregeln für Nachttauchgänge.",
+                    uploadedByName = "Adrian Scheid (Vorstand)"
+                ),
+                OrganizationDocumentEntity(
+                    id = "doc_delphin_jhv",
+                    orgId = "org_club_delphin",
+                    title = "Protokoll der Jahreshauptversammlung 2026",
+                    category = "PROTOCOL",
+                    fileName = "JHV_Protokoll_2026_Final.pdf",
+                    fileSizeBytes = 310000L,
+                    visibility = "ALL_MEMBERS",
+                    requiresAcknowledgment = false,
+                    acknowledgmentCount = 0,
+                    version = "1.0",
+                    documentContentSummary = "Bericht des Vorstands, Kassenprüfung, Entlastung des Vorstands, Wahl des neuen Gerätewarts (Marcus Vance) und Beschluss zur Anschaffung der Bauer Mariner Kompressoranlage.",
+                    uploadedByName = "Adrian Scheid (Vorstand)"
+                ),
+                OrganizationDocumentEntity(
+                    id = "doc_delphin_intern",
+                    orgId = "org_club_delphin",
+                    title = "Internes Vorstandsprotokoll & Haushaltsplan Q3/Q4",
+                    category = "PROTOCOL",
+                    fileName = "Vorstand_Intern_Q3_2026.pdf",
+                    fileSizeBytes = 125000L,
+                    visibility = "ADMINS_ONLY",
+                    requiresAcknowledgment = false,
+                    acknowledgmentCount = 0,
+                    version = "1.0",
+                    documentContentSummary = "Vertraulicher Finanzstatus, Beitragsrückstände und Investitionsbudget für neue Kaltwasser-Leihregler in 2027.",
+                    uploadedByName = "Adrian Scheid (Vorstand)"
+                )
+            )
+
+            val centerDocuments = listOf(
+                OrganizationDocumentEntity(
+                    id = "doc_bh_waiver",
+                    orgId = "org_center_blue_horizon",
+                    title = "Haftungsausschluss & Risikoaufklärung (Standard Waiver)",
+                    category = "WAIVER",
+                    fileName = "Blue_Horizon_Liability_Waiver_2026.pdf",
+                    fileSizeBytes = 210000L,
+                    visibility = "PUBLIC",
+                    requiresAcknowledgment = true,
+                    acknowledgmentCount = 2,
+                    version = "4.1",
+                    documentContentSummary = "Rechtlich geprüfter Haftungsausschluss gemäß WRSTC/RSTC Standards: Aufklärung über Risiken des Gerätetauchens, Eigenverantwortung, Ausschluss einfacher Fahrlässigkeit und Bestätigung der körperlichen Tauchtauglichkeit.",
+                    uploadedByName = "Sarah Connor (Basisleiterin)"
+                ),
+                OrganizationDocumentEntity(
+                    id = "doc_bh_rules",
+                    orgId = "org_center_blue_horizon",
+                    title = "Basis- & Bootsordnung M/Y Blue Horizon",
+                    category = "RULES",
+                    fileName = "Bootsordnung_Safaris.pdf",
+                    fileSizeBytes = 195000L,
+                    visibility = "PUBLIC",
+                    requiresAcknowledgment = true,
+                    acknowledgmentCount = 2,
+                    version = "2.1",
+                    documentContentSummary = "Sicherheits- und Verhaltensregeln an Bord: Rauchverbot im Salon, Flaschen-Sicherung am Tauchdeck, Zodiac-Einstiegsprotokoll und Notfall-Sammelplätze.",
+                    uploadedByName = "Sarah Connor (Basisleiterin)"
+                ),
+                OrganizationDocumentEntity(
+                    id = "doc_bh_map",
+                    orgId = "org_center_blue_horizon",
+                    title = "Tauchplatzkarte Shark & Yolanda Reef",
+                    category = "MAP",
+                    fileName = "Map_Ras_Mohammed_Shark_Yolanda.pdf",
+                    fileSizeBytes = 890000L,
+                    visibility = "PUBLIC",
+                    requiresAcknowledgment = false,
+                    acknowledgmentCount = 0,
+                    version = "1.0",
+                    documentContentSummary = "Detaillierte Tiefen- und Strömungskarte: Shark Reef Steilwand bis 750m, Anemonen City und die Wrackreste der Yolanda mit Toiletten-Fracht.",
+                    uploadedByName = "Sarah Connor (Basisleiterin)"
+                )
+            )
+
+            val initialSignatures = listOf(
+                DocumentSignatureEntity(
+                    id = "sig_delphin_adrian_satzung",
+                    orgId = "org_club_delphin",
+                    documentId = "doc_delphin_satzung",
+                    documentTitle = "Vereinssatzung Tauchclub Delphin e.V.",
+                    memberId = "mem_delphin_adrian",
+                    signerName = "Adrian Scheid",
+                    signerEmail = "adrian.scheid01@gmail.com",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 30
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_delphin_adrian_see",
+                    orgId = "org_club_delphin",
+                    documentId = "doc_delphin_seeordnung",
+                    documentTitle = "Gewässer- & Tauchplatzordnung Starnberger See",
+                    memberId = "mem_delphin_adrian",
+                    signerName = "Adrian Scheid",
+                    signerEmail = "adrian.scheid01@gmail.com",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 30
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_delphin_marcus_satzung",
+                    orgId = "org_club_delphin",
+                    documentId = "doc_delphin_satzung",
+                    documentTitle = "Vereinssatzung Tauchclub Delphin e.V.",
+                    memberId = "mem_delphin_marcus",
+                    signerName = "Marcus Vance",
+                    signerEmail = "m.vance@diveclub.net",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 14
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_delphin_marcus_see",
+                    orgId = "org_club_delphin",
+                    documentId = "doc_delphin_seeordnung",
+                    documentTitle = "Gewässer- & Tauchplatzordnung Starnberger See",
+                    memberId = "mem_delphin_marcus",
+                    signerName = "Marcus Vance",
+                    signerEmail = "m.vance@diveclub.net",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 14
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_bh_sarah_waiver",
+                    orgId = "org_center_blue_horizon",
+                    documentId = "doc_bh_waiver",
+                    documentTitle = "Haftungsausschluss & Risikoaufklärung (Standard Waiver)",
+                    memberId = "mem_bh_sarah",
+                    signerName = "Sarah Connor",
+                    signerEmail = "sarah.c@ocean.net",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 20
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_bh_sarah_rules",
+                    orgId = "org_center_blue_horizon",
+                    documentId = "doc_bh_rules",
+                    documentTitle = "Basis- & Bootsordnung M/Y Blue Horizon",
+                    memberId = "mem_bh_sarah",
+                    signerName = "Sarah Connor",
+                    signerEmail = "sarah.c@ocean.net",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 20
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_bh_adrian_waiver",
+                    orgId = "org_center_blue_horizon",
+                    documentId = "doc_bh_waiver",
+                    documentTitle = "Haftungsausschluss & Risikoaufklärung (Standard Waiver)",
+                    memberId = "mem_bh_adrian",
+                    signerName = "Adrian Scheid",
+                    signerEmail = "adrian.scheid01@gmail.com",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 10
+                ),
+                DocumentSignatureEntity(
+                    id = "sig_bh_adrian_rules",
+                    orgId = "org_center_blue_horizon",
+                    documentId = "doc_bh_rules",
+                    documentTitle = "Basis- & Bootsordnung M/Y Blue Horizon",
+                    memberId = "mem_bh_adrian",
+                    signerName = "Adrian Scheid",
+                    signerEmail = "adrian.scheid01@gmail.com",
+                    signatureType = "CHECKBOX_CONFIRMED",
+                    signedTimestamp = System.currentTimeMillis() - 86400000L * 10
+                )
+            )
+
+            clubDocuments.forEach { divingDao.insertOrganizationDocument(it) }
+            centerDocuments.forEach { divingDao.insertOrganizationDocument(it) }
+            initialSignatures.forEach { divingDao.insertDocumentSignature(it) }
         }
     }
 

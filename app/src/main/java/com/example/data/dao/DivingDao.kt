@@ -18,6 +18,8 @@ import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.InventoryItemEntity
 import com.example.data.model.RentalTransactionEntity
+import com.example.data.model.OrganizationDocumentEntity
+import com.example.data.model.DocumentSignatureEntity
 import com.example.data.model.UserAccountEntity
 import com.example.data.model.UserProgressEntity
 import kotlinx.coroutines.flow.Flow
@@ -495,5 +497,55 @@ interface DivingDao {
 
     @Query("UPDATE rental_transactions SET returnDate = :returnDate, status = :status, returnCondition = :condition, damageReportNotes = :damageNotes WHERE id = :id")
     suspend fun completeRentalReturn(id: String, returnDate: String, status: String, condition: String, damageNotes: String)
+
+    // --- Modul 4: Organization Documents & Signatures Center ---
+    @Query("SELECT * FROM organization_documents WHERE orgId = :orgId ORDER BY createdAt DESC")
+    fun getAllDocumentsForOrganization(orgId: String): Flow<List<OrganizationDocumentEntity>>
+
+    @Query("SELECT * FROM organization_documents WHERE orgId = :orgId AND visibility = :visibility ORDER BY createdAt DESC")
+    fun getDocumentsByVisibility(orgId: String, visibility: String): Flow<List<OrganizationDocumentEntity>>
+
+    @Query("SELECT * FROM organization_documents WHERE orgId = :orgId AND requiresAcknowledgment = 1 ORDER BY createdAt DESC")
+    fun getMandatoryDocumentsForOrganization(orgId: String): Flow<List<OrganizationDocumentEntity>>
+
+    @Query("SELECT * FROM organization_documents WHERE orgId = :orgId AND requiresAcknowledgment = 1")
+    suspend fun getMandatoryDocumentsDirect(orgId: String): List<OrganizationDocumentEntity>
+
+    @Query("SELECT * FROM organization_documents WHERE id = :id LIMIT 1")
+    fun getOrganizationDocumentById(id: String): Flow<OrganizationDocumentEntity?>
+
+    @Query("SELECT * FROM organization_documents WHERE id = :id LIMIT 1")
+    suspend fun getOrganizationDocumentByIdDirect(id: String): OrganizationDocumentEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrganizationDocument(doc: OrganizationDocumentEntity)
+
+    @Update
+    suspend fun updateOrganizationDocument(doc: OrganizationDocumentEntity)
+
+    @Query("UPDATE organization_documents SET acknowledgmentCount = :count WHERE id = :id")
+    suspend fun updateDocumentAcknowledgmentCount(id: String, count: Int)
+
+    @Query("DELETE FROM organization_documents WHERE id = :id")
+    suspend fun deleteOrganizationDocument(id: String)
+
+    // Signatures
+    @Query("SELECT * FROM document_signatures WHERE orgId = :orgId ORDER BY signedTimestamp DESC")
+    fun getAllSignaturesForOrganization(orgId: String): Flow<List<DocumentSignatureEntity>>
+
+    @Query("SELECT * FROM document_signatures WHERE documentId = :documentId ORDER BY signedTimestamp DESC")
+    fun getSignaturesForDocument(documentId: String): Flow<List<DocumentSignatureEntity>>
+
+    @Query("SELECT * FROM document_signatures WHERE orgId = :orgId AND memberId = :memberId ORDER BY signedTimestamp DESC")
+    fun getSignaturesForMember(orgId: String, memberId: String): Flow<List<DocumentSignatureEntity>>
+
+    @Query("SELECT * FROM document_signatures WHERE documentId = :documentId AND memberId = :memberId LIMIT 1")
+    suspend fun getSignatureForMemberAndDocument(documentId: String, memberId: String): DocumentSignatureEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDocumentSignature(signature: DocumentSignatureEntity)
+
+    @Query("DELETE FROM document_signatures WHERE documentId = :documentId")
+    suspend fun deleteSignaturesForDocument(documentId: String)
 }
 
