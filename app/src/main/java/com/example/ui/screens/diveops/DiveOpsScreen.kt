@@ -95,7 +95,8 @@ fun DiveOpsScreen(
         Triple(0, "👥", strings.tabDiveOpsRoster),
         Triple(1, "🚤", strings.tabDiveOpsEvents),
         Triple(2, "🤿", strings.tabDiveOpsBuddyBoard),
-        Triple(3, "📋", strings.tabDiveOpsManifest)
+        Triple(3, "📋", strings.tabDiveOpsManifest),
+        Triple(4, "⚙️", strings.tabDiveOpsAssets)
     )
 
     Scaffold(
@@ -236,6 +237,12 @@ fun DiveOpsScreen(
                         organization = org,
                         primaryAccentColor = primaryAccentColor,
                         onNavigateToTrips = { selectedTab = 1 }
+                    )
+                    4 -> DiveOpsAssetsTab(
+                        viewModel = viewModel,
+                        organization = org,
+                        isGerman = isGerman,
+                        primaryAccentColor = primaryAccentColor
                     )
                 }
             }

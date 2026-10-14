@@ -10,6 +10,8 @@ import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
+import com.example.data.model.InventoryItemEntity
+import com.example.data.model.RentalTransactionEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.StudentRosterEntity
@@ -169,6 +171,76 @@ class DivingRepository(private val divingDao: DivingDao) {
 
     suspend fun deleteParticipant(id: String) {
         divingDao.deleteParticipant(id)
+    }
+
+    // --- Asset & Tech Inventory Flows & Operations ---
+    fun getAllInventoryForOrganization(orgId: String): Flow<List<InventoryItemEntity>> =
+        divingDao.getAllInventoryForOrganization(orgId)
+
+    fun getInventoryByType(orgId: String, itemType: String): Flow<List<InventoryItemEntity>> =
+        divingDao.getInventoryByType(orgId, itemType)
+
+    fun getInventoryItemById(id: String): Flow<InventoryItemEntity?> =
+        divingDao.getInventoryItemById(id)
+
+    suspend fun getInventoryItemByIdDirect(id: String): InventoryItemEntity? =
+        divingDao.getInventoryItemByIdDirect(id)
+
+    suspend fun insertInventoryItem(item: InventoryItemEntity) {
+        divingDao.insertInventoryItem(item)
+    }
+
+    suspend fun insertInventoryItems(items: List<InventoryItemEntity>) {
+        divingDao.insertInventoryItems(items)
+    }
+
+    suspend fun updateInventoryItem(item: InventoryItemEntity) {
+        divingDao.updateInventoryItem(item)
+    }
+
+    suspend fun updateInventoryStatus(id: String, status: String) {
+        divingDao.updateInventoryStatus(id, status)
+    }
+
+    suspend fun updateInventoryService(id: String, nextDate: String, lastDate: String, notes: String) {
+        divingDao.updateInventoryService(id, nextDate, lastDate, notes)
+    }
+
+    suspend fun updateCompressorTelemetry(id: String, hours: Float, filterHours: Float, airAnalysisDate: String) {
+        divingDao.updateCompressorTelemetry(id, hours, filterHours, airAnalysisDate)
+    }
+
+    suspend fun updateInventoryRentalAssignment(id: String, status: String, renterId: String?, renterName: String?, dueDate: String?) {
+        divingDao.updateInventoryRentalAssignment(id, status, renterId, renterName, dueDate)
+    }
+
+    suspend fun deleteInventoryItem(id: String) {
+        divingDao.deleteInventoryItem(id)
+    }
+
+    // --- Asset & Tech Rental Transactions ---
+    fun getActiveRentalsForOrganization(orgId: String): Flow<List<RentalTransactionEntity>> =
+        divingDao.getActiveRentalsForOrganization(orgId)
+
+    fun getAllRentalsForOrganization(orgId: String): Flow<List<RentalTransactionEntity>> =
+        divingDao.getAllRentalsForOrganization(orgId)
+
+    fun getRentalsForItem(itemId: String): Flow<List<RentalTransactionEntity>> =
+        divingDao.getRentalsForItem(itemId)
+
+    fun getRentalsForMember(memberId: String): Flow<List<RentalTransactionEntity>> =
+        divingDao.getRentalsForMember(memberId)
+
+    suspend fun insertRentalTransaction(rental: RentalTransactionEntity) {
+        divingDao.insertRentalTransaction(rental)
+    }
+
+    suspend fun updateRentalTransaction(rental: RentalTransactionEntity) {
+        divingDao.updateRentalTransaction(rental)
+    }
+
+    suspend fun completeRentalReturn(id: String, returnDate: String, status: String, condition: String, damageNotes: String) {
+        divingDao.completeRentalReturn(id, returnDate, status, condition, damageNotes)
     }
 
     // Dive Logbook Flows & Operations
@@ -1801,6 +1873,232 @@ class DivingRepository(private val divingDao: DivingDao) {
             (clubParticipants + centerParticipants).forEach { participant ->
                 divingDao.insertParticipant(participant)
             }
+
+            // 3. Initial Inventory Items (Club Delphin & Blue Horizon Resort)
+            val clubInventory = listOf(
+                InventoryItemEntity(
+                    id = "inv_club_comp_bauer",
+                    orgId = "org_club_delphin",
+                    itemType = "COMPRESSOR",
+                    internalCode = "COMP-01",
+                    brand = "Bauer Kompressoren",
+                    model = "Mariner 250 Silent (200/300 bar)",
+                    serialNumber = "BAU-M250-9941",
+                    sizeOrSpec = "250 L/min • 3-stufig • P31 Filtersystem",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-05-30",
+                    lastServiceDate = "2026-05-20",
+                    serviceNotes = "Jahreswartung durch Bauer Service München durchgeführt. Ölwechsel Synthetiköl.",
+                    compressorHours = 142.5f,
+                    compressorFilterMaxHours = 50f,
+                    compressorFilterCurrentHours = 38.0f,
+                    airAnalysisDate = "2026-09-15"
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_tank_01",
+                    orgId = "org_club_delphin",
+                    itemType = "TANK",
+                    internalCode = "T-12-01",
+                    brand = "Eurocylinder",
+                    model = "12L Stahl lang",
+                    serialNumber = "EC-88192-232",
+                    sizeOrSpec = "12L Stahl • 232 bar • Mono-Ventil DIN",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2028-05-15",
+                    lastServiceDate = "2025-05-15",
+                    serviceNotes = "TÜV Süd Prüfprotokoll #8841-A: Innendruckprüfung & optische Prüfung ohne Beanstandung bestanden."
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_tank_02",
+                    orgId = "org_club_delphin",
+                    itemType = "TANK",
+                    internalCode = "T-15-01",
+                    brand = "Eurocylinder",
+                    model = "15L Stahl",
+                    serialNumber = "EC-99301-232",
+                    sizeOrSpec = "15L Stahl • 232 bar • Doppelabgang",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-09-30",
+                    lastServiceDate = "2024-09-30",
+                    serviceNotes = "TÜV Rheinland Prüfbericht #7720-B."
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_tank_03_expired",
+                    orgId = "org_club_delphin",
+                    itemType = "TANK",
+                    internalCode = "T-12-04 (TÜV FÄLLIG)",
+                    brand = "Faber",
+                    model = "12L Stahl",
+                    serialNumber = "FAB-4421-200",
+                    sizeOrSpec = "12L Stahl • 200 bar",
+                    status = "LOCKED_EXPIRED",
+                    nextServiceDate = "2025-06-01",
+                    lastServiceDate = "2022-06-01",
+                    serviceNotes = "TÜV seit 01.06.2025 ABGELAUFEN! Automatische Verleih-Sperre aktiv. Keine Füllung erlaubt!"
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_reg_01",
+                    orgId = "org_club_delphin",
+                    itemType = "REGULATOR",
+                    internalCode = "REG-APX-01",
+                    brand = "Apeks",
+                    model = "XTX 50 + Oktopus",
+                    serialNumber = "APX-55120-DIN",
+                    sizeOrSpec = "Kaltwasser-zertifiziert DIN 300 bar",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-03-20",
+                    lastServiceDate = "2026-03-20",
+                    serviceNotes = "Jährliche Revision bei Fachhändler TauchSport München. Mitteldruck stabil bei 9.5 bar."
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_reg_02_rented",
+                    orgId = "org_club_delphin",
+                    itemType = "REGULATOR",
+                    internalCode = "REG-APX-02",
+                    brand = "Apeks",
+                    model = "XTX 200 DIN 300",
+                    serialNumber = "APX-77402-DIN",
+                    sizeOrSpec = "Kaltwasser-zertifiziert DIN 300 bar",
+                    status = "RENTED",
+                    nextServiceDate = "2027-06-15",
+                    lastServiceDate = "2026-06-15",
+                    serviceNotes = "Revision durchgeführt.",
+                    currentRenterMemberId = "mem_delphin_marcus",
+                    currentRenterName = "Marcus Vance",
+                    currentRentalDueDate = "2026-10-28"
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_bcd_01",
+                    orgId = "org_club_delphin",
+                    itemType = "BCD",
+                    internalCode = "BCD-01",
+                    brand = "Mares",
+                    model = "Rover Pro",
+                    serialNumber = "MAR-2291",
+                    sizeOrSpec = "Größe M • 150N Auftrieb",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-08-10",
+                    lastServiceDate = "2026-08-10",
+                    serviceNotes = "Schnellentlüfter & Inflator desinfiziert und geprüft."
+                ),
+                InventoryItemEntity(
+                    id = "inv_club_o2_01",
+                    orgId = "org_club_delphin",
+                    itemType = "O2_KIT",
+                    internalCode = "O2-WENOLL",
+                    brand = "Wenoll",
+                    model = "100% Notfall-Sauerstoffkoffer",
+                    serialNumber = "WEN-9921",
+                    sizeOrSpec = "2L O2 Stahl 200 bar • Konstantfluss & Demand",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-12-31",
+                    lastServiceDate = "2026-01-10",
+                    serviceNotes = "O2-Flasche voll (200 bar), Beatmungsmasken steril verpackt."
+                )
+            )
+
+            val centerInventory = listOf(
+                InventoryItemEntity(
+                    id = "inv_bh_comp_poseidon",
+                    orgId = "org_center_blue_horizon",
+                    itemType = "COMPRESSOR",
+                    internalCode = "COMP-01",
+                    brand = "Bauer Kompressoren",
+                    model = "Poseidon PE 300 Silent",
+                    serialNumber = "POS-PE300-8812",
+                    sizeOrSpec = "300 L/min • B-Timer Filterüberwachung",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-08-01",
+                    lastServiceDate = "2026-08-01",
+                    serviceNotes = "Filterwechsel & B-Timer Reset durchgeführt.",
+                    compressorHours = 320.0f,
+                    compressorFilterMaxHours = 50f,
+                    compressorFilterCurrentHours = 46.5f,
+                    airAnalysisDate = "2026-08-01"
+                ),
+                InventoryItemEntity(
+                    id = "inv_bh_tank_alu_01",
+                    orgId = "org_center_blue_horizon",
+                    itemType = "TANK",
+                    internalCode = "ALU-S80-01",
+                    brand = "Luxfer",
+                    model = "Aluminum S80 (11.1L)",
+                    serialNumber = "LUX-88201-207",
+                    sizeOrSpec = "Alu 80 cuft • 207 bar • O2 Clean für Nitrox",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2027-11-20",
+                    lastServiceDate = "2025-11-20",
+                    serviceNotes = "Hydrostatische Prüfung & O2-Reinigung gültig."
+                ),
+                InventoryItemEntity(
+                    id = "inv_bh_reg_01_rented",
+                    orgId = "org_center_blue_horizon",
+                    itemType = "REGULATOR",
+                    internalCode = "REG-AL-01",
+                    brand = "Aqualung",
+                    model = "Core Supreme DIN",
+                    serialNumber = "AL-7741-DIN",
+                    sizeOrSpec = "DIN 300 bar • Kaltwassersystem",
+                    status = "RENTED",
+                    nextServiceDate = "2027-05-10",
+                    lastServiceDate = "2026-05-10",
+                    serviceNotes = "Geprüft.",
+                    currentRenterMemberId = "mem_bh_sarah",
+                    currentRenterName = "Sarah Connor",
+                    currentRentalDueDate = "2026-10-24"
+                ),
+                InventoryItemEntity(
+                    id = "inv_bh_comp_suunto",
+                    orgId = "org_center_blue_horizon",
+                    itemType = "COMPUTER",
+                    internalCode = "TC-01",
+                    brand = "Suunto",
+                    model = "Zoop Novo",
+                    serialNumber = "SUU-229188",
+                    sizeOrSpec = "Luft & Nitrox bis 50%",
+                    status = "AVAILABLE",
+                    nextServiceDate = "2028-01-01",
+                    lastServiceDate = "2026-01-01",
+                    serviceNotes = "Neue O-Ring Dichtung & Markenzelle."
+                )
+            )
+
+            val initialRentals = listOf(
+                RentalTransactionEntity(
+                    id = "rent_club_marcus",
+                    orgId = "org_club_delphin",
+                    itemId = "inv_club_reg_02_rented",
+                    itemCode = "REG-APX-02",
+                    itemDescription = "Apeks XTX 200 DIN 300",
+                    memberId = "mem_delphin_marcus",
+                    renterName = "Marcus Vance",
+                    checkOutDate = "2026-10-14",
+                    dueDate = "2026-10-28",
+                    status = "ACTIVE",
+                    returnCondition = "INTACT",
+                    damageReportNotes = "",
+                    staffUserId = "usr_adrian_instructor"
+                ),
+                RentalTransactionEntity(
+                    id = "rent_bh_sarah",
+                    orgId = "org_center_blue_horizon",
+                    itemId = "inv_bh_reg_01_rented",
+                    itemCode = "REG-AL-01",
+                    itemDescription = "Aqualung Core Supreme DIN",
+                    memberId = "mem_bh_sarah",
+                    renterName = "Sarah Connor",
+                    checkOutDate = "2026-10-12",
+                    dueDate = "2026-10-24",
+                    status = "ACTIVE",
+                    returnCondition = "INTACT",
+                    damageReportNotes = "",
+                    staffUserId = "usr_adrian_instructor"
+                )
+            )
+
+            clubInventory.forEach { divingDao.insertInventoryItem(it) }
+            centerInventory.forEach { divingDao.insertInventoryItem(it) }
+            initialRentals.forEach { divingDao.insertRentalTransaction(it) }
         }
     }
 

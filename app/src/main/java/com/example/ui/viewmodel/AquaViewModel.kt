@@ -17,6 +17,8 @@ import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
+import com.example.data.model.InventoryItemEntity
+import com.example.data.model.RentalTransactionEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.QuizQuestion
@@ -338,6 +340,12 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentOrgEvents = MutableStateFlow<List<DiveEventEntity>>(emptyList())
     val currentOrgEvents: StateFlow<List<DiveEventEntity>> = _currentOrgEvents.asStateFlow()
 
+    private val _currentOrgInventory = MutableStateFlow<List<InventoryItemEntity>>(emptyList())
+    val currentOrgInventory: StateFlow<List<InventoryItemEntity>> = _currentOrgInventory.asStateFlow()
+
+    private val _currentOrgActiveRentals = MutableStateFlow<List<RentalTransactionEntity>>(emptyList())
+    val currentOrgActiveRentals: StateFlow<List<RentalTransactionEntity>> = _currentOrgActiveRentals.asStateFlow()
+
     private val _selectedEvent = MutableStateFlow<DiveEventEntity?>(null)
     val selectedEvent: StateFlow<DiveEventEntity?> = _selectedEvent.asStateFlow()
 
@@ -346,12 +354,16 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
 
     private var orgMembersJob: kotlinx.coroutines.Job? = null
     private var orgEventsJob: kotlinx.coroutines.Job? = null
+    private var orgInventoryJob: kotlinx.coroutines.Job? = null
+    private var orgRentalsJob: kotlinx.coroutines.Job? = null
     private var eventParticipantsJob: kotlinx.coroutines.Job? = null
 
     fun selectOrganization(org: OrganizationEntity?) {
         _currentOrganization.value = org
         orgMembersJob?.cancel()
         orgEventsJob?.cancel()
+        orgInventoryJob?.cancel()
+        orgRentalsJob?.cancel()
         selectDiveEvent(null)
         if (org != null) {
             orgMembersJob = viewModelScope.launch {
@@ -364,9 +376,21 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                     _currentOrgEvents.value = events
                 }
             }
+            orgInventoryJob = viewModelScope.launch {
+                repository.getAllInventoryForOrganization(org.id).collect { inventory ->
+                    _currentOrgInventory.value = inventory
+                }
+            }
+            orgRentalsJob = viewModelScope.launch {
+                repository.getActiveRentalsForOrganization(org.id).collect { rentals ->
+                    _currentOrgActiveRentals.value = rentals
+                }
+            }
         } else {
             _currentOrgMembers.value = emptyList()
             _currentOrgEvents.value = emptyList()
+            _currentOrgInventory.value = emptyList()
+            _currentOrgActiveRentals.value = emptyList()
         }
     }
 
@@ -731,6 +755,158 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 teamIndex++
             }
+        }
+    }
+
+    // --- Asset & Tech: Equipment, TÜV, Compressor & Rentals ---
+    fun addInventoryItem(
+        itemType: String,
+        internalCode: String,
+        brand: String,
+        model: String,
+        sizeOrSpec: String,
+        serialNumber: String = "",
+        nextServiceDate: String = "",
+        serviceNotes: String = ""
+    ) {
+        val org = _currentOrganization.value ?: return
+        val isExpired = nextServiceDate.isNotBlank() && nextServiceDate < java.time.LocalDate.now().toString()
+        val initialStatus = if (isExpired) "LOCKED_EXPIRED" else "AVAILABLE"
+
+        val newItem = InventoryItemEntity(
+            id = "inv_${UUID.randomUUID().toString().take(8)}",
+            orgId = org.id,
+            itemType = itemType,
+            internalCode = internalCode.trim(),
+            brand = brand.trim(),
+            model = model.trim(),
+            serialNumber = serialNumber.trim(),
+            sizeOrSpec = sizeOrSpec.trim(),
+            status = initialStatus,
+            nextServiceDate = nextServiceDate.trim(),
+            lastServiceDate = java.time.LocalDate.now().toString(),
+            serviceNotes = serviceNotes.trim(),
+            createdAt = System.currentTimeMillis()
+        )
+
+        viewModelScope.launch {
+            repository.insertInventoryItem(newItem)
+        }
+    }
+
+    fun updateInventoryItem(item: InventoryItemEntity) {
+        viewModelScope.launch {
+            repository.updateInventoryItem(item)
+        }
+    }
+
+    fun deleteInventoryItem(id: String) {
+        viewModelScope.launch {
+            repository.deleteInventoryItem(id)
+        }
+    }
+
+    fun checkOutRentalItem(
+        item: InventoryItemEntity,
+        member: OrganizationMemberEntity,
+        dueDate: String,
+        notes: String = ""
+    ) {
+        val org = _currentOrganization.value ?: return
+        val today = java.time.LocalDate.now().toString()
+
+        val rental = RentalTransactionEntity(
+            id = "rent_${UUID.randomUUID().toString().take(8)}",
+            orgId = org.id,
+            itemId = item.id,
+            itemCode = item.internalCode,
+            itemDescription = "${item.brand} ${item.model} (${item.sizeOrSpec})",
+            memberId = member.id,
+            renterName = member.fullName,
+            checkOutDate = today,
+            dueDate = dueDate.trim(),
+            status = "ACTIVE",
+            returnCondition = "INTACT",
+            damageReportNotes = notes.trim(),
+            staffUserId = _currentUser.value?.id ?: "usr_staff",
+            createdAt = System.currentTimeMillis()
+        )
+
+        viewModelScope.launch {
+            repository.insertRentalTransaction(rental)
+            repository.updateInventoryRentalAssignment(
+                id = item.id,
+                status = "RENTED",
+                renterId = member.id,
+                renterName = member.fullName,
+                dueDate = dueDate.trim()
+            )
+        }
+    }
+
+    fun checkInRentalItem(
+        item: InventoryItemEntity,
+        rentalId: String?,
+        returnCondition: String,
+        damageNotes: String
+    ) {
+        val today = java.time.LocalDate.now().toString()
+        val newStatus = if (returnCondition == "DAMAGED") "MAINTENANCE" else "AVAILABLE"
+
+        viewModelScope.launch {
+            if (rentalId != null) {
+                repository.completeRentalReturn(
+                    id = rentalId,
+                    returnDate = today,
+                    status = if (returnCondition == "DAMAGED") "DAMAGED" else "RETURNED",
+                    condition = returnCondition,
+                    damageNotes = damageNotes.trim()
+                )
+            }
+            repository.updateInventoryRentalAssignment(
+                id = item.id,
+                status = newStatus,
+                renterId = null,
+                renterName = null,
+                dueDate = null
+            )
+        }
+    }
+
+    fun updateInventoryServiceTuv(
+        itemId: String,
+        nextDate: String,
+        lastDate: String,
+        notes: String
+    ) {
+        viewModelScope.launch {
+            repository.updateInventoryService(
+                id = itemId,
+                nextDate = nextDate.trim(),
+                lastDate = lastDate.trim(),
+                notes = notes.trim()
+            )
+        }
+    }
+
+    fun updateCompressorTelemetry(
+        itemId: String,
+        addedHours: Float,
+        resetFilter: Boolean,
+        airAnalysisDate: String
+    ) {
+        val item = _currentOrgInventory.value.find { it.id == itemId } ?: return
+        val newHours = item.compressorHours + addedHours
+        val newFilterHours = if (resetFilter) 0f else (item.compressorFilterCurrentHours + addedHours)
+        val newAirDate = airAnalysisDate.ifBlank { item.airAnalysisDate }
+
+        viewModelScope.launch {
+            repository.updateCompressorTelemetry(
+                id = itemId,
+                hours = newHours,
+                filterHours = newFilterHours,
+                airAnalysisDate = newAirDate
+            )
         }
     }
 

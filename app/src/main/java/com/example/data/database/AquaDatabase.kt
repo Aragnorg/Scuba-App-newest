@@ -19,6 +19,8 @@ import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
+import com.example.data.model.InventoryItemEntity
+import com.example.data.model.RentalTransactionEntity
 
 @Database(
     entities = [
@@ -34,9 +36,11 @@ import com.example.data.model.DiveEventParticipantEntity
         OrganizationEntity::class,
         OrganizationMemberEntity::class,
         DiveEventEntity::class,
-        DiveEventParticipantEntity::class
+        DiveEventParticipantEntity::class,
+        InventoryItemEntity::class,
+        RentalTransactionEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 abstract class AquaDatabase : RoomDatabase() {

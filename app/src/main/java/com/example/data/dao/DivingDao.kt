@@ -16,6 +16,8 @@ import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
+import com.example.data.model.InventoryItemEntity
+import com.example.data.model.RentalTransactionEntity
 import com.example.data.model.UserAccountEntity
 import com.example.data.model.UserProgressEntity
 import kotlinx.coroutines.flow.Flow
@@ -434,5 +436,64 @@ interface DivingDao {
 
     @Query("DELETE FROM dive_event_participants WHERE eventId = :eventId")
     suspend fun deleteParticipantsForEvent(eventId: String)
+
+    // --- Asset & Tech: Equipment Inventory & Compliance ---
+    @Query("SELECT * FROM inventory_items WHERE orgId = :orgId ORDER BY itemType ASC, internalCode ASC")
+    fun getAllInventoryForOrganization(orgId: String): Flow<List<InventoryItemEntity>>
+
+    @Query("SELECT * FROM inventory_items WHERE orgId = :orgId AND itemType = :itemType ORDER BY internalCode ASC")
+    fun getInventoryByType(orgId: String, itemType: String): Flow<List<InventoryItemEntity>>
+
+    @Query("SELECT * FROM inventory_items WHERE id = :id LIMIT 1")
+    fun getInventoryItemById(id: String): Flow<InventoryItemEntity?>
+
+    @Query("SELECT * FROM inventory_items WHERE id = :id LIMIT 1")
+    suspend fun getInventoryItemByIdDirect(id: String): InventoryItemEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInventoryItem(item: InventoryItemEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInventoryItems(items: List<InventoryItemEntity>)
+
+    @Update
+    suspend fun updateInventoryItem(item: InventoryItemEntity)
+
+    @Query("UPDATE inventory_items SET status = :status WHERE id = :id")
+    suspend fun updateInventoryStatus(id: String, status: String)
+
+    @Query("UPDATE inventory_items SET nextServiceDate = :nextDate, lastServiceDate = :lastDate, serviceNotes = :notes, status = 'AVAILABLE' WHERE id = :id")
+    suspend fun updateInventoryService(id: String, nextDate: String, lastDate: String, notes: String)
+
+    @Query("UPDATE inventory_items SET compressorHours = :hours, compressorFilterCurrentHours = :filterHours, airAnalysisDate = :airAnalysisDate WHERE id = :id")
+    suspend fun updateCompressorTelemetry(id: String, hours: Float, filterHours: Float, airAnalysisDate: String)
+
+    @Query("UPDATE inventory_items SET status = :status, currentRenterMemberId = :renterId, currentRenterName = :renterName, currentRentalDueDate = :dueDate WHERE id = :id")
+    suspend fun updateInventoryRentalAssignment(id: String, status: String, renterId: String?, renterName: String?, dueDate: String?)
+
+    @Query("DELETE FROM inventory_items WHERE id = :id")
+    suspend fun deleteInventoryItem(id: String)
+
+    // --- Asset & Tech: Rental Transactions ---
+    @Query("SELECT * FROM rental_transactions WHERE orgId = :orgId AND status = 'ACTIVE' ORDER BY dueDate ASC")
+    fun getActiveRentalsForOrganization(orgId: String): Flow<List<RentalTransactionEntity>>
+
+    @Query("SELECT * FROM rental_transactions WHERE orgId = :orgId ORDER BY createdAt DESC")
+    fun getAllRentalsForOrganization(orgId: String): Flow<List<RentalTransactionEntity>>
+
+    @Query("SELECT * FROM rental_transactions WHERE itemId = :itemId ORDER BY createdAt DESC")
+    fun getRentalsForItem(itemId: String): Flow<List<RentalTransactionEntity>>
+
+    @Query("SELECT * FROM rental_transactions WHERE memberId = :memberId ORDER BY createdAt DESC")
+    fun getRentalsForMember(memberId: String): Flow<List<RentalTransactionEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRentalTransaction(rental: RentalTransactionEntity)
+
+    @Update
+    suspend fun updateRentalTransaction(rental: RentalTransactionEntity)
+
+    @Query("UPDATE rental_transactions SET returnDate = :returnDate, status = :status, returnCondition = :condition, damageReportNotes = :damageNotes WHERE id = :id")
+    suspend fun completeRentalReturn(id: String, returnDate: String, status: String, condition: String, damageNotes: String)
 }
 

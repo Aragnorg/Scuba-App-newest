@@ -510,3 +510,60 @@ data class DiveEventParticipantEntity(
     }
 }
 
+@Entity(tableName = "inventory_items")
+data class InventoryItemEntity(
+    @PrimaryKey val id: String,
+    val orgId: String,
+    val itemType: String, // "TANK", "REGULATOR", "BCD", "SUIT", "COMPUTER", "O2_KIT", "COMPRESSOR", "ACCESSORY"
+    val internalCode: String, // e.g. "T-12-01", "REG-APX-01", "COMP-01"
+    val brand: String, // e.g. "Apeks", "Aqualung", "Mares", "Bauer Kompressoren", "Luxfer"
+    val model: String, // e.g. "XTX 50 DIN", "Mariner 250", "Pro HD", "12L Long 232 bar"
+    val serialNumber: String = "",
+    val sizeOrSpec: String = "", // e.g. "12L Stahl lang, 200 bar", "Größe L / 5mm", "DIN 300 bar"
+    val status: String = "AVAILABLE", // "AVAILABLE", "RENTED", "MAINTENANCE", "LOCKED_EXPIRED", "DECOMMISSIONED"
+    val nextServiceDate: String = "", // "YYYY-MM-DD" e.g. TÜV date, Regulator revision date, O2 expiry date
+    val lastServiceDate: String = "",
+    val serviceNotes: String = "", // e.g. "TÜV Süd Prüfprotokoll #8841-A"
+    val certificateDocId: String? = null,
+    // Compressor specific fields
+    val compressorHours: Float = 0f,
+    val compressorFilterMaxHours: Float = 50f,
+    val compressorFilterCurrentHours: Float = 0f,
+    val airAnalysisDate: String = "", // DIN EN 12021
+    // Current rental assignment (if rented out)
+    val currentRenterMemberId: String? = null,
+    val currentRenterName: String? = null,
+    val currentRentalDueDate: String? = null,
+    val createdAt: Long = System.currentTimeMillis()
+) {
+    val isTank: Boolean get() = itemType == "TANK"
+    val isRegulator: Boolean get() = itemType == "REGULATOR"
+    val isBcd: Boolean get() = itemType == "BCD"
+    val isSuit: Boolean get() = itemType == "SUIT"
+    val isComputer: Boolean get() = itemType == "COMPUTER"
+    val isO2Kit: Boolean get() = itemType == "O2_KIT"
+    val isCompressor: Boolean get() = itemType == "COMPRESSOR"
+    val isRented: Boolean get() = status == "RENTED"
+    val isAvailable: Boolean get() = status == "AVAILABLE"
+    val isLocked: Boolean get() = status == "LOCKED_EXPIRED" || status == "MAINTENANCE"
+}
+
+@Entity(tableName = "rental_transactions")
+data class RentalTransactionEntity(
+    @PrimaryKey val id: String,
+    val orgId: String,
+    val itemId: String,
+    val itemCode: String,
+    val itemDescription: String,
+    val memberId: String,
+    val renterName: String,
+    val checkOutDate: String, // "YYYY-MM-DD"
+    val dueDate: String, // "YYYY-MM-DD"
+    val returnDate: String? = null,
+    val status: String = "ACTIVE", // "ACTIVE", "RETURNED", "OVERDUE", "DAMAGED"
+    val returnCondition: String = "INTACT", // "INTACT", "CLEANING_NEEDED", "DAMAGED"
+    val damageReportNotes: String = "",
+    val staffUserId: String = "",
+    val createdAt: Long = System.currentTimeMillis()
+)
+
