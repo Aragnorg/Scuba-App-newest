@@ -586,6 +586,8 @@ data class OrganizationDocumentEntity(
     val uploadedByUserId: String = "",
     val createdAt: Long = System.currentTimeMillis()
 ) {
+    val contentSummary: String get() = documentContentSummary
+    val uploadedByMemberId: String get() = uploadedByUserId
     val isMandatory: Boolean get() = requiresAcknowledgment
     val isWaiver: Boolean get() = category == "WAIVER"
     val isRules: Boolean get() = category == "RULES"
@@ -600,7 +602,7 @@ data class DocumentSignatureEntity(
     @PrimaryKey val id: String,
     val orgId: String,
     val documentId: String,
-    val documentTitle: String,
+    val documentTitle: String = "",
     val memberId: String,
     val signerName: String,
     val signerEmail: String,
@@ -608,5 +610,8 @@ data class DocumentSignatureEntity(
     val signatureDataJson: String = "",
     val signedTimestamp: Long = System.currentTimeMillis(),
     val ipOrDeviceNote: String = "AquaLearn Verified App Signature"
-)
+) {
+    val touchPathPointsJson: String? get() = signatureDataJson.ifBlank { null }
+    val deviceVerificationNote: String get() = ipOrDeviceNote
+}
 

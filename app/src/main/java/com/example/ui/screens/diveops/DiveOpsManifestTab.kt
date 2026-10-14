@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.OrganizationEntity
+import com.example.data.model.OrganizationMemberEntity
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary

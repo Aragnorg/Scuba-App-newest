@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package com.example.ui.screens.diveops
 
 import androidx.compose.animation.AnimatedVisibility
@@ -404,8 +406,9 @@ fun DiveOpsAssetsTab(
                         )
                     }
                 }
-            } else {
-                items(filteredInventory, key = { it.id }) { item ->
+            }
+        } else {
+            items(filteredInventory, key = { it.id }) { item ->
                     val isExpired = item.nextServiceDate.isNotBlank() && item.nextServiceDate < todayStr
                     val rentalTx = activeRentals.find { it.itemId == item.id }
 

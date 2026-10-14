@@ -521,7 +521,7 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             status = "ACTIVE",
             certLevel = certLevel.trim(),
             totalLoggedDives = 0,
-            ttuExpiryDate = ttuExpiryDate,
+            ttuExpiryDate = ttuExpiryDate ?: "",
             notes = notes.trim()
         )
         viewModelScope.launch {
@@ -966,9 +966,9 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             fileSizeBytes = if (fileSizeBytes > 0) fileSizeBytes else 245000L,
             mimeType = "application/pdf",
             requiresAcknowledgment = requiresAcknowledgment,
-            uploadedByMemberId = _currentOrgMembers.value.firstOrNull { it.role == "OWNER" || it.role == "ADMIN" }?.id ?: "admin",
+            uploadedByUserId = _currentOrgMembers.value.firstOrNull { it.role == "OWNER" || it.role == "ADMIN" }?.id ?: "admin",
             uploadedByName = _currentOrgMembers.value.firstOrNull { it.role == "OWNER" || it.role == "ADMIN" }?.fullName ?: "Administrator",
-            contentSummary = contentSummary.trim(),
+            documentContentSummary = contentSummary.trim(),
             createdAt = System.currentTimeMillis(),
             acknowledgmentCount = 0
         )
@@ -992,15 +992,16 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             val existing = repository.getSignatureForMemberAndDocument(documentId, memberId)
             val newSig = DocumentSignatureEntity(
                 id = existing?.id ?: "sig_${UUID.randomUUID().toString().take(8)}",
-                documentId = documentId,
                 orgId = org.id,
+                documentId = documentId,
+                documentTitle = doc.title,
                 memberId = memberId,
                 signerName = signerName,
                 signerEmail = signerEmail,
                 signedTimestamp = System.currentTimeMillis(),
                 signatureType = signatureType,
-                touchPathPointsJson = touchPathPointsJson,
-                deviceVerificationNote = deviceVerificationNote
+                signatureDataJson = touchPathPointsJson ?: "",
+                ipOrDeviceNote = deviceVerificationNote
             )
             repository.insertDocumentSignature(newSig)
             if (existing == null) {
