@@ -1506,7 +1506,28 @@ class DivingRepository(private val divingDao: DivingDao) {
                 fullName = "Adrian Scheid",
                 isEmailVerified = true,
                 verificationCode = "999888",
-                role = "INSTRUCTOR"
+                role = "INSTRUCTOR",
+                phoneNumber = "+49 170 1234567",
+                certLevel = "CMAS *** / PADI OWSI",
+                certAgency = "VDST / CMAS",
+                licenseNumber = "TL2-GER-9921",
+                totalLoggedDives = 340,
+                ttuExpiryDate = "2027-05-20",
+                ttuDoctorName = "Dr. med. Thomas Weber",
+                emergencyContactName = "Monika Scheid",
+                emergencyContactPhone = "+49 171 9876543",
+                insuranceProvider = "DAN Europe",
+                insuranceNumber = "DAN-DE-449102",
+                suitSize = "L (52)",
+                shoeSize = "43",
+                bcdSize = "M",
+                preferredTank = "12L Stahl DIN",
+                instructorAgency = "VDST / CMAS",
+                instructorLicenseNumber = "TL2-GER-9921",
+                instructorLevel = "Tauchlehrer ** (CMAS Instructor **)",
+                teachingSpecialtiesJson = "[\"Nitrox EANx\", \"Tieftauchen\", \"Trockentauchen\", \"Wracktauchen\", \"HLW / O2-Provider\"]",
+                instructorValidUntil = "2027-12-31",
+                homeOrganizationName = "Tauchclub Delphin Bodensee e.V."
             )
             divingDao.insertUserAccount(instructorAccount)
         }
@@ -1519,7 +1540,22 @@ class DivingRepository(private val divingDao: DivingDao) {
                 fullName = "Leo Chen",
                 isEmailVerified = true,
                 verificationCode = "888777",
-                role = "STUDENT"
+                role = "STUDENT",
+                phoneNumber = "+49 176 9988776",
+                certLevel = "Open Water Diver (18m)",
+                certAgency = "SSI",
+                licenseNumber = "SSI-DIV-5512",
+                totalLoggedDives = 14,
+                ttuExpiryDate = "2027-08-15",
+                ttuDoctorName = "Dr. med. Frank Meyer",
+                emergencyContactName = "Sarah Chen",
+                emergencyContactPhone = "+49 176 1122334",
+                insuranceProvider = "AquaMed",
+                insuranceNumber = "AQM-78192-DE",
+                suitSize = "M",
+                shoeSize = "42",
+                bcdSize = "M",
+                preferredTank = "12L Alu DIN"
             )
             divingDao.insertUserAccount(studentAccount)
         }

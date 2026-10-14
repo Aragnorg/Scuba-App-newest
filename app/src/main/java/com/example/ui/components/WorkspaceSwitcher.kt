@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -445,6 +446,48 @@ fun CreateOrganizationDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
+                // Quick Test-Fill Sample Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            name = "Tauchclub Delphin Bodensee e.V."
+                            orgType = "CLUB"
+                            affiliations = "VDST, CMAS, BLTV"
+                            location = "Überlingen am Bodensee, DE"
+                            waterBody = "Bodensee / Überlinger See"
+                            contactEmail = "vorstand@tc-delphin-bodensee.de"
+                            contactPhone = "+49 7551 987654"
+                            chamberLocation = "Druckkammerzentrum Überlingen (Tel: 07551 8370)"
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
+                    ) {
+                        Text("⚡ Test-Verein", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SeaGreen)
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            name = "Red Sea Blue Horizon Dive Resort"
+                            orgType = "DIVE_CENTER"
+                            affiliations = "PADI 5-Star CDC, SSI Diamond Resort"
+                            location = "Sharm El Sheikh, Süd-Sinai, EG"
+                            waterBody = "Rotes Meer / Ras Mohammed"
+                            contactEmail = "ops@bluehorizon-dive.com"
+                            contactPhone = "+20 69 360 4420"
+                            chamberLocation = "Hyperbaric Medical Center Sharm (Tel: +20 69 366 0922)"
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
+                    ) {
+                        Text("⚡ Test-Basis", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = OceanPrimary)
+                    }
+                }
+
                 // Organization Type Radio Group
                 Text(
                     text = strings.orgTypeLabel,
@@ -611,3 +654,236 @@ fun CreateOrganizationDialog(
         }
     )
 }
+
+@Composable
+fun EditOrganizationDialog(
+    organization: OrganizationEntity,
+    onSave: (OrganizationEntity) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var name by remember { mutableStateOf(organization.name) }
+    var orgType by remember { mutableStateOf(organization.orgType) }
+    var affiliations by remember { mutableStateOf(organization.affiliations) }
+    var location by remember { mutableStateOf(organization.location) }
+    var waterBody by remember { mutableStateOf(organization.waterBody) }
+    var contactEmail by remember { mutableStateOf(organization.contactEmail) }
+    var contactPhone by remember { mutableStateOf(organization.contactPhone) }
+    var website by remember { mutableStateOf(organization.website) }
+
+    var chamberLocation by remember {
+        mutableStateOf(
+            try {
+                org.json.JSONObject(organization.emergencyPlanJson).optString("nearestChamber", "")
+            } catch (_: Exception) { "" }
+        )
+    }
+    var emergencyPhone by remember {
+        mutableStateOf(
+            try {
+                org.json.JSONObject(organization.emergencyPlanJson).optString("emergencyPhone", "+49 112 / DAN")
+            } catch (_: Exception) { "+49 112 / DAN" }
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Organisation bearbeiten",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Quick Test-Fill Sample Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            name = "Tauchclub Delphin Bodensee e.V."
+                            orgType = "CLUB"
+                            affiliations = "VDST, CMAS, BLTV"
+                            location = "Überlingen am Bodensee, DE"
+                            waterBody = "Bodensee / Überlinger See"
+                            contactEmail = "vorstand@tc-delphin-bodensee.de"
+                            contactPhone = "+49 7551 987654"
+                            website = "www.tc-delphin-bodensee.de"
+                            chamberLocation = "Druckkammerzentrum Überlingen (Tel: +49 7551 8370)"
+                            emergencyPhone = "+49 112 (DLRG / Wasserwacht)"
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
+                    ) {
+                        Text("⚡ Test-Verein", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SeaGreen)
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            name = "Red Sea Blue Horizon Dive Resort"
+                            orgType = "DIVE_CENTER"
+                            affiliations = "PADI 5-Star CDC, SSI Diamond Resort"
+                            location = "Sharm El Sheikh, Süd-Sinai, EG"
+                            waterBody = "Rotes Meer / Ras Mohammed"
+                            contactEmail = "ops@bluehorizon-dive.com"
+                            contactPhone = "+20 69 360 4420"
+                            website = "www.bluehorizon-dive.com"
+                            chamberLocation = "Hyperbaric Medical Center Sharm (Tel: +20 69 366 0922)"
+                            emergencyPhone = "+20 122 218 4800 (Red Sea SAR)"
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
+                    ) {
+                        Text("⚡ Test-Basis", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = OceanPrimary)
+                    }
+                }
+
+                // Org Type Selector
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (orgType == "CLUB") SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        border = BorderStroke(1.dp, if (orgType == "CLUB") SeaGreen else Color.Transparent),
+                        modifier = Modifier.weight(1f).clickable { orgType = "CLUB" }
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("🏛️", fontSize = 18.sp)
+                            Text("Verein", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (orgType == "DIVE_CENTER") OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        border = BorderStroke(1.dp, if (orgType == "DIVE_CENTER") OceanPrimary else Color.Transparent),
+                        modifier = Modifier.weight(1f).clickable { orgType = "DIVE_CENTER" }
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("⚓", fontSize = 18.sp)
+                            Text("Basis", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (orgType == "DIVE_SCHOOL") AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        border = BorderStroke(1.dp, if (orgType == "DIVE_SCHOOL") AquaCyan else Color.Transparent),
+                        modifier = Modifier.weight(1f).clickable { orgType = "DIVE_SCHOOL" }
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("🤿", fontSize = 18.sp)
+                            Text("Schule", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Organisationsname *") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = affiliations,
+                    onValueChange = { affiliations = it },
+                    label = { Text("Verbände / Zugehörigkeiten") },
+                    placeholder = { Text("z.B. VDST, CMAS, PADI, SSI") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { location = it },
+                    label = { Text("Standort / Ort") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = waterBody,
+                    onValueChange = { waterBody = it },
+                    label = { Text("Hausgewässer / Region") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = contactEmail,
+                    onValueChange = { contactEmail = it },
+                    label = { Text("Kontakt E-Mail") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = contactPhone,
+                    onValueChange = { contactPhone = it },
+                    label = { Text("Telefonnummer") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = chamberLocation,
+                    onValueChange = { chamberLocation = it },
+                    label = { Text("Nächste Druckkammer") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = emergencyPhone,
+                    onValueChange = { emergencyPhone = it },
+                    label = { Text("Notruf / Hotline") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val updatedPlan = org.json.JSONObject().apply {
+                        put("nearestChamber", chamberLocation.ifBlank { "Lokales Druckkammerzentrum" })
+                        put("emergencyPhone", emergencyPhone.ifBlank { "+49 112 / DAN" })
+                        put("gpsEvacuationPoint", location.ifBlank { "Basis Marina" })
+                        put("o2KitLocation", "Basis Tresen / O2-Koffer")
+                    }.toString()
+
+                    val updated = organization.copy(
+                        name = name.trim(),
+                        orgType = orgType,
+                        affiliations = affiliations.trim(),
+                        location = location.trim(),
+                        waterBody = waterBody.trim(),
+                        contactEmail = contactEmail.trim(),
+                        contactPhone = contactPhone.trim(),
+                        website = website.trim(),
+                        emergencyPlanJson = updatedPlan
+                    )
+                    onSave(updated)
+                    onDismiss()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+            ) {
+                Text("Speichern")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Abbrechen")
+            }
+        }
+    )
+}
+

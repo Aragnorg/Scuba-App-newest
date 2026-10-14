@@ -304,6 +304,14 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateFullUserProfile(updated: UserAccountEntity) {
+        _currentUser.value = updated
+        viewModelScope.launch {
+            repository.updateUserAccount(updated)
+            repository.updateStudentName(updated.fullName)
+        }
+    }
+
     val allModules: StateFlow<List<CourseModuleEntity>> = repository.allModules
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -506,6 +514,115 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             )
             repository.insertMember(ownerMember)
             selectOrganization(newOrg)
+        }
+    }
+
+    fun updateOrganizationDetails(updated: OrganizationEntity) {
+        viewModelScope.launch {
+            repository.updateOrganization(updated)
+            if (_currentOrganization.value?.id == updated.id) {
+                _currentOrganization.value = updated
+            }
+        }
+    }
+
+    fun seedSampleMembersForCurrentOrg() {
+        val currentOrg = _currentOrganization.value ?: return
+        viewModelScope.launch {
+            val samples = listOf(
+                OrganizationMemberEntity(
+                    id = "mem_${UUID.randomUUID().toString().take(8)}",
+                    orgId = currentOrg.id,
+                    fullName = "Julian Sommer",
+                    email = "j.sommer@ocean.de",
+                    phoneNumber = "+49 171 4455667",
+                    role = if (currentOrg.isClub) "INSTRUCTOR" else "DIVE_LEADER",
+                    membershipNumber = if (currentOrg.isClub) "V-002" else "GUIDE-02",
+                    joinedDate = "2023-04-10",
+                    status = "ACTIVE",
+                    certLevel = "CMAS ** / Rescue Diver",
+                    totalLoggedDives = 185,
+                    specialtiesJson = "[\"Nitrox\", \"Trockenanzug\", \"Tieftauchen\"]",
+                    ttuExpiryDate = "2027-09-15",
+                    ttuDoctorName = "Dr. med. Weber",
+                    emergencyContactName = "Katja Sommer",
+                    emergencyContactPhone = "+49 171 9988776",
+                    insuranceProvider = "DAN Europe",
+                    insuranceNumber = "DAN-DE-9912",
+                    rentalPreferences = "12L DIN, BCD L",
+                    notes = "Erfahrener Guide für Kaltwasser & Steilwände."
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_${UUID.randomUUID().toString().take(8)}",
+                    orgId = currentOrg.id,
+                    fullName = "Elena Vogel",
+                    email = "elena.vogel@travel.de",
+                    phoneNumber = "+49 175 1122334",
+                    role = if (currentOrg.isClub) "MEMBER" else "GUEST",
+                    membershipNumber = if (currentOrg.isClub) "V-015" else "GAST-104",
+                    joinedDate = "2024-02-01",
+                    status = "ACTIVE",
+                    certLevel = "Open Water Diver (18m)",
+                    totalLoggedDives = 22,
+                    specialtiesJson = "[\"Nitrox\"]",
+                    ttuExpiryDate = java.time.LocalDate.now().plusDays(20).toString(),
+                    ttuDoctorName = "Dr. med. H. Becker",
+                    emergencyContactName = "Peter Vogel",
+                    emergencyContactPhone = "+49 175 5544332",
+                    insuranceProvider = "AquaMed",
+                    insuranceNumber = "AQM-2231",
+                    rentalPreferences = "Neopren Gr. S, BCD S, 10L Flasche",
+                    notes = "TTU läuft bald ab; Auffrischung vereinbart."
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_${UUID.randomUUID().toString().take(8)}",
+                    orgId = currentOrg.id,
+                    fullName = "Maximilian Wolf",
+                    email = "max.wolf@alpen.at",
+                    phoneNumber = "+43 664 123456",
+                    role = if (currentOrg.isClub) "MEMBER" else "GUEST",
+                    membershipNumber = if (currentOrg.isClub) "V-021" else "GAST-105",
+                    joinedDate = "2024-06-15",
+                    status = "ACTIVE",
+                    certLevel = "Advanced Open Water Diver (AOWD)",
+                    totalLoggedDives = 58,
+                    specialtiesJson = "[\"Nitrox\", \"Wracktauchen\"]",
+                    ttuExpiryDate = "2025-11-10",
+                    ttuDoctorName = "Dr. K. Huber",
+                    emergencyContactName = "Claudia Wolf",
+                    emergencyContactPhone = "+43 664 654321",
+                    insuranceProvider = "DiveAssure",
+                    insuranceNumber = "DA-AT-5541",
+                    rentalPreferences = "12L DIN, BCD XL",
+                    notes = "Achtung: TTU ist abgelaufen - vor Event neu vorlegen!"
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_${UUID.randomUUID().toString().take(8)}",
+                    orgId = currentOrg.id,
+                    fullName = "Stefan 'Tech' Bauer",
+                    email = "stefan.bauer@diveops.de",
+                    phoneNumber = "+49 172 8899001",
+                    role = "TECH_MANAGER",
+                    membershipNumber = if (currentOrg.isClub) "V-003" else "TECH-01",
+                    joinedDate = "2022-08-01",
+                    status = "ACTIVE",
+                    certLevel = "Trimix & Rebreather Diver",
+                    totalLoggedDives = 520,
+                    specialtiesJson = "[\"Gas Blender\", \"Equipment Specialist\", \"Trockenanzug\"]",
+                    ttuExpiryDate = "2027-11-30",
+                    ttuDoctorName = "Dr. med. T. Weber",
+                    emergencyContactName = "Sabine Bauer",
+                    emergencyContactPhone = "+49 172 1122998",
+                    insuranceProvider = "DAN Europe",
+                    insuranceNumber = "DAN-DE-1102",
+                    rentalPreferences = "Doppel-12 DIN, Wing",
+                    notes = "Verantwortlich für Kompressor & Flaschen-TÜV."
+                )
+            )
+            repository.insertMembers(samples)
+            val updatedOrg = currentOrg.copy(activeMembersCount = currentOrg.activeMembersCount + samples.size)
+            repository.updateOrganization(updatedOrg)
+            _currentOrganization.value = updatedOrg
         }
     }
 

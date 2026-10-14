@@ -85,10 +85,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiverDocumentEntity
+import com.example.data.model.UserAccountEntity
+import com.example.ui.components.CreateOrganizationDialog
 import com.example.ui.components.DocumentExpirationAlertBanner
+import com.example.ui.components.EditOrganizationDialog
 import com.example.ui.components.ExamReadinessGauge
 import com.example.ui.components.LanguageSwitchButton
 import com.example.ui.components.UserAvatarView
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.CorporateFare
+import androidx.compose.runtime.mutableIntStateOf
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
@@ -137,6 +144,9 @@ fun ProfileMenuModal(
 
     var showEditNameDialog by remember { mutableStateOf(false) }
     var editNameText by remember { mutableStateOf("") }
+    var showEditFullProfileDialog by remember { mutableStateOf(false) }
+    var showCreateOrgDialog by remember { mutableStateOf(false) }
+    var showEditOrgDialog by remember { mutableStateOf(false) }
 
     // Camera Capture Launcher for Profile Picture
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -382,8 +392,174 @@ fun ProfileMenuModal(
                                         Text(strings.removeProfilePicture, color = Color(0xFFE53E3E), fontSize = 11.sp)
                                     }
                                 }
-                            }
-                        }
+
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+                                // Diver Brevet & Credentials Dossier
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text(
+                                        text = if (currentLanguage == AppLanguage.DE) "Persönliche Taucher-Akte" else "Personal Diver Dossier",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+
+                                    // Row 1: Brevet & Dives
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = OceanPrimary.copy(alpha = 0.1f),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Column(modifier = Modifier.padding(8.dp)) {
+                                                Text("Brevet & Verband", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text(
+                                                    text = "${currentUser?.certAgency ?: "VDST / CMAS"} • ${currentUser?.certLevel ?: "Open Water Diver"}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = OceanPrimary
+                                                )
+                                                if (!currentUser?.licenseNumber.isNullOrBlank()) {
+                                                    Text(text = "Nr: ${currentUser?.licenseNumber}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
+                                                }
+                                            }
+                                        }
+
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = SeaGreen.copy(alpha = 0.1f),
+                                            modifier = Modifier.weight(0.7f)
+                                        ) {
+                                            Column(modifier = Modifier.padding(8.dp)) {
+                                                Text("Geloggte Dives", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text(
+                                                    text = "🤿 ${currentUser?.totalLoggedDives ?: 12} Dives",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = SeaGreen
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    // Row 2: TTU Medical & Insurance
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = Color(0xFF38A169).copy(alpha = 0.1f),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Column(modifier = Modifier.padding(8.dp)) {
+                                                Text("TTU Attest", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text(
+                                                    text = "🩺 ${currentUser?.ttuExpiryDate ?: "2027-06-30"}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFF2E7D32)
+                                                )
+                                                if (!currentUser?.ttuDoctorName.isNullOrBlank()) {
+                                                    Text(text = "${currentUser?.ttuDoctorName}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
+                                                }
+                                            }
+                                        }
+
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Column(modifier = Modifier.padding(8.dp)) {
+                                                Text("Tauchversicherung", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text(
+                                                    text = "🛡️ ${currentUser?.insuranceProvider.takeIf { !it.isNullOrBlank() } ?: "DAN Europe"}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                                if (!currentUser?.insuranceNumber.isNullOrBlank()) {
+                                                    Text(text = "Nr: ${currentUser?.insuranceNumber}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Row 3: Emergency contact & Rental preferences
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Column(modifier = Modifier.padding(8.dp)) {
+                                            Text(
+                                                text = "🚨 Notfallkontakt: ${currentUser?.emergencyContactName.takeIf { !it.isNullOrBlank() } ?: "Monika Scheid"} (${currentUser?.emergencyContactPhone.takeIf { !it.isNullOrBlank() } ?: "+49 171 9876543"})",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                fontSize = 11.sp
+                                            )
+                                            Spacer(modifier = Modifier.height(2.dp))
+                                            Text(
+                                                text = "🎽 Leih-Größen: Anzug ${currentUser?.suitSize ?: "L"} • Schuhgr. ${currentUser?.shoeSize ?: "43"} • BCD ${currentUser?.bcdSize ?: "M"} • ${currentUser?.preferredTank ?: "12L DIN"}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                fontSize = 11.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+
+                                    // If Instructor / Leadership: Show Instructor Badge details
+                                    if (currentUser?.role == "INSTRUCTOR") {
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = OceanPrimary.copy(alpha = 0.12f),
+                                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.3f)),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Column(modifier = Modifier.padding(8.dp)) {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Text("🏢", fontSize = 14.sp)
+                                                    Spacer(modifier = Modifier.width(6.dp))
+                                                    Text(
+                                                        text = "Leitungs- & Ausbilder-Akte",
+                                                        style = MaterialTheme.typography.labelMedium,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = OceanPrimary
+                                                    )
+                                                }
+                                                Text(
+                                                    text = "${currentUser?.instructorLevel ?: "Tauchlehrer ** (CMAS Instructor **)"} (${currentUser?.instructorAgency ?: "VDST / CMAS"})",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                                Text(
+                                                    text = "Lizenz: ${currentUser?.instructorLicenseNumber ?: "TL2-GER-9921"} • Gültig bis: ${currentUser?.instructorValidUntil ?: "2027-12-31"}",
+                                                    style = MaterialTheme.typography.labelSmall
+                                                )
+                                                Text(
+                                                    text = "Lehrbefugnisse: ${currentUser?.parseTeachingSpecialties()?.joinToString(", ") ?: "Nitrox, Tief, Trocken, Wrack"}",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    // Button: Edit Full Profile & Test Data
+                                    Button(
+                                        onClick = { showEditFullProfileDialog = true },
+                                        modifier = Modifier.fillMaxWidth().testTag("edit_full_profile_btn"),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                                    ) {
+                                        Text(
+                                            text = if (currentLanguage == AppLanguage.DE)
+                                                "✏️ Vollständiges Profil bearbeiten & befüllen"
+                                            else
+                                                "✏️ Edit Complete Profile & Sample Data",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
                     }
 
                     // Diver Stats Counter Row
@@ -498,6 +674,75 @@ fun ProfileMenuModal(
                                     fontSize = 11.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                            }
+                        }
+
+                        // Organization & Club Quick Access Card
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 14.dp)
+                                .testTag("profile_org_card"),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                val currentOrg by viewModel.currentOrganization.collectAsState()
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.CorporateFare, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(22.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = if (currentLanguage == AppLanguage.DE) "Tauchorganisation (Verein / Basis)" else "Diving Organization (Club / Center)",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                Text(
+                                    text = if (currentOrg != null) {
+                                        if (currentLanguage == AppLanguage.DE)
+                                            "Aktiver Workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Verein" else "Tauchbasis"}) • ${currentOrg!!.activeMembersCount} Personen"
+                                        else
+                                            "Active workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Club" else "Dive Center"})"
+                                    } else {
+                                        if (currentLanguage == AppLanguage.DE)
+                                            "Aktuell im persönlichen Tauchermodus. Du kannst jederzeit einen Verein oder eine Tauchbasis anlegen oder verwalten."
+                                        else
+                                            "Currently in personal diver mode. You can create or manage a club or dive center anytime."
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+
+                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    OutlinedButton(
+                                        onClick = { showCreateOrgDialog = true },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(10.dp)
+                                    ) {
+                                        Text(
+                                            text = if (currentLanguage == AppLanguage.DE) "+ Neue Org anlegen" else "+ Create New Org",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+
+                                    if (currentOrg != null) {
+                                        Button(
+                                            onClick = { showEditOrgDialog = true },
+                                            modifier = Modifier.weight(1f),
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = if (currentOrg!!.isClub) SeaGreen else OceanPrimary)
+                                        ) {
+                                            Text(
+                                                text = if (currentLanguage == AppLanguage.DE) "Org bearbeiten" else "Edit Org",
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -1043,6 +1288,31 @@ fun ProfileMenuModal(
             }
         )
     }
+
+    val currentOrg by viewModel.currentOrganization.collectAsState()
+
+    if (showEditFullProfileDialog && currentUser != null) {
+        EditFullProfileDialog(
+            user = currentUser!!,
+            onSave = { updated -> viewModel.updateFullUserProfile(updated) },
+            onDismiss = { showEditFullProfileDialog = false }
+        )
+    }
+
+    if (showCreateOrgDialog) {
+        CreateOrganizationDialog(
+            viewModel = viewModel,
+            onDismiss = { showCreateOrgDialog = false }
+        )
+    }
+
+    if (showEditOrgDialog && currentOrg != null) {
+        EditOrganizationDialog(
+            organization = currentOrg!!,
+            onSave = { updated -> viewModel.updateOrganizationDetails(updated) },
+            onDismiss = { showEditOrgDialog = false }
+        )
+    }
 }
 
 @Composable
@@ -1096,4 +1366,382 @@ private fun ProfileFilterChip(
             fontSize = 11.sp
         )
     }
+}
+
+@Composable
+fun EditFullProfileDialog(
+    user: UserAccountEntity,
+    onSave: (UserAccountEntity) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var fullName by remember { mutableStateOf(user.fullName) }
+    var email by remember { mutableStateOf(user.email) }
+    var phoneNumber by remember { mutableStateOf(user.phoneNumber) }
+    var certLevel by remember { mutableStateOf(user.certLevel) }
+    var certAgency by remember { mutableStateOf(user.certAgency) }
+    var licenseNumber by remember { mutableStateOf(user.licenseNumber) }
+    var totalLoggedDives by remember { mutableStateOf(user.totalLoggedDives.toString()) }
+    var ttuExpiryDate by remember { mutableStateOf(user.ttuExpiryDate) }
+    var ttuDoctorName by remember { mutableStateOf(user.ttuDoctorName) }
+    var emergencyContactName by remember { mutableStateOf(user.emergencyContactName) }
+    var emergencyContactPhone by remember { mutableStateOf(user.emergencyContactPhone) }
+    var insuranceProvider by remember { mutableStateOf(user.insuranceProvider) }
+    var insuranceNumber by remember { mutableStateOf(user.insuranceNumber) }
+    var suitSize by remember { mutableStateOf(user.suitSize) }
+    var shoeSize by remember { mutableStateOf(user.shoeSize) }
+    var bcdSize by remember { mutableStateOf(user.bcdSize) }
+    var preferredTank by remember { mutableStateOf(user.preferredTank) }
+
+    // Instructor fields
+    var instructorAgency by remember { mutableStateOf(user.instructorAgency) }
+    var instructorLicenseNumber by remember { mutableStateOf(user.instructorLicenseNumber) }
+    var instructorLevel by remember { mutableStateOf(user.instructorLevel) }
+    var teachingSpecialtiesJson by remember { mutableStateOf(user.teachingSpecialtiesJson) }
+    var instructorValidUntil by remember { mutableStateOf(user.instructorValidUntil) }
+    var homeOrganizationName by remember { mutableStateOf(user.homeOrganizationName) }
+
+    var selectedTab by remember { mutableIntStateOf(0) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Column {
+                Text(
+                    text = "Vollständiges Profil bearbeiten",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Brevets, TTU, Notfallkontakte & Tauchlehrer-Akte verwalten.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Tab switcher between Diver and Instructor
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (selectedTab == 0) OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        border = BorderStroke(1.dp, if (selectedTab == 0) OceanPrimary else Color.Transparent),
+                        modifier = Modifier.weight(1f).clickable { selectedTab = 0 }
+                    ) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = "👤 Taucher-Profil",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (selectedTab == 0) OceanPrimary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = if (selectedTab == 1) SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        border = BorderStroke(1.dp, if (selectedTab == 1) SeaGreen else Color.Transparent),
+                        modifier = Modifier.weight(1f).clickable { selectedTab = 1 }
+                    ) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
+                            Text(
+                                text = "🤿 Leitung & TL",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (selectedTab == 1) SeaGreen else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+
+                if (selectedTab == 0) {
+                    // SECTION 0: Diver Profile
+                    OutlinedButton(
+                        onClick = {
+                            fullName = if (fullName.isNotBlank()) fullName else "Adrian Scheid"
+                            phoneNumber = "+49 170 1234567"
+                            certLevel = "Advanced Open Water Diver (AOWD)"
+                            certAgency = "VDST / CMAS"
+                            licenseNumber = "GER-DIVER-88214"
+                            totalLoggedDives = "45"
+                            ttuExpiryDate = "2027-06-30"
+                            ttuDoctorName = "Dr. med. T. Weber (GTÜM e.V.)"
+                            emergencyContactName = "Monika Scheid"
+                            emergencyContactPhone = "+49 171 9876543"
+                            insuranceProvider = "DAN Europe"
+                            insuranceNumber = "DAN-DE-449102"
+                            suitSize = "L (52)"
+                            shoeSize = "43"
+                            bcdSize = "M"
+                            preferredTank = "12L Stahl DIN (232 bar)"
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Text("⚡ Mit Test-Taucherdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = OceanPrimary)
+                    }
+
+                    OutlinedTextField(
+                        value = fullName,
+                        onValueChange = { fullName = it },
+                        label = { Text("Vollständiger Name *") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("E-Mail Adresse") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = phoneNumber,
+                        onValueChange = { phoneNumber = it },
+                        label = { Text("Telefonnummer") },
+                        placeholder = { Text("+49 170 1234567") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = certLevel,
+                        onValueChange = { certLevel = it },
+                        label = { Text("Brevet-Stufe / Zertifizierung") },
+                        placeholder = { Text("z.B. OWD, AOWD, Rescue Diver") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = certAgency,
+                        onValueChange = { certAgency = it },
+                        label = { Text("Tauchverband") },
+                        placeholder = { Text("z.B. VDST / CMAS, PADI, SSI") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = licenseNumber,
+                        onValueChange = { licenseNumber = it },
+                        label = { Text("Brevet- / Lizenznummer") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = totalLoggedDives,
+                        onValueChange = { totalLoggedDives = it },
+                        label = { Text("Geloggte Tauchgänge") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = ttuExpiryDate,
+                        onValueChange = { ttuExpiryDate = it },
+                        label = { Text("TTU Gültig bis (JJJJ-MM-TT)") },
+                        placeholder = { Text("2027-06-30") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = ttuDoctorName,
+                        onValueChange = { ttuDoctorName = it },
+                        label = { Text("Ausstellender Arzt / Praxis") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = emergencyContactName,
+                        onValueChange = { emergencyContactName = it },
+                        label = { Text("Notfallkontakt Name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = emergencyContactPhone,
+                        onValueChange = { emergencyContactPhone = it },
+                        label = { Text("Notfallkontakt Telefon") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = insuranceProvider,
+                        onValueChange = { insuranceProvider = it },
+                        label = { Text("Tauchversicherung (z.B. DAN)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = insuranceNumber,
+                        onValueChange = { insuranceNumber = it },
+                        label = { Text("Versicherungsnummer / Police") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = suitSize,
+                        onValueChange = { suitSize = it },
+                        label = { Text("Anzuggröße (z.B. M, L, XL)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = shoeSize,
+                        onValueChange = { shoeSize = it },
+                        label = { Text("Schuhgröße (z.B. 43)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = bcdSize,
+                        onValueChange = { bcdSize = it },
+                        label = { Text("Tarierweste / BCD Größe") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = preferredTank,
+                        onValueChange = { preferredTank = it },
+                        label = { Text("Bevorzugte Flasche") },
+                        placeholder = { Text("12L Stahl DIN, 15L oder Alu") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                } else {
+                    // SECTION 1: Instructor / Leadership Profile
+                    OutlinedButton(
+                        onClick = {
+                            instructorAgency = "VDST / CMAS"
+                            instructorLevel = "Tauchlehrer ** (CMAS Instructor **)"
+                            instructorLicenseNumber = "TL2-GER-9921"
+                            instructorValidUntil = "2027-12-31"
+                            homeOrganizationName = "Tauchclub Delphin Bodensee e.V."
+                            teachingSpecialtiesJson = "[\"Nitrox EANx\", \"Tieftauchen\", \"Trockentauchen\", \"Wracktauchen\", \"HLW / O2-Provider\"]"
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Text("⚡ Mit Test-Tauchlehrerdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SeaGreen)
+                    }
+
+                    OutlinedTextField(
+                        value = instructorLevel,
+                        onValueChange = { instructorLevel = it },
+                        label = { Text("Ausbilder- / Leitungs-Stufe") },
+                        placeholder = { Text("z.B. CMAS TL**, PADI OWSI/MSDT") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = instructorAgency,
+                        onValueChange = { instructorAgency = it },
+                        label = { Text("Verband (Instructor)") },
+                        placeholder = { Text("VDST / CMAS, PADI, SSI") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = instructorLicenseNumber,
+                        onValueChange = { instructorLicenseNumber = it },
+                        label = { Text("Tauchlehrer- / Lizenznummer") },
+                        placeholder = { Text("z.B. TL2-GER-9921") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = instructorValidUntil,
+                        onValueChange = { instructorValidUntil = it },
+                        label = { Text("Lizenz gültig bis (JJJJ-MM-TT)") },
+                        placeholder = { Text("2027-12-31") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = homeOrganizationName,
+                        onValueChange = { homeOrganizationName = it },
+                        label = { Text("Stamm-Organisation / Verein / Basis") },
+                        placeholder = { Text("Tauchclub Delphin e.V.") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+
+                    OutlinedTextField(
+                        value = teachingSpecialtiesJson,
+                        onValueChange = { teachingSpecialtiesJson = it },
+                        label = { Text("Lehrbefugnisse / Spezialkurse") },
+                        placeholder = { Text("[\"Nitrox\", \"Tieftauchen\", \"Trockenanzug\"]") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val updated = user.copy(
+                        fullName = fullName.trim(),
+                        email = email.trim(),
+                        phoneNumber = phoneNumber.trim(),
+                        certLevel = certLevel.trim(),
+                        certAgency = certAgency.trim(),
+                        licenseNumber = licenseNumber.trim(),
+                        totalLoggedDives = totalLoggedDives.toIntOrNull() ?: user.totalLoggedDives,
+                        ttuExpiryDate = ttuExpiryDate.trim(),
+                        ttuDoctorName = ttuDoctorName.trim(),
+                        emergencyContactName = emergencyContactName.trim(),
+                        emergencyContactPhone = emergencyContactPhone.trim(),
+                        insuranceProvider = insuranceProvider.trim(),
+                        insuranceNumber = insuranceNumber.trim(),
+                        suitSize = suitSize.trim(),
+                        shoeSize = shoeSize.trim(),
+                        bcdSize = bcdSize.trim(),
+                        preferredTank = preferredTank.trim(),
+                        instructorAgency = instructorAgency.trim(),
+                        instructorLicenseNumber = instructorLicenseNumber.trim(),
+                        instructorLevel = instructorLevel.trim(),
+                        teachingSpecialtiesJson = teachingSpecialtiesJson.trim(),
+                        instructorValidUntil = instructorValidUntil.trim(),
+                        homeOrganizationName = homeOrganizationName.trim()
+                    )
+                    onSave(updated)
+                    onDismiss()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+            ) {
+                Text("Speichern")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Abbrechen")
+            }
+        }
+    )
 }

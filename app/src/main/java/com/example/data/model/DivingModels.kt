@@ -225,8 +225,44 @@ data class UserAccountEntity(
     val verificationSentAt: Long = System.currentTimeMillis(),
     val role: String = "STUDENT",
     val profilePictureUri: String? = null,
-    val createdAt: Long = System.currentTimeMillis()
-)
+    val createdAt: Long = System.currentTimeMillis(),
+
+    // --- Persönliches Taucher-Profil ---
+    val phoneNumber: String = "+49 170 1234567",
+    val certLevel: String = "Advanced Open Water Diver (AOWD)",
+    val certAgency: String = "VDST / CMAS", // e.g. "VDST / CMAS", "PADI", "SSI", "i.a.c."
+    val licenseNumber: String = "GER-DIVER-88214",
+    val totalLoggedDives: Int = 42,
+    val ttuExpiryDate: String = "2027-06-30",
+    val ttuDoctorName: String = "Dr. med. T. Weber (GTÜM e.V.)",
+    val emergencyContactName: String = "Monika Scheid",
+    val emergencyContactPhone: String = "+49 171 9876543",
+    val insuranceProvider: String = "DAN Europe",
+    val insuranceNumber: String = "DAN-DE-449102",
+    val suitSize: String = "L (52)",
+    val shoeSize: String = "43",
+    val bcdSize: String = "M",
+    val preferredTank: String = "12L Stahl DIN (232 bar)",
+
+    // --- Tauchlehrer- / Leitungs-Profil ---
+    val instructorAgency: String = "VDST / CMAS",
+    val instructorLicenseNumber: String = "TL2-GER-9921",
+    val instructorLevel: String = "Tauchlehrer ** (CMAS Instructor **)",
+    val teachingSpecialtiesJson: String = "[\"Nitrox EANx\", \"Tieftauchen\", \"Trockentauchen\", \"Wracktauchen\", \"HLW / O2-Provider\"]",
+    val instructorValidUntil: String = "2027-12-31",
+    val homeOrganizationName: String = "Tauchclub Delphin Bodensee e.V."
+) {
+    fun parseTeachingSpecialties(): List<String> {
+        val list = mutableListOf<String>()
+        try {
+            val arr = org.json.JSONArray(teachingSpecialtiesJson)
+            for (i in 0 until arr.length()) {
+                list.add(arr.getString(i))
+            }
+        } catch (_: Exception) {}
+        return list
+    }
+}
 
 data class VerificationEmailMessage(
     val senderName: String = "Adrian Scheid (AquaLearn Owner)",

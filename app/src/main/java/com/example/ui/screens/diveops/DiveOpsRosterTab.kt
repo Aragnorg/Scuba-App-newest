@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
+import com.example.ui.components.EditOrganizationDialog
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -100,6 +101,7 @@ fun DiveOpsRosterTab(
     var searchQuery by remember { mutableStateOf("") }
     var selectedRoleFilter by remember { mutableStateOf("ALL") }
     var showEmergencyDialog by remember { mutableStateOf(false) }
+    var showEditOrgDialog by remember { mutableStateOf(false) }
     var showAddMemberDialog by remember { mutableStateOf(false) }
     var memberToEditTtu by remember { mutableStateOf<OrganizationMemberEntity?>(null) }
     var memberToChangeRole by remember { mutableStateOf<OrganizationMemberEntity?>(null) }
@@ -160,6 +162,7 @@ fun DiveOpsRosterTab(
             OrgHeroBanner(
                 organization = organization,
                 primaryAccentColor = primaryAccentColor,
+                onEditOrganization = { showEditOrgDialog = true },
                 onOpenEmergencyPlan = { showEmergencyDialog = true }
             )
         }
@@ -279,14 +282,25 @@ fun DiveOpsRosterTab(
                     )
                 }
 
-                Button(
-                    onClick = { showAddMemberDialog = true },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(if (organization.isClub) "+ Mitglied" else "+ Gast/Diver", fontSize = 12.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedButton(
+                        onClick = { viewModel.seedSampleMembersForCurrentOrg() },
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Text("⚡ Test-Mitglieder", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = primaryAccentColor)
+                    }
+
+                    Button(
+                        onClick = { showAddMemberDialog = true },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(if (organization.isClub) "+ Mitglied" else "+ Gast/Diver", fontSize = 12.sp)
+                    }
                 }
             }
         }
@@ -419,6 +433,14 @@ fun DiveOpsRosterTab(
             }
         )
     }
+
+    if (showEditOrgDialog) {
+        EditOrganizationDialog(
+            organization = organization,
+            onSave = { updated -> viewModel.updateOrganizationDetails(updated) },
+            onDismiss = { showEditOrgDialog = false }
+        )
+    }
 }
 
 /**
@@ -429,6 +451,7 @@ fun DiveOpsRosterTab(
 fun OrgHeroBanner(
     organization: OrganizationEntity,
     primaryAccentColor: Color,
+    onEditOrganization: () -> Unit,
     onOpenEmergencyPlan: () -> Unit
 ) {
     Card(
@@ -518,21 +541,41 @@ fun OrgHeroBanner(
                     Spacer(modifier = Modifier.width(1.dp))
                 }
 
-                // Emergency Plan Dossier Button
-                Button(
-                    onClick = onOpenEmergencyPlan,
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "🚨", fontSize = 13.sp)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Notfallplan",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    OutlinedButton(
+                        onClick = onEditOrganization,
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text(text = "✏️", fontSize = 12.sp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Bearbeiten",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryAccentColor
+                        )
+                    }
+
+                    // Emergency Plan Dossier Button
+                    Button(
+                        onClick = onOpenEmergencyPlan,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text(text = "🚨", fontSize = 13.sp)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Notfallplan",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
