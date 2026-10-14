@@ -365,6 +365,72 @@ data class ScubaCourse(
     val difficulty: String = "Beginner"
 )
 
+// ==========================================
+// B2B2C DiveOps Multi-Tenant Architecture
+// ==========================================
 
+@Entity(tableName = "organizations")
+data class OrganizationEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val logoUri: String? = null,
+    val orgType: String = "CLUB", // "CLUB" (Verein), "DIVE_CENTER" (Tauchbasis), "DIVE_SCHOOL" (Tauchschule)
+    val affiliations: String = "VDST / CMAS", // e.g. "VDST / CMAS", "PADI 5-Star CDC", "SSI Diamond Resort", "i.a.c."
+    val location: String,
+    val waterBody: String,
+    val contactEmail: String,
+    val contactPhone: String,
+    val website: String = "",
+    val emergencyPlanJson: String = "",
+    val activeMembersCount: Int = 0,
+    val createdAt: Long = System.currentTimeMillis()
+) {
+    val isClub: Boolean get() = orgType == "CLUB"
+    val isDiveCenter: Boolean get() = orgType == "DIVE_CENTER"
+    val isDiveSchool: Boolean get() = orgType == "DIVE_SCHOOL"
+}
 
+@Entity(tableName = "organization_members")
+data class OrganizationMemberEntity(
+    @PrimaryKey val id: String,
+    val orgId: String,
+    val userId: String = "",
+    val fullName: String,
+    val email: String,
+    val phoneNumber: String = "",
+    val role: String = "MEMBER", // "OWNER", "ADMIN", "INSTRUCTOR", "DIVE_LEADER", "TECH_MANAGER", "MEMBER", "GUEST"
+    val membershipNumber: String = "", // e.g. "DELPHIN-042" or "GUEST-2026-99"
+    val joinedDate: String, // e.g. "2024-03-01"
+    val status: String = "ACTIVE", // "ACTIVE", "INACTIVE", "SUSPENDED"
+    val certLevel: String = "Open Water Diver",
+    val totalLoggedDives: Int = 12,
+    val specialtiesJson: String = "[]",
+    val ttuDocumentId: String? = null,
+    val ttuExpiryDate: String = "", // e.g. "2027-05-20"
+    val ttuDoctorName: String = "",
+    val emergencyContactName: String = "",
+    val emergencyContactPhone: String = "",
+    val insuranceProvider: String = "",
+    val insuranceNumber: String = "",
+    val signedWaiverDate: String? = null,
+    val rentalPreferences: String = "",
+    val notes: String = "",
+    val createdAt: Long = System.currentTimeMillis()
+) {
+    fun parseSpecialties(): List<String> {
+        val list = mutableListOf<String>()
+        try {
+            val arr = JSONArray(specialtiesJson)
+            for (i in 0 until arr.length()) {
+                list.add(arr.getString(i))
+            }
+        } catch (_: Exception) {}
+        return list
+    }
 
+    val isLeadershipRole: Boolean
+        get() = role in listOf("OWNER", "ADMIN", "INSTRUCTOR", "DIVE_LEADER")
+
+    val isTechRole: Boolean
+        get() = role in listOf("OWNER", "ADMIN", "TECH_MANAGER")
+}

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.ui.components.LanguageSwitchButton
 import com.example.ui.components.UserAvatarView
+import com.example.ui.components.WorkspaceSwitcherPill
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.screens.documents.DocumentsVaultScreen
@@ -146,6 +147,12 @@ fun InstructorEnvironment(
                     }
                 },
                 actions = {
+                    // Workspace / Organization Switcher
+                    WorkspaceSwitcherPill(
+                        viewModel = viewModel,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+
                     // Language Switcher (EN / DE)
                     LanguageSwitchButton(
                         currentLanguage = currentLanguage,

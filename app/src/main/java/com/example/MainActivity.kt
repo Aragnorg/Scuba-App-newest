@@ -19,6 +19,7 @@ import com.example.ui.screens.PresentationViewerScreen
 import com.example.ui.screens.QuizExamScreen
 import com.example.ui.screens.StudentEnvironment
 import com.example.ui.screens.VideoPlayerScreen
+import com.example.ui.screens.diveops.DiveOpsScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.AquaViewModel
 import com.example.ui.viewmodel.AuthState
@@ -57,6 +58,7 @@ fun AquaApp(viewModel: AquaViewModel = viewModel()) {
     ) {
         val authState by viewModel.authState.collectAsState()
         val currentUser by viewModel.currentUser.collectAsState()
+        val currentOrg by viewModel.currentOrganization.collectAsState()
 
         val activePres by viewModel.activePresentation.collectAsState()
         val activeVid by viewModel.activeVideo.collectAsState()
@@ -88,7 +90,11 @@ fun AquaApp(viewModel: AquaViewModel = viewModel()) {
                     quiz = activeQz!!
                 )
             }
-            // 3. Environment Segregation based on Account Role
+            // 3. Multi-Tenant DiveOps & OrgFlow Mission Control Mode
+            currentOrg != null -> {
+                DiveOpsScreen(viewModel = viewModel)
+            }
+            // 4. Environment Segregation based on Account Role
             currentUser?.role == "INSTRUCTOR" -> {
                 InstructorEnvironment(viewModel = viewModel)
             }

@@ -6,6 +6,8 @@ import com.example.data.model.DiverDocumentEntity
 import com.example.data.model.DiveLogEntity
 import com.example.data.model.Flashcard
 import com.example.data.model.LearningVideoEntity
+import com.example.data.model.OrganizationEntity
+import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.StudentRosterEntity
@@ -35,6 +37,69 @@ class DivingRepository(private val divingDao: DivingDao) {
     val allStudents: Flow<List<StudentRosterEntity>> = divingDao.getAllStudents()
     val activeStudents: Flow<List<StudentRosterEntity>> = divingDao.getActiveStudents()
     val pastStudents: Flow<List<StudentRosterEntity>> = divingDao.getPastStudents()
+
+    // Multi-tenant Organizations & DiveOps Flows
+    val allOrganizations: Flow<List<OrganizationEntity>> = divingDao.getAllOrganizations()
+
+    fun getOrganizationById(id: String): Flow<OrganizationEntity?> =
+        divingDao.getOrganizationById(id)
+
+    suspend fun getOrganizationByIdDirect(id: String): OrganizationEntity? =
+        divingDao.getOrganizationByIdDirect(id)
+
+    suspend fun insertOrganization(organization: OrganizationEntity) {
+        divingDao.insertOrganization(organization)
+    }
+
+    suspend fun updateOrganization(organization: OrganizationEntity) {
+        divingDao.updateOrganization(organization)
+    }
+
+    suspend fun deleteOrganization(id: String) {
+        divingDao.deleteOrganization(id)
+    }
+
+    fun getMembersForOrganization(orgId: String): Flow<List<OrganizationMemberEntity>> =
+        divingDao.getMembersForOrganization(orgId)
+
+    fun getActiveMembersForOrganization(orgId: String): Flow<List<OrganizationMemberEntity>> =
+        divingDao.getActiveMembersForOrganization(orgId)
+
+    fun getMemberById(id: String): Flow<OrganizationMemberEntity?> =
+        divingDao.getMemberById(id)
+
+    suspend fun getMemberByIdDirect(id: String): OrganizationMemberEntity? =
+        divingDao.getMemberByIdDirect(id)
+
+    suspend fun getMemberByOrgAndUserDirect(orgId: String, userId: String): OrganizationMemberEntity? =
+        divingDao.getMemberByOrgAndUserDirect(orgId, userId)
+
+    fun getMembershipsForUser(userId: String): Flow<List<OrganizationMemberEntity>> =
+        divingDao.getMembershipsForUser(userId)
+
+    suspend fun insertMember(member: OrganizationMemberEntity) {
+        divingDao.insertMember(member)
+    }
+
+    suspend fun updateMember(member: OrganizationMemberEntity) {
+        divingDao.updateMember(member)
+    }
+
+    suspend fun updateMemberRole(id: String, role: String) {
+        divingDao.updateMemberRole(id, role)
+    }
+
+    suspend fun updateMemberStatus(id: String, status: String) {
+        divingDao.updateMemberStatus(id, status)
+    }
+
+    suspend fun updateMemberTtu(id: String, docId: String?, expiryDate: String?, doctorName: String?) {
+        divingDao.updateMemberTtu(id, docId, expiryDate, doctorName)
+    }
+
+    suspend fun deleteMember(id: String) {
+        divingDao.deleteMember(id)
+    }
 
     // Dive Logbook Flows & Operations
     val allDiveLogs: Flow<List<DiveLogEntity>> = divingDao.getAllDiveLogs()
@@ -596,6 +661,7 @@ class DivingRepository(private val divingDao: DivingDao) {
         seedStudentsAndAccountsIfEmpty()
         seedDiveLogsIfEmpty()
         seedDocumentsIfEmpty()
+        seedOrganizationsIfEmpty()
     }
 
     private suspend fun ensureSpecialtyContentsSeeded() {
@@ -1256,6 +1322,237 @@ class DivingRepository(private val divingDao: DivingDao) {
                 role = "STUDENT"
             )
             divingDao.insertUserAccount(studentAccount)
+        }
+    }
+
+    private suspend fun seedOrganizationsIfEmpty() {
+        val existingOrgs = divingDao.getAllOrganizations().firstOrNull()
+        if (existingOrgs.isNullOrEmpty()) {
+            // Organization 1: Tauchverein (CLUB)
+            val emergencyClubJson = JSONObject().apply {
+                put("nearestChamber", "Druckkammerzentrum Überlingen / Helios Spital (Tel: +49 7551 8370)")
+                put("emergencyPhone", "+49 112 (DLRG / Wasserwacht)")
+                put("gpsEvacuationPoint", "47.7667° N, 9.1702° E (Bootsrampe Ost)")
+                put("o2KitLocation", "Vereinsheim Regatta & Einsatzanhänger")
+            }.toString()
+
+            val club = OrganizationEntity(
+                id = "org_club_delphin",
+                name = "Tauchclub Delphin Bodensee e.V.",
+                logoUri = "",
+                orgType = "CLUB",
+                affiliations = "VDST, CMAS, BLTV",
+                location = "Überlingen am Bodensee, Deutschland",
+                waterBody = "Bodensee / Überlinger See",
+                contactEmail = "vorstand@tc-delphin-bodensee.de",
+                contactPhone = "+49 7551 987654",
+                website = "www.tc-delphin-bodensee.de",
+                emergencyPlanJson = emergencyClubJson,
+                activeMembersCount = 4,
+                createdAt = System.currentTimeMillis() - (180 * 86400000L)
+            )
+
+            // Organization 2: Kommerzielle Tauchbasis / Safari (DIVE_CENTER)
+            val emergencyCenterJson = JSONObject().apply {
+                put("nearestChamber", "Sharm Medical Hyperbaric Center, Dr. Adel Taher (VHF Ch 16 / Tel: +20 69 366 0922)")
+                put("emergencyPhone", "+20 122 218 4800 (Red Sea SAR)")
+                put("gpsEvacuationPoint", "27.8585° N, 34.3218° E (Sharm Marina Jetty 4)")
+                put("o2KitLocation", "Speedboat 1, Safari-Yacht Horizon, Dive Center Counter")
+            }.toString()
+
+            val diveCenter = OrganizationEntity(
+                id = "org_center_blue_horizon",
+                name = "Blue Horizon Dive Resort & Liveaboard",
+                logoUri = "",
+                orgType = "DIVE_CENTER",
+                affiliations = "PADI 5-Star CDC, SSI Diamond Center, DAN Partner",
+                location = "Sharm El Sheikh, Süd-Sinai, Ägypten",
+                waterBody = "Rotes Meer / Ras Mohammed / Straits of Tiran",
+                contactEmail = "ops@bluehorizon-dive.com",
+                contactPhone = "+20 69 360 4420",
+                website = "www.bluehorizon-dive.com",
+                emergencyPlanJson = emergencyCenterJson,
+                activeMembersCount = 3,
+                createdAt = System.currentTimeMillis() - (365 * 86400000L)
+            )
+
+            divingDao.insertOrganization(club)
+            divingDao.insertOrganization(diveCenter)
+
+            // Members for Club Delphin
+            val clubMembers = listOf(
+                OrganizationMemberEntity(
+                    id = "mem_delphin_adrian",
+                    orgId = "org_club_delphin",
+                    userId = "usr_adrian_instructor",
+                    fullName = "Adrian Scheid",
+                    email = "adrian.scheid01@gmail.com",
+                    phoneNumber = "+49 170 1234567",
+                    role = "OWNER",
+                    membershipNumber = "TCD-001",
+                    joinedDate = "2022-01-15",
+                    status = "ACTIVE",
+                    certLevel = "CMAS *** / PADI OWSI",
+                    totalLoggedDives = 340,
+                    specialtiesJson = "[\"Nitrox\", \"Drysuit\", \"Deep Diver\", \"Wreck\"]",
+                    ttuExpiryDate = "2027-05-20",
+                    ttuDoctorName = "Dr. med. Thomas Weber",
+                    emergencyContactName = "Monika Scheid",
+                    emergencyContactPhone = "+49 171 998877",
+                    insuranceProvider = "DAN Europe Sport Silver",
+                    insuranceNumber = "DAN-EUR-883921",
+                    signedWaiverDate = "2026-01-10",
+                    notes = "1. Vorsitzender & TL2"
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_delphin_marcus",
+                    orgId = "org_club_delphin",
+                    userId = "usr_marcus",
+                    fullName = "Marcus Vance",
+                    email = "m.vance@diveclub.net",
+                    phoneNumber = "+49 172 3456789",
+                    role = "TECH_MANAGER",
+                    membershipNumber = "TCD-014",
+                    joinedDate = "2023-03-01",
+                    status = "ACTIVE",
+                    certLevel = "CMAS ** / Silver",
+                    totalLoggedDives = 185,
+                    specialtiesJson = "[\"Equipment Specialist\", \"Compressor Tech\", \"Nitrox\"]",
+                    ttuExpiryDate = "2026-11-05",
+                    ttuDoctorName = "Dr. med. Frank Bauer",
+                    emergencyContactName = "Sarah Vance",
+                    emergencyContactPhone = "+49 172 987654",
+                    insuranceProvider = "AquaMed Dive Card",
+                    insuranceNumber = "AQM-44912",
+                    signedWaiverDate = "2026-02-14",
+                    notes = "Gerätewart Flaschenfüllanlage & Leihmaterial"
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_delphin_leo",
+                    orgId = "org_club_delphin",
+                    userId = "usr_leo_student",
+                    fullName = "Leo Chen",
+                    email = "leo.chen@diver.com",
+                    phoneNumber = "+49 176 8877665",
+                    role = "MEMBER",
+                    membershipNumber = "TCD-089",
+                    joinedDate = "2025-06-01",
+                    status = "ACTIVE",
+                    certLevel = "Open Water Diver (18m)",
+                    totalLoggedDives = 24,
+                    specialtiesJson = "[\"Drysuit\"]",
+                    ttuExpiryDate = "2025-08-10",
+                    ttuDoctorName = "Dr. med. H. Becker",
+                    emergencyContactName = "Mei Chen",
+                    emergencyContactPhone = "+49 176 1122334",
+                    insuranceProvider = "DAN Europe",
+                    insuranceNumber = "DAN-DE-5561",
+                    signedWaiverDate = "2025-06-01",
+                    rentalPreferences = "Jacket M, 7mm suit, 12L Steel",
+                    notes = "Aktives Mitglied, trainiert im Hallenbad"
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_delphin_elena",
+                    orgId = "org_club_delphin",
+                    userId = "usr_elena",
+                    fullName = "Elena Rostova",
+                    email = "elena.r@deepblue.com",
+                    phoneNumber = "+49 173 5544332",
+                    role = "INSTRUCTOR",
+                    membershipNumber = "TCD-028",
+                    joinedDate = "2023-09-15",
+                    status = "ACTIVE",
+                    certLevel = "CMAS *** / Divemaster",
+                    totalLoggedDives = 210,
+                    specialtiesJson = "[\"Deep Diver\", \"Group Leader\", \"First Aid O2\"]",
+                    ttuExpiryDate = "2027-02-15",
+                    ttuDoctorName = "Dr. med. Thomas Weber",
+                    emergencyContactName = "Pavel Rostov",
+                    emergencyContactPhone = "+49 173 119988",
+                    insuranceProvider = "VDST Verbandsversicherung",
+                    insuranceNumber = "VDST-88310",
+                    signedWaiverDate = "2026-01-15",
+                    notes = "Organisiert Mittwochs-Dämmerungstauchen"
+                )
+            )
+
+            // Members for Blue Horizon Dive Resort
+            val centerMembers = listOf(
+                OrganizationMemberEntity(
+                    id = "mem_bh_adrian",
+                    orgId = "org_center_blue_horizon",
+                    userId = "usr_adrian_instructor",
+                    fullName = "Adrian Scheid",
+                    email = "adrian.scheid01@gmail.com",
+                    phoneNumber = "+20 100 876 5432",
+                    role = "OWNER",
+                    membershipNumber = "STAFF-01",
+                    joinedDate = "2021-11-01",
+                    status = "ACTIVE",
+                    certLevel = "PADI Course Director / MSDT",
+                    totalLoggedDives = 1450,
+                    specialtiesJson = "[\"Nitrox Instructor\", \"Trimix\", \"Sidemount\", \"O2 Provider\"]",
+                    ttuExpiryDate = "2027-08-30",
+                    ttuDoctorName = "Dr. Adel Taher (Hyperbaric Doctor)",
+                    emergencyContactName = "Monika Scheid",
+                    emergencyContactPhone = "+49 171 998877",
+                    insuranceProvider = "DAN Pro Worldwide",
+                    insuranceNumber = "DAN-PRO-99120",
+                    signedWaiverDate = "2026-01-01",
+                    notes = "Head of Base Operations & Technical Director"
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_bh_sarah",
+                    orgId = "org_center_blue_horizon",
+                    userId = "usr_sarah",
+                    fullName = "Sarah Connor",
+                    email = "sarah.c@ocean.net",
+                    phoneNumber = "+20 101 234 5678",
+                    role = "INSTRUCTOR",
+                    membershipNumber = "STAFF-04",
+                    joinedDate = "2023-04-10",
+                    status = "ACTIVE",
+                    certLevel = "PADI MSDT #412093",
+                    totalLoggedDives = 780,
+                    specialtiesJson = "[\"Boat Guide\", \"Shark Behavior\", \"Nitrox\", \"Deep\"]",
+                    ttuExpiryDate = "2027-03-10",
+                    ttuDoctorName = "Dr. Adel Taher",
+                    emergencyContactName = "John Connor",
+                    emergencyContactPhone = "+44 7700 900123",
+                    insuranceProvider = "DAN Europe Pro",
+                    insuranceNumber = "DAN-PRO-4412",
+                    signedWaiverDate = "2026-01-05",
+                    notes = "Safari Boat Lead Guide"
+                ),
+                OrganizationMemberEntity(
+                    id = "mem_bh_leo",
+                    orgId = "org_center_blue_horizon",
+                    userId = "usr_leo_student",
+                    fullName = "Leo Chen",
+                    email = "leo.chen@diver.com",
+                    phoneNumber = "+49 176 8877665",
+                    role = "GUEST",
+                    membershipNumber = "GST-2026-88",
+                    joinedDate = "2026-09-18",
+                    status = "ACTIVE",
+                    certLevel = "Advanced Open Water Diver",
+                    totalLoggedDives = 28,
+                    specialtiesJson = "[\"Nitrox\", \"Boat Diver\"]",
+                    ttuExpiryDate = "2026-10-28",
+                    ttuDoctorName = "Dr. med. Thomas Weber",
+                    emergencyContactName = "Mei Chen",
+                    emergencyContactPhone = "+49 176 1122334",
+                    insuranceProvider = "DAN Europe Sport",
+                    insuranceNumber = "DAN-EUR-883921",
+                    signedWaiverDate = "2026-09-18",
+                    rentalPreferences = "BCD Size M, Reg DIN 300, Fins 42-43, 12L Alu",
+                    notes = "Gebucht für Thistlegorm & Ras Mohammed Ausfahrt"
+                )
+            )
+
+            (clubMembers + centerMembers).forEach { member ->
+                divingDao.insertMember(member)
+            }
         }
     }
 

@@ -234,6 +234,63 @@ object DocumentExpirationHelper {
             .sortedByDescending { it.second.urgencyScore }
     }
 
+    fun computeDateExpiration(dateStr: String?, isGerman: Boolean = false): DocumentExpirationInfo {
+        if (dateStr.isNullOrBlank()) {
+            return DocumentExpirationInfo(
+                level = ExpirationAlertLevel.EXPIRED,
+                daysRemaining = null,
+                badgeLabel = if (isGerman) "Keine TTU / Fehlt" else "No Medical / Missing",
+                detailStatusText = if (isGerman) "Kein ärztliches Tauchtauglichkeitsattest hinterlegt." else "No medical fitness document on file.",
+                urgencyScore = 3
+            )
+        }
+        val raw = dateStr.trim()
+        val parsedDate = parseDate(raw)
+        if (parsedDate == null) {
+            return DocumentExpirationInfo(
+                level = ExpirationAlertLevel.LIFETIME,
+                daysRemaining = null,
+                badgeLabel = raw.take(16),
+                detailStatusText = if (isGerman) "Gültigkeit: $raw" else "Validity: $raw",
+                urgencyScore = 0
+            )
+        }
+        val todayCalendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val expiryCalendar = Calendar.getInstance().apply {
+            time = parsedDate
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val diffMillis = expiryCalendar.timeInMillis - todayCalendar.timeInMillis
+        val diffDays = diffMillis / (1000 * 60 * 60 * 24)
+
+        return when {
+            diffDays < 0 -> {
+                val daysAgo = abs(diffDays)
+                val badge = if (isGerman) "Abgelaufen (vor $daysAgo T.)" else "Expired ($daysAgo d ago)"
+                val detail = if (isGerman) "TTU abgelaufen am $raw. Tauchfreigabe ausgesetzt." else "Medical expired on $raw. Diving clearance suspended."
+                DocumentExpirationInfo(ExpirationAlertLevel.EXPIRED, diffDays, badge, detail, 3)
+            }
+            diffDays <= 30 -> {
+                val badge = if (isGerman) "Ablauf in $diffDays T." else "Expires in $diffDays d"
+                val detail = if (isGerman) "TTU läuft in $diffDays Tagen ab ($raw). Erneuerung erforderlich." else "Medical expires in $diffDays days ($raw). Renewal needed."
+                DocumentExpirationInfo(ExpirationAlertLevel.EXPIRING_SOON, diffDays, badge, detail, 2)
+            }
+            else -> {
+                val badge = if (isGerman) "Gültig bis $raw" else "Valid until $raw"
+                val detail = if (isGerman) "Gültig bis $raw ($diffDays Tage verbleibend)." else "Valid through $raw ($diffDays days remaining)."
+                DocumentExpirationInfo(ExpirationAlertLevel.VALID, diffDays, badge, detail, 1)
+            }
+        }
+    }
+
     fun hasUrgentExpirationAlerts(docs: List<DiverDocumentEntity>): Boolean {
         return docs.any {
             val info = computeExpirationInfo(it)

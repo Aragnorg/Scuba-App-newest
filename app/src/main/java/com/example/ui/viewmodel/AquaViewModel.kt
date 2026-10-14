@@ -13,6 +13,8 @@ import com.example.data.model.DiveLogEntity
 import com.example.data.model.DivePushNotification
 import com.example.data.model.Flashcard
 import com.example.data.model.LearningVideoEntity
+import com.example.data.model.OrganizationEntity
+import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.QuizQuestion
@@ -321,8 +323,159 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     val allDiveLogs: StateFlow<List<DiveLogEntity>> = repository.allDiveLogs
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val allPendingDives: StateFlow<List<DiveLogEntity>> = repository.allPendingDives
+    // --- Multi-Tenant Organization & DiveOps State Flows ---
+    val allOrganizations: StateFlow<List<OrganizationEntity>> = repository.allOrganizations
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _currentOrganization = MutableStateFlow<OrganizationEntity?>(null)
+    val currentOrganization: StateFlow<OrganizationEntity?> = _currentOrganization.asStateFlow()
+
+    private val _currentOrgMembers = MutableStateFlow<List<OrganizationMemberEntity>>(emptyList())
+    val currentOrgMembers: StateFlow<List<OrganizationMemberEntity>> = _currentOrgMembers.asStateFlow()
+
+    private var orgMembersJob: kotlinx.coroutines.Job? = null
+
+    fun selectOrganization(org: OrganizationEntity?) {
+        _currentOrganization.value = org
+        orgMembersJob?.cancel()
+        if (org != null) {
+            orgMembersJob = viewModelScope.launch {
+                repository.getMembersForOrganization(org.id).collect { members ->
+                    _currentOrgMembers.value = members
+                }
+            }
+        } else {
+            _currentOrgMembers.value = emptyList()
+        }
+    }
+
+    fun selectOrganizationById(orgId: String?) {
+        if (orgId == null) {
+            selectOrganization(null)
+            return
+        }
+        val org = allOrganizations.value.find { it.id == orgId }
+        selectOrganization(org)
+    }
+
+    fun createOrganization(
+        name: String,
+        orgType: String,
+        affiliations: String = "",
+        location: String = "",
+        waterBody: String = "",
+        contactEmail: String = "",
+        contactPhone: String = "",
+        website: String = "",
+        emergencyPlanJson: String = ""
+    ) {
+        val newOrg = OrganizationEntity(
+            id = "org_${UUID.randomUUID().toString().take(8)}",
+            name = name.trim(),
+            logoUri = "",
+            orgType = orgType,
+            affiliations = affiliations.trim(),
+            location = location.trim(),
+            waterBody = waterBody.trim(),
+            contactEmail = contactEmail.trim(),
+            contactPhone = contactPhone.trim(),
+            website = website.trim(),
+            emergencyPlanJson = emergencyPlanJson.ifBlank {
+                JSONObject().apply {
+                    put("nearestChamber", "Lokales Druckkammerzentrum")
+                    put("emergencyPhone", "112 / DAN HotLine")
+                    put("gpsEvacuationPoint", "Basis Bootssteg")
+                    put("o2KitLocation", "Basis Tresen")
+                }.toString()
+            },
+            activeMembersCount = 1,
+            createdAt = System.currentTimeMillis()
+        )
+        viewModelScope.launch {
+            repository.insertOrganization(newOrg)
+            val user = _currentUser.value
+            val ownerMember = OrganizationMemberEntity(
+                id = "mem_${UUID.randomUUID().toString().take(8)}",
+                orgId = newOrg.id,
+                userId = user?.id ?: "usr_adrian_instructor",
+                fullName = user?.fullName ?: "Adrian Scheid",
+                email = user?.email ?: "adrian.scheid01@gmail.com",
+                phoneNumber = "",
+                role = "OWNER",
+                membershipNumber = if (newOrg.isClub) "V-001" else "STAFF-01",
+                joinedDate = java.time.LocalDate.now().toString(),
+                status = "ACTIVE",
+                certLevel = "Course Director / TL3",
+                totalLoggedDives = 350,
+                ttuExpiryDate = "2027-12-31"
+            )
+            repository.insertMember(ownerMember)
+            selectOrganization(newOrg)
+        }
+    }
+
+    fun addOrganizationMember(
+        fullName: String,
+        email: String,
+        role: String,
+        certLevel: String = "Open Water Diver",
+        phoneNumber: String = "",
+        membershipNumber: String = "",
+        ttuExpiryDate: String? = null,
+        notes: String = ""
+    ) {
+        val currentOrg = _currentOrganization.value ?: return
+        val newMember = OrganizationMemberEntity(
+            id = "mem_${UUID.randomUUID().toString().take(8)}",
+            orgId = currentOrg.id,
+            userId = "",
+            fullName = fullName.trim(),
+            email = email.trim(),
+            phoneNumber = phoneNumber.trim(),
+            role = role,
+            membershipNumber = membershipNumber.ifBlank { "M-${(10..99).random()}" },
+            joinedDate = java.time.LocalDate.now().toString(),
+            status = "ACTIVE",
+            certLevel = certLevel.trim(),
+            totalLoggedDives = 0,
+            ttuExpiryDate = ttuExpiryDate,
+            notes = notes.trim()
+        )
+        viewModelScope.launch {
+            repository.insertMember(newMember)
+            repository.updateOrganization(
+                currentOrg.copy(activeMembersCount = currentOrg.activeMembersCount + 1)
+            )
+        }
+    }
+
+    fun updateMemberRole(memberId: String, newRole: String) {
+        viewModelScope.launch {
+            repository.updateMemberRole(memberId, newRole)
+        }
+    }
+
+    fun updateMemberStatus(memberId: String, newStatus: String) {
+        viewModelScope.launch {
+            repository.updateMemberStatus(memberId, newStatus)
+        }
+    }
+
+    fun updateMemberTtu(memberId: String, docId: String?, expiryDate: String?, doctorName: String?) {
+        viewModelScope.launch {
+            repository.updateMemberTtu(memberId, docId, expiryDate, doctorName)
+        }
+    }
+
+    fun removeOrganizationMember(memberId: String) {
+        val currentOrg = _currentOrganization.value ?: return
+        viewModelScope.launch {
+            repository.deleteMember(memberId)
+            repository.updateOrganization(
+                currentOrg.copy(activeMembersCount = maxOf(0, currentOrg.activeMembersCount - 1))
+            )
+        }
+    }
 
     // --- Diver Documents Vault State Flows & Operations ---
     val allDocuments: StateFlow<List<DiverDocumentEntity>> = repository.allDocuments

@@ -1,0 +1,1579 @@
+package com.example.ui.screens.diveops
+
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContactPhone
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Emergency
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Water
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.data.model.OrganizationEntity
+import com.example.data.model.OrganizationMemberEntity
+import com.example.ui.components.LanguageSwitchButton
+import com.example.ui.components.WorkspaceSwitcherPill
+import com.example.ui.i18n.AppLanguage
+import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
+import com.example.ui.theme.AquaCyan
+import com.example.ui.theme.DepthNavy
+import com.example.ui.theme.OceanPrimary
+import com.example.ui.theme.SeaGreen
+import com.example.ui.viewmodel.AquaViewModel
+import com.example.util.DocumentExpirationHelper
+import com.example.util.ExpirationAlertLevel
+import org.json.JSONObject
+
+/**
+ * DiveOps & OrgFlow Mission Control:
+ * Universal Multi-Tenant Management Platform for Diving Organizations:
+ * 1. Dive Clubs (Tauchvereine e.V.)
+ * 2. Commercial Dive Centers & Resorts (Tauchbasen)
+ * 3. Dive Schools & Trip/Safari Operators
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DiveOpsScreen(
+    viewModel: AquaViewModel,
+    modifier: Modifier = Modifier
+) {
+    val currentOrg by viewModel.currentOrganization.collectAsState()
+    val members by viewModel.currentOrgMembers.collectAsState()
+    val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
+
+    // If no organization is selected, return to personal mode
+    if (currentOrg == null) {
+        return
+    }
+    val org = currentOrg!!
+
+    // Back button returns to Personal Diver profile mode
+    BackHandler {
+        viewModel.selectOrganization(null)
+    }
+
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedRoleFilter by remember { mutableStateOf("ALL") }
+    var showEmergencyDialog by remember { mutableStateOf(false) }
+    var showAddMemberDialog by remember { mutableStateOf(false) }
+    var memberToEditTtu by remember { mutableStateOf<OrganizationMemberEntity?>(null) }
+    var memberToChangeRole by remember { mutableStateOf<OrganizationMemberEntity?>(null) }
+    var memberToDelete by remember { mutableStateOf<OrganizationMemberEntity?>(null) }
+
+    // TTU Traffic Light Statistics
+    val ttuStats = remember(members, isGerman) {
+        var validCount = 0
+        var expiringSoonCount = 0
+        var expiredCount = 0
+        members.forEach { m ->
+            val info = DocumentExpirationHelper.computeDateExpiration(m.ttuExpiryDate, isGerman)
+            when (info.level) {
+                ExpirationAlertLevel.VALID -> validCount++
+                ExpirationAlertLevel.EXPIRING_SOON -> expiringSoonCount++
+                ExpirationAlertLevel.EXPIRED, ExpirationAlertLevel.LIFETIME -> {
+                    if (m.ttuExpiryDate.isNullOrBlank() || info.level == ExpirationAlertLevel.EXPIRED) {
+                        expiredCount++
+                    } else {
+                        validCount++
+                    }
+                }
+            }
+        }
+        Triple(validCount, expiringSoonCount, expiredCount)
+    }
+
+    // Filter members
+    val filteredMembers = remember(members, searchQuery, selectedRoleFilter) {
+        members.filter { m ->
+            val matchesSearch = searchQuery.isBlank() ||
+                m.fullName.contains(searchQuery, ignoreCase = true) ||
+                m.email.contains(searchQuery, ignoreCase = true) ||
+                m.membershipNumber.contains(searchQuery, ignoreCase = true) ||
+                m.certLevel.contains(searchQuery, ignoreCase = true)
+
+            val matchesRole = when (selectedRoleFilter) {
+                "ALL" -> true
+                "OWNER" -> m.role == "OWNER"
+                "INSTRUCTOR" -> m.role == "INSTRUCTOR"
+                "TECH_MANAGER" -> m.role == "TECH_MANAGER"
+                "MEMBER_GUEST" -> m.role == "MEMBER" || m.role == "GUEST"
+                else -> true
+            }
+            matchesSearch && matchesRole
+        }
+    }
+
+    val primaryAccentColor = if (org.isClub) SeaGreen else OceanPrimary
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        WorkspaceSwitcherPill(viewModel = viewModel)
+                    }
+                },
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 6.dp)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = primaryAccentColor.copy(alpha = 0.15f)
+                        ) {
+                            Text(
+                                text = if (org.isClub) "CLUB" else "BASE",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = primaryAccentColor
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    // Language Switcher
+                    LanguageSwitchButton(
+                        currentLanguage = currentLanguage,
+                        onLanguageChange = { viewModel.setLanguage(it) },
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+
+                    // Return to Personal Profile
+                    IconButton(
+                        onClick = { viewModel.selectOrganization(null) },
+                        modifier = Modifier.testTag("exit_diveops_btn")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = strings.personalDiverProfile,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+                // 1. Organization Hero & Emergency Action Card
+                OrgHeroBanner(
+                    organization = org,
+                    primaryAccentColor = primaryAccentColor,
+                    onOpenEmergencyPlan = { showEmergencyDialog = true }
+                )
+            }
+
+            item {
+                // 2. Safety Gate & TTU Traffic Light Dashboard
+                SafetyGateTrafficLightBar(
+                    validCount = ttuStats.first,
+                    expiringSoonCount = ttuStats.second,
+                    expiredCount = ttuStats.third,
+                    totalCount = members.size,
+                    strings = strings
+                )
+            }
+
+            item {
+                // 3. Search and Role Filter Chips
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        placeholder = {
+                            Text(
+                                if (org.isClub) "Mitglied, Brevet, E-Mail suchen..." else "Kunde, Gast, Brevet suchen..."
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Search, contentDescription = null, tint = primaryAccentColor)
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotBlank()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("diveops_search_field"),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
+
+                    // Role filter chips
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        FilterChip(
+                            selected = selectedRoleFilter == "ALL",
+                            onClick = { selectedRoleFilter = "ALL" },
+                            label = { Text("Alle (${members.size})", fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
+                                selectedLabelColor = primaryAccentColor
+                            )
+                        )
+                        FilterChip(
+                            selected = selectedRoleFilter == "OWNER",
+                            onClick = { selectedRoleFilter = "OWNER" },
+                            label = { Text(if (org.isClub) "Vorstand" else "Leitung", fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
+                                selectedLabelColor = primaryAccentColor
+                            )
+                        )
+                        FilterChip(
+                            selected = selectedRoleFilter == "INSTRUCTOR",
+                            onClick = { selectedRoleFilter = "INSTRUCTOR" },
+                            label = { Text(if (org.isClub) "Ausbilder" else "Guides", fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
+                                selectedLabelColor = primaryAccentColor
+                            )
+                        )
+                        FilterChip(
+                            selected = selectedRoleFilter == "TECH_MANAGER",
+                            onClick = { selectedRoleFilter = "TECH_MANAGER" },
+                            label = { Text(if (org.isClub) "Gerätewart" else "Technik", fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
+                                selectedLabelColor = primaryAccentColor
+                            )
+                        )
+                        FilterChip(
+                            selected = selectedRoleFilter == "MEMBER_GUEST",
+                            onClick = { selectedRoleFilter = "MEMBER_GUEST" },
+                            label = { Text(if (org.isClub) "Mitglieder" else "Gäste", fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
+                                selectedLabelColor = primaryAccentColor
+                            )
+                        )
+                    }
+                }
+            }
+
+            item {
+                // Roster Section Header with Add Member Button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = if (org.isClub) strings.rosterTitleClub else strings.rosterTitleCenter,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "${filteredMembers.size} Personen erfasst",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    Button(
+                        onClick = { showAddMemberDialog = true },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(if (org.isClub) "+ Mitglied" else "+ Gast/Diver", fontSize = 12.sp)
+                    }
+                }
+            }
+
+            // 4. Member Cards List
+            if (filteredMembers.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("🔍", fontSize = 28.sp)
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Keine Personen gefunden",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Passe die Filter oder den Suchbegriff an.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            } else {
+                items(filteredMembers, key = { it.id }) { member ->
+                    MemberRosterCard(
+                        member = member,
+                        organization = org,
+                        isGerman = isGerman,
+                        onUpdateTtu = { memberToEditTtu = member },
+                        onChangeRole = { memberToChangeRole = member },
+                        onDelete = { memberToDelete = member }
+                    )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(30.dp))
+            }
+        }
+    }
+
+    // --- Dialogs ---
+
+    // 1. Emergency Dossier Dialog
+    if (showEmergencyDialog) {
+        EmergencyPlanDialog(
+            organization = org,
+            onDismiss = { showEmergencyDialog = false }
+        )
+    }
+
+    // 2. Add Member Dialog
+    if (showAddMemberDialog) {
+        AddOrganizationMemberDialog(
+            organization = org,
+            onDismiss = { showAddMemberDialog = false },
+            onConfirm = { name, email, role, cert, phone, number, ttuDate, notes ->
+                viewModel.addOrganizationMember(
+                    fullName = name,
+                    email = email,
+                    role = role,
+                    certLevel = cert,
+                    phoneNumber = phone,
+                    membershipNumber = number,
+                    ttuExpiryDate = ttuDate,
+                    notes = notes
+                )
+                showAddMemberDialog = false
+            }
+        )
+    }
+
+    // 3. Update TTU Dialog
+    if (memberToEditTtu != null) {
+        UpdateTtuDialog(
+            member = memberToEditTtu!!,
+            onDismiss = { memberToEditTtu = null },
+            onConfirm = { expiryDate, doctorName ->
+                viewModel.updateMemberTtu(
+                    memberId = memberToEditTtu!!.id,
+                    docId = null,
+                    expiryDate = expiryDate,
+                    doctorName = doctorName
+                )
+                memberToEditTtu = null
+            }
+        )
+    }
+
+    // 4. Change Role Dialog
+    if (memberToChangeRole != null) {
+        ChangeMemberRoleDialog(
+            member = memberToChangeRole!!,
+            isClub = org.isClub,
+            onDismiss = { memberToChangeRole = null },
+            onConfirm = { newRole ->
+                viewModel.updateMemberRole(memberToChangeRole!!.id, newRole)
+                memberToChangeRole = null
+            }
+        )
+    }
+
+    // 5. Delete Member Confirm Dialog
+    if (memberToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { memberToDelete = null },
+            title = { Text("Person entfernen") },
+            text = {
+                Text("Möchtest du '${memberToDelete!!.fullName}' wirklich aus dieser Organisation entfernen?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.removeOrganizationMember(memberToDelete!!.id)
+                        memberToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
+                ) {
+                    Text("Entfernen")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { memberToDelete = null }) {
+                    Text("Abbrechen")
+                }
+            }
+        )
+    }
+}
+
+/**
+ * Organization Header Hero Banner:
+ * Displays organization identity, associations, region, and fast emergency plan access.
+ */
+@Composable
+fun OrgHeroBanner(
+    organization: OrganizationEntity,
+    primaryAccentColor: Color,
+    onOpenEmergencyPlan: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, primaryAccentColor.copy(alpha = 0.35f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = primaryAccentColor.copy(alpha = 0.15f),
+                    modifier = Modifier.size(46.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = if (organization.isClub) "🏛️" else "⚓",
+                            fontSize = 24.sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = organization.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = if (organization.isClub) "Eingetragener Tauchverein (e.V.)" else "Kommerzielle Tauchbasis & Resort",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = primaryAccentColor,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            // Region & Water Body
+            if (organization.waterBody.isNotBlank() || organization.location.isNotBlank()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 2.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Water,
+                        contentDescription = null,
+                        tint = primaryAccentColor,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = listOf(organization.waterBody, organization.location).filter { it.isNotBlank() }.joinToString(" • "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Affiliations & Emergency Action Button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (organization.affiliations.isNotBlank()) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    ) {
+                        Text(
+                            text = "Verband: ${organization.affiliations}",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.width(1.dp))
+                }
+
+                // Emergency Plan Dossier Button
+                Button(
+                    onClick = onOpenEmergencyPlan,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Emergency,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "🚨 Notfallplan",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Safety Gate Traffic Light KPI Bar:
+ * Prominently surfaces TTU compliance: Valid (Green), Expiring in <30d (Yellow), Expired (Red).
+ */
+@Composable
+fun SafetyGateTrafficLightBar(
+    validCount: Int,
+    expiringSoonCount: Int,
+    expiredCount: Int,
+    totalCount: Int,
+    strings: com.example.ui.i18n.Strings
+) {
+    Card(
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.HealthAndSafety,
+                        contentDescription = null,
+                        tint = if (expiredCount > 0) Color(0xFFE53E3E) else SeaGreen,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = strings.ttuComplianceStatus,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Text(
+                    text = "$validCount von $totalCount freigegeben",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Traffic Light Chips Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Green: Valid
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFF38A169).copy(alpha = 0.12f),
+                    border = BorderStroke(1.dp, Color(0xFF38A169)),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "$validCount",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF276749)
+                        )
+                        Text(
+                            text = "🟢 Gültig",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF276749)
+                        )
+                    }
+                }
+
+                // Yellow: Expiring Soon
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFFD69E2E).copy(alpha = 0.12f),
+                    border = BorderStroke(1.dp, Color(0xFFD69E2E)),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "$expiringSoonCount",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFB7791F)
+                        )
+                        Text(
+                            text = "🟡 <30 Tage",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFB7791F)
+                        )
+                    }
+                }
+
+                // Red: Expired / Missing
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFFE53E3E).copy(alpha = 0.12f),
+                    border = BorderStroke(1.dp, Color(0xFFE53E3E)),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "$expiredCount",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFC53030)
+                        )
+                        Text(
+                            text = "🔴 Abgelaufen",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFC53030)
+                        )
+                    }
+                }
+            }
+
+            // Safety Gate Active Alert
+            if (expiredCount > 0) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFFE53E3E).copy(alpha = 0.12f),
+                    border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = Color(0xFFE53E3E),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "⛔ Safety Gate: $expiredCount Person(en) ohne gültige TTU gesperrt für Tief-/Bootsausfahrten!",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFC53030)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Member Roster Card:
+ * Displays full diver profile, role pill, brevet, TTU traffic-light status, and management actions.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MemberRosterCard(
+    member: OrganizationMemberEntity,
+    organization: OrganizationEntity,
+    isGerman: Boolean,
+    onUpdateTtu: () -> Unit,
+    onChangeRole: () -> Unit,
+    onDelete: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val isClub = organization.isClub
+
+    // TTU Expiration Analysis
+    val ttuInfo = remember(member.ttuExpiryDate, isGerman) {
+        DocumentExpirationHelper.computeDateExpiration(member.ttuExpiryDate, isGerman)
+    }
+
+    val roleColor = when (member.role) {
+        "OWNER" -> Color(0xFF805AD5)
+        "INSTRUCTOR" -> OceanPrimary
+        "TECH_MANAGER" -> Color(0xFFDD6B20)
+        else -> SeaGreen
+    }
+
+    val roleTitle = when (member.role) {
+        "OWNER" -> if (isClub) "Vereinsvorstand" else "Basisleiter"
+        "INSTRUCTOR" -> if (isClub) "Tauchgruppenleiter" else "Senior Guide / TL"
+        "TECH_MANAGER" -> if (isClub) "Gerätewart" else "Basistechniker"
+        "GUEST" -> "Kunde / Gast"
+        else -> if (isClub) "Vereinsmitglied" else "Gasttaucher"
+    }
+
+    val ttuColor = when (ttuInfo.level) {
+        ExpirationAlertLevel.VALID -> Color(0xFF2F855A)
+        ExpirationAlertLevel.EXPIRING_SOON -> Color(0xFFD69E2E)
+        ExpirationAlertLevel.EXPIRED, ExpirationAlertLevel.LIFETIME -> {
+            if (member.ttuExpiryDate.isNullOrBlank() || ttuInfo.level == ExpirationAlertLevel.EXPIRED) {
+                Color(0xFFE53E3E)
+            } else {
+                Color(0xFF2F855A)
+            }
+        }
+    }
+
+    Card(
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(
+            width = if (ttuInfo.level == ExpirationAlertLevel.EXPIRED) 1.5.dp else 1.dp,
+            color = if (ttuInfo.level == ExpirationAlertLevel.EXPIRED) Color(0xFFE53E3E).copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Header Row: Avatar, Name, Role Badge, Expand Toggle
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = roleColor.copy(alpha = 0.15f),
+                    border = BorderStroke(1.5.dp, roleColor),
+                    modifier = Modifier.size(42.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = member.fullName.take(1).uppercase(),
+                            fontWeight = FontWeight.ExtraBold,
+                            color = roleColor,
+                            fontSize = 18.sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = member.fullName,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = roleColor.copy(alpha = 0.15f)
+                        ) {
+                            Text(
+                                text = roleTitle,
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = roleColor
+                            )
+                        }
+                    }
+                    Text(
+                        text = "ID: ${member.membershipNumber} • ${member.email}",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                IconButton(
+                    onClick = { expanded = !expanded },
+                    modifier = Modifier.size(28.dp)
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Expand",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Brevet & Logged Dives Pill Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = OceanPrimary.copy(alpha = 0.12f)
+                ) {
+                    Text(
+                        text = "🤿 ${member.certLevel}",
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = OceanPrimary
+                    )
+                }
+                if (member.totalLoggedDives > 0) {
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                    ) {
+                        Text(
+                            text = "${member.totalLoggedDives} Dives",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Specialties pills
+            val specialties = member.parseSpecialties()
+            if (specialties.isNotEmpty()) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    specialties.forEach { spec ->
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        ) {
+                            Text(
+                                text = spec,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 9.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+
+            // TTU / Medical Traffic Light Banner
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = ttuColor.copy(alpha = 0.12f),
+                border = BorderStroke(1.dp, ttuColor.copy(alpha = 0.4f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = when (ttuInfo.level) {
+                                ExpirationAlertLevel.VALID -> "🟢"
+                                ExpirationAlertLevel.EXPIRING_SOON -> "🟡"
+                                else -> "🔴"
+                            },
+                            fontSize = 12.sp
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Column {
+                            Text(
+                                text = ttuInfo.badgeLabel,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = ttuColor
+                            )
+                            if (member.ttuDoctorName.isNotBlank()) {
+                                Text(
+                                    text = "Arzt: ${member.ttuDoctorName}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    // Update TTU button
+                    TextButton(
+                        onClick = onUpdateTtu,
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 6.dp, vertical = 0.dp)
+                    ) {
+                        Text("🩺 TTU anpassen", fontSize = 11.sp, color = ttuColor, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            // Expandable Details (Insurance, Contact, Rental gear, Notes)
+            AnimatedVisibility(
+                visible = expanded,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                    if (member.emergencyContactName.isNotBlank() || member.emergencyContactPhone.isNotBlank()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.ContactPhone, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Notfallkontakt: ${member.emergencyContactName} (${member.emergencyContactPhone})",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    if (member.insuranceProvider.isNotBlank()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Security, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Versicherung: ${member.insuranceProvider} (${member.insuranceNumber})",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    if (member.rentalPreferences.isNotBlank()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Build, contentDescription = null, tint = Color(0xFFDD6B20), modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Leih-Equipment: ${member.rentalPreferences}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    if (member.notes.isNotBlank()) {
+                        Text(
+                            text = "Notizen: ${member.notes}",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    // Management Action Buttons
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedButton(
+                            onClick = onChangeRole,
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(13.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Rolle ändern", fontSize = 11.sp)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = onDelete,
+                            modifier = Modifier.size(30.dp)
+                        ) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Emergency Plan Dossier Dialog:
+ * Shows immediate chamber location, emergency phone with quick-dial, GPS assembly point, and O2 kit.
+ */
+@Composable
+fun EmergencyPlanDialog(
+    organization: OrganizationEntity,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val emergencyJson = try {
+        JSONObject(organization.emergencyPlanJson)
+    } catch (_: Exception) {
+        JSONObject()
+    }
+    val nearestChamber = emergencyJson.optString("nearestChamber", "Lokales Druckkammerzentrum")
+    val emergencyPhone = emergencyJson.optString("emergencyPhone", "112 / DAN Europe +39 06 42118685")
+    val gpsEvacPoint = emergencyJson.optString("gpsEvacuationPoint", organization.location.ifBlank { "Basis Marina" })
+    val o2KitLocation = emergencyJson.optString("o2KitLocation", "Basis Tresen & Notfallkoffer")
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Emergency,
+                    contentDescription = null,
+                    tint = Color(0xFFE53E3E),
+                    modifier = Modifier.size(26.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "🚨 Notfallplan & Rettungskette",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFC53030)
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Operativer Notfallplan für ${organization.name}:",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // 1. Chamber
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            text = "🏥 Nächste Dekompressionskammer:",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = OceanPrimary
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = nearestChamber,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                // 2. Emergency Phone / SAR
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color(0xFFE53E3E).copy(alpha = 0.12f),
+                    border = BorderStroke(1.dp, Color(0xFFE53E3E)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "📞 Notruf / Seenotrettung (SAR):",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFC53030)
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = emergencyPhone,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFFC53030)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_DIAL).apply {
+                                    data = Uri.parse("tel:${emergencyPhone.filter { it.isDigit() || it == '+' }}")
+                                }
+                                context.startActivity(intent)
+                            }
+                        ) {
+                            Icon(Icons.Default.Phone, contentDescription = "Dial", tint = Color(0xFFC53030))
+                        }
+                    }
+                }
+
+                // 3. GPS Evacuation Point
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            text = "📍 Rettungstreffpunkt / Slipstelle:",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = SeaGreen
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = gpsEvacPoint,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                // 4. Oxygen Kit Location
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            text = "🫁 100% Notfall-Sauerstoff (O2-Koffer):",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = DepthNavy
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = o2KitLocation,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Schließen")
+            }
+        }
+    )
+}
+
+/**
+ * Add Organization Member Dialog:
+ * Adds a new diver/guest to the roster with role, TTU date, and membership number.
+ */
+@Composable
+fun AddOrganizationMemberDialog(
+    organization: OrganizationEntity,
+    onDismiss: () -> Unit,
+    onConfirm: (name: String, email: String, role: String, cert: String, phone: String, number: String, ttuDate: String?, notes: String) -> Unit
+) {
+    val isClub = organization.isClub
+    var fullName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var role by remember { mutableStateOf(if (isClub) "MEMBER" else "GUEST") }
+    var certLevel by remember { mutableStateOf("Open Water Diver (18m)") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var membershipNumber by remember { mutableStateOf("") }
+    var ttuExpiryDate by remember { mutableStateOf("2027-05-15") }
+    var notes by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (isClub) "Mitglied anlegen" else "Kunde / Gast anlegen") },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Vollständiger Name *") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("E-Mail-Adresse *") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = phoneNumber,
+                    onValueChange = { phoneNumber = it },
+                    label = { Text("Telefonnummer") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = membershipNumber,
+                    onValueChange = { membershipNumber = it },
+                    label = { Text(if (isClub) "Mitgliedsnummer" else "Kundennummer / Pass") },
+                    placeholder = { Text(if (isClub) "z.B. TCD-099" else "z.B. GST-4421") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = certLevel,
+                    onValueChange = { certLevel = it },
+                    label = { Text("Brevet-Stufe") },
+                    placeholder = { Text("z.B. CMAS * / OWD / AOWD") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = ttuExpiryDate,
+                    onValueChange = { ttuExpiryDate = it },
+                    label = { Text("TTU Ablaufdatum (YYYY-MM-DD)") },
+                    placeholder = { Text("2027-05-15") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Role Selector
+                Text("Rolle auswählen:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    FilterChip(
+                        selected = role == (if (isClub) "MEMBER" else "GUEST"),
+                        onClick = { role = if (isClub) "MEMBER" else "GUEST" },
+                        label = { Text(if (isClub) "Mitglied" else "Gast", fontSize = 11.sp) }
+                    )
+                    FilterChip(
+                        selected = role == "INSTRUCTOR",
+                        onClick = { role = "INSTRUCTOR" },
+                        label = { Text(if (isClub) "Ausbilder" else "Guide", fontSize = 11.sp) }
+                    )
+                    FilterChip(
+                        selected = role == "TECH_MANAGER",
+                        onClick = { role = "TECH_MANAGER" },
+                        label = { Text(if (isClub) "Gerätewart" else "Technik", fontSize = 11.sp) }
+                    )
+                }
+
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text("Notizen") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (errorMessage != null) {
+                    Text(errorMessage!!, color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (fullName.isBlank() || email.isBlank()) {
+                        errorMessage = "Bitte Name und E-Mail ausfüllen."
+                        return@Button
+                    }
+                    onConfirm(fullName, email, role, certLevel, phoneNumber, membershipNumber, ttuExpiryDate, notes)
+                }
+            ) {
+                Text("Speichern")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+        }
+    )
+}
+
+/**
+ * Update TTU Expiry Dialog:
+ * Allows quick updating of medical certificate date and doctor.
+ */
+@Composable
+fun UpdateTtuDialog(
+    member: OrganizationMemberEntity,
+    onDismiss: () -> Unit,
+    onConfirm: (expiryDate: String, doctorName: String) -> Unit
+) {
+    var expiryDate by remember { mutableStateOf(member.ttuExpiryDate ?: "2027-06-30") }
+    var doctorName by remember { mutableStateOf(member.ttuDoctorName.ifBlank { "Dr. med. Thomas Weber" }) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("🩺 TTU / Attest aktualisieren") },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "Tauchtauglichkeitsuntersuchung (TTU) für ${member.fullName}:",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                OutlinedTextField(
+                    value = expiryDate,
+                    onValueChange = { expiryDate = it },
+                    label = { Text("Neues Ablaufdatum (YYYY-MM-DD)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = doctorName,
+                    onValueChange = { doctorName = it },
+                    label = { Text("Ausstellender Arzt / Praxis") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm(expiryDate, doctorName) }) {
+                Text("Aktualisieren")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+        }
+    )
+}
+
+/**
+ * Change Member Role Dialog:
+ */
+@Composable
+fun ChangeMemberRoleDialog(
+    member: OrganizationMemberEntity,
+    isClub: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (newRole: String) -> Unit
+) {
+    var selectedRole by remember { mutableStateOf(member.role) }
+    val roles = listOf(
+        "OWNER" to if (isClub) "🏛️ Vereinsvorstand / Leitung" else "⚓ Basisleiter / Inhaber",
+        "INSTRUCTOR" to if (isClub) "🤿 Ausbilder / Tauchgruppenleiter" else "🤿 Tauchlehrer / Senior Guide",
+        "TECH_MANAGER" to if (isClub) "🔧 Gerätewart (Flaschen/TÜV)" else "🔧 Basistechniker / Werkstatt",
+        (if (isClub) "MEMBER" else "GUEST") to if (isClub) "🤿 Reguläres Vereinsmitglied" else "🤿 Kunde / Safari-Gast"
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rolle ändern") },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Wähle eine neue Rolle für ${member.fullName}:", style = MaterialTheme.typography.bodySmall)
+                roles.forEach { (roleKey, roleLabel) ->
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (selectedRole == roleKey) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                        ),
+                        border = BorderStroke(1.dp, if (selectedRole == roleKey) OceanPrimary else Color.Transparent),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedRole = roleKey }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = roleLabel,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (selectedRole == roleKey) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.weight(1f)
+                            )
+                            if (selectedRole == roleKey) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm(selectedRole) }) { Text("Übernehmen") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+        }
+    )
+}

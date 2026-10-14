@@ -12,6 +12,8 @@ import com.example.data.model.LearningVideoEntity
 import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.StudentRosterEntity
+import com.example.data.model.OrganizationEntity
+import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.UserAccountEntity
 import com.example.data.model.UserProgressEntity
 import kotlinx.coroutines.flow.Flow
@@ -297,5 +299,70 @@ interface DivingDao {
 
     @Query("UPDATE diver_documents SET approvalStatus = 'REJECTED', approverNotes = :notes WHERE id = :id")
     suspend fun rejectDocument(id: String, notes: String)
+
+    // --- B2B2C Multi-Tenant Organizations (DiveOps) ---
+    @Query("SELECT * FROM organizations ORDER BY name ASC")
+    fun getAllOrganizations(): Flow<List<OrganizationEntity>>
+
+    @Query("SELECT * FROM organizations WHERE id = :id LIMIT 1")
+    fun getOrganizationById(id: String): Flow<OrganizationEntity?>
+
+    @Query("SELECT * FROM organizations WHERE id = :id LIMIT 1")
+    suspend fun getOrganizationByIdDirect(id: String): OrganizationEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrganization(organization: OrganizationEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrganizations(organizations: List<OrganizationEntity>)
+
+    @Update
+    suspend fun updateOrganization(organization: OrganizationEntity)
+
+    @Query("DELETE FROM organizations WHERE id = :id")
+    suspend fun deleteOrganization(id: String)
+
+    // --- Organization Members ---
+    @Query("SELECT * FROM organization_members WHERE orgId = :orgId ORDER BY role ASC, fullName ASC")
+    fun getMembersForOrganization(orgId: String): Flow<List<OrganizationMemberEntity>>
+
+    @Query("SELECT * FROM organization_members WHERE orgId = :orgId AND status = 'ACTIVE' ORDER BY role ASC, fullName ASC")
+    fun getActiveMembersForOrganization(orgId: String): Flow<List<OrganizationMemberEntity>>
+
+    @Query("SELECT * FROM organization_members WHERE id = :id LIMIT 1")
+    fun getMemberById(id: String): Flow<OrganizationMemberEntity?>
+
+    @Query("SELECT * FROM organization_members WHERE id = :id LIMIT 1")
+    suspend fun getMemberByIdDirect(id: String): OrganizationMemberEntity?
+
+    @Query("SELECT * FROM organization_members WHERE orgId = :orgId AND userId = :userId LIMIT 1")
+    fun getMemberByOrgAndUser(orgId: String, userId: String): Flow<OrganizationMemberEntity?>
+
+    @Query("SELECT * FROM organization_members WHERE orgId = :orgId AND userId = :userId LIMIT 1")
+    suspend fun getMemberByOrgAndUserDirect(orgId: String, userId: String): OrganizationMemberEntity?
+
+    @Query("SELECT * FROM organization_members WHERE userId = :userId")
+    fun getMembershipsForUser(userId: String): Flow<List<OrganizationMemberEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMember(member: OrganizationMemberEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMembers(members: List<OrganizationMemberEntity>)
+
+    @Update
+    suspend fun updateMember(member: OrganizationMemberEntity)
+
+    @Query("UPDATE organization_members SET role = :role WHERE id = :id")
+    suspend fun updateMemberRole(id: String, role: String)
+
+    @Query("UPDATE organization_members SET status = :status WHERE id = :id")
+    suspend fun updateMemberStatus(id: String, status: String)
+
+    @Query("UPDATE organization_members SET ttuDocumentId = :docId, ttuExpiryDate = :expiryDate, ttuDoctorName = :doctorName WHERE id = :id")
+    suspend fun updateMemberTtu(id: String, docId: String?, expiryDate: String?, doctorName: String?)
+
+    @Query("DELETE FROM organization_members WHERE id = :id")
+    suspend fun deleteMember(id: String)
 }
 
