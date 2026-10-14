@@ -470,6 +470,15 @@ fun RegisterForm(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
+            Text(
+                text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
+                    "Erstelle dein persönliches Konto mit deiner E-Mail-Adresse (Sporttaucher oder Tauchlehrer/Leitung)."
+                else
+                    "Create your personal account with your email address (Diver or Leadership).",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
             OutlinedTextField(
                 value = fullName,
                 onValueChange = { fullName = it },
@@ -860,7 +869,10 @@ fun EmailVerificationScreen(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Automated Email from Owner",
+                                text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
+                                    "Aktivierungs-E-Mail (Posteingang)"
+                                else
+                                    "Verification Email (Inbox)",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = SeaGreen
@@ -882,12 +894,12 @@ fun EmailVerificationScreen(
 
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
-                            text = "From: ${latestEmailMessage.senderName} <${latestEmailMessage.senderEmail}>",
+                            text = "Von: ${latestEmailMessage.senderName} <${latestEmailMessage.senderEmail}>",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "Subject: ${latestEmailMessage.subject}",
+                            text = "Betreff: ${latestEmailMessage.subject}",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold
                         )
@@ -899,34 +911,59 @@ fun EmailVerificationScreen(
                         shape = RoundedCornerShape(10.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant
                     ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "${strings.verificationCodeLabel}:",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = latestEmailMessage.verificationCode,
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Black,
-                                    fontFamily = FontFamily.Monospace,
-                                    letterSpacing = 4.sp,
-                                    color = OceanPrimary
-                                )
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "${strings.verificationCodeLabel}:",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = latestEmailMessage.verificationCode,
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Black,
+                                        fontFamily = FontFamily.Monospace,
+                                        letterSpacing = 4.sp,
+                                        color = OceanPrimary
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        verificationCode = latestEmailMessage.verificationCode
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = OceanSecondary),
+                                    modifier = Modifier.testTag("autofill_verification_code_button")
+                                ) {
+                                    Text(strings.autofillButton)
+                                }
                             }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // 1-Click Instant Activation
                             Button(
                                 onClick = {
                                     verificationCode = latestEmailMessage.verificationCode
+                                    onVerify(latestEmailMessage.verificationCode)
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = OceanSecondary),
-                                modifier = Modifier.testTag("autofill_verification_code_button")
+                                modifier = Modifier.fillMaxWidth().testTag("instant_activate_button"),
+                                colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                                shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text(strings.autofillButton)
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
+                                        "⚡ 1-Klick Aktivieren & Einloggen"
+                                    else
+                                        "⚡ 1-Click Activate & Sign In",
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }

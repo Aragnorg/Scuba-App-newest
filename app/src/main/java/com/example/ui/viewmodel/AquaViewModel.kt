@@ -61,10 +61,20 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         repository = DivingRepository(database.divingDao())
         viewModelScope.launch {
             repository.checkAndSeedInitialData()
-            val existing = repository.getInitialAccount()
-            if (existing != null) {
-                _currentUser.value = existing
-                _authState.value = AuthState.Authenticated(existing)
+            val savedUserId = prefs.getString("logged_in_user_id", null)
+            if (!savedUserId.isNullOrBlank()) {
+                val user = repository.getUserAccountById(savedUserId)
+                if (user != null && user.isEmailVerified) {
+                    _currentUser.value = user
+                    _authState.value = AuthState.Authenticated(user)
+                } else {
+                    prefs.edit().remove("logged_in_user_id").apply()
+                    _currentUser.value = null
+                    _authState.value = AuthState.LoggedOut
+                }
+            } else {
+                _currentUser.value = null
+                _authState.value = AuthState.LoggedOut
             }
         }
     }
@@ -206,6 +216,7 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             val result = repository.verifyUserEmail(email, code)
             result.fold(
                 onSuccess = { verifiedAccount ->
+                    prefs.edit().putString("logged_in_user_id", verifiedAccount.id).apply()
                     _currentUser.value = verifiedAccount
                     _authState.value = AuthState.Authenticated(verifiedAccount)
                     _authSuccess.value = "Registration finalised! Welcome to AquaLearn, ${verifiedAccount.fullName}."
@@ -246,6 +257,7 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             val result = repository.loginUser(email, passwordPlain)
             result.fold(
                 onSuccess = { account ->
+                    prefs.edit().putString("logged_in_user_id", account.id).apply()
                     _currentUser.value = account
                     _authState.value = AuthState.Authenticated(account)
                 },
@@ -270,11 +282,13 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logout() {
+        prefs.edit().remove("logged_in_user_id").apply()
         _currentUser.value = null
         _authState.value = AuthState.LoggedOut
         _latestVerificationEmail.value = null
         _authError.value = null
         _authSuccess.value = null
+        selectOrganization(null)
     }
 
     fun clearAuthMessages() {

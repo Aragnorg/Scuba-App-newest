@@ -536,6 +536,9 @@ class DivingRepository(private val divingDao: DivingDao) {
 
     // --- Authentication & Email Verification ---
 
+    suspend fun getUserAccountById(id: String): UserAccountEntity? =
+        divingDao.getAccountByIdDirect(id)
+
     suspend fun registerUser(
         email: String,
         passwordPlain: String,
@@ -545,24 +548,49 @@ class DivingRepository(private val divingDao: DivingDao) {
         val cleanEmail = email.trim().lowercase()
         val existing = divingDao.getAccountByEmailDirect(cleanEmail)
         if (existing != null && existing.isEmailVerified) {
-            return Result.failure(Exception("An account with this email already exists. Please log in."))
+            val isSeedAccount = existing.id == "usr_adrian_instructor" || existing.id == "usr_leo_student"
+            if (!isSeedAccount) {
+                return Result.failure(Exception("An account with this email already exists. Please log in."))
+            }
         }
 
         // Generate a 6-digit verification security code
         val verificationCode = (100000..999999).random().toString()
         val accountId = existing?.id ?: "usr_${java.util.UUID.randomUUID().toString().take(8)}"
         val passwordHash = hashPassword(passwordPlain)
-        val determinedRole = if (cleanEmail == "adrian.scheid01@gmail.com") "INSTRUCTOR" else role
+        val determinedRole = role
+        val isInstructor = determinedRole == "INSTRUCTOR"
 
         val newAccount = UserAccountEntity(
             id = accountId,
             email = cleanEmail,
             passwordHash = passwordHash,
-            fullName = fullName.trim().ifBlank { "Diver Candidate" },
+            fullName = fullName.trim().ifBlank { if (isInstructor) "Tauchlehrer" else "Taucher" },
             isEmailVerified = false,
             verificationCode = verificationCode,
             verificationSentAt = System.currentTimeMillis(),
-            role = determinedRole
+            role = determinedRole,
+            phoneNumber = existing?.phoneNumber ?: "",
+            certLevel = existing?.certLevel ?: (if (isInstructor) "CMAS ** / PADI OWSI" else "Open Water Diver (OWD)"),
+            certAgency = existing?.certAgency ?: "VDST / CMAS",
+            licenseNumber = existing?.licenseNumber ?: "",
+            totalLoggedDives = existing?.totalLoggedDives ?: (if (isInstructor) 150 else 0),
+            ttuExpiryDate = existing?.ttuExpiryDate ?: "2027-12-31",
+            ttuDoctorName = existing?.ttuDoctorName ?: "",
+            emergencyContactName = existing?.emergencyContactName ?: "",
+            emergencyContactPhone = existing?.emergencyContactPhone ?: "",
+            insuranceProvider = existing?.insuranceProvider ?: "DAN Europe",
+            insuranceNumber = existing?.insuranceNumber ?: "",
+            suitSize = existing?.suitSize ?: "L (52)",
+            shoeSize = existing?.shoeSize ?: "43",
+            bcdSize = existing?.bcdSize ?: "M",
+            preferredTank = existing?.preferredTank ?: "12L Stahl DIN",
+            instructorAgency = if (isInstructor) (existing?.instructorAgency ?: "VDST / CMAS") else "",
+            instructorLicenseNumber = if (isInstructor) (existing?.instructorLicenseNumber ?: "") else "",
+            instructorLevel = if (isInstructor) (existing?.instructorLevel ?: "Tauchlehrer ** (CMAS **)") else "",
+            teachingSpecialtiesJson = if (isInstructor) (existing?.teachingSpecialtiesJson ?: "[\"Nitrox\", \"Tieftauchen\", \"Trockentauchen\"]") else "[]",
+            instructorValidUntil = if (isInstructor) (existing?.instructorValidUntil ?: "2027-12-31") else "",
+            homeOrganizationName = if (isInstructor) (existing?.homeOrganizationName ?: "") else ""
         )
         divingDao.insertUserAccount(newAccount)
 
@@ -677,26 +705,25 @@ class DivingRepository(private val divingDao: DivingDao) {
         code: String
     ): VerificationEmailMessage {
         val html = """
-            Welcome to AquaLearn Diver Academy, $recipientName!
+            Willkommen bei AquaLearn, $recipientName!
             
-            Thank you for registering for our self-paced diving training program.
-            To complete your registration and activate your student account, please enter the following verification code:
+            Vielen Dank für Ihre Registrierung mit Ihrer E-Mail-Adresse ($recipientEmail).
+            Um Ihr Taucher-Konto zu aktivieren und loszulegen, verwenden Sie bitte Ihren 6-stelligen Aktivierungscode:
             
-            VERIFICATION CODE: $code
+            AKTIVIERUNGSCODE: $code
             
-            Sent automatically by:
-            Adrian Scheid (AquaLearn Academy Owner & Instructor)
-            Email: adrian.scheid01@gmail.com
+            Ihr Konto steht Ihnen anschließend sofort mit vollem Funktionsumfang zur Verfügung.
             
-            Stay safe and dive deep!
+            Gut Luft & Allzeit sicheres Tauchen!
+            Ihr AquaLearn Team
         """.trimIndent()
 
         return VerificationEmailMessage(
-            senderName = "Adrian Scheid (AquaLearn Owner)",
-            senderEmail = "adrian.scheid01@gmail.com",
+            senderName = "AquaLearn Security System",
+            senderEmail = "noreply@aqualearn.app",
             recipientEmail = recipientEmail,
             recipientName = recipientName,
-            subject = "Verify Your AquaLearn Diver Academy Registration",
+            subject = "AquaLearn Aktivierungscode: $code",
             verificationCode = code,
             sentTimestamp = System.currentTimeMillis(),
             emailHtmlBody = html

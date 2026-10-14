@@ -150,6 +150,9 @@ interface DivingDao {
     @Query("SELECT * FROM user_accounts WHERE id = :id LIMIT 1")
     fun getAccountById(id: String): Flow<UserAccountEntity?>
 
+    @Query("SELECT * FROM user_accounts WHERE id = :id LIMIT 1")
+    suspend fun getAccountByIdDirect(id: String): UserAccountEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUserAccount(account: UserAccountEntity)
 

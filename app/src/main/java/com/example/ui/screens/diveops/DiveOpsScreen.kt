@@ -44,11 +44,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.mutableStateOf
 import com.example.ui.components.LanguageSwitchButton
+import com.example.ui.components.UserAvatarView
 import com.example.ui.components.WorkspaceSwitcherPill
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
+import com.example.ui.screens.profile.ProfileMenuModal
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
 import com.example.ui.viewmodel.AquaViewModel
@@ -89,7 +92,15 @@ fun DiveOpsScreen(
     }
 
     var selectedTab by remember { mutableIntStateOf(0) }
+    var showProfileModal by remember { mutableStateOf(false) }
     val primaryAccentColor = if (org.isClub) SeaGreen else OceanPrimary
+
+    if (showProfileModal) {
+        ProfileMenuModal(
+            viewModel = viewModel,
+            onDismiss = { showProfileModal = false }
+        )
+    }
 
     val tabs = listOf(
         Triple(0, "👥", strings.tabDiveOpsRoster),
@@ -140,6 +151,19 @@ fun DiveOpsScreen(
                             onLanguageChange = { viewModel.setLanguage(it) },
                             modifier = Modifier.padding(end = 4.dp)
                         )
+
+                        // User Profile & Settings
+                        val currentUser by viewModel.currentUser.collectAsState()
+                        IconButton(
+                            onClick = { showProfileModal = true },
+                            modifier = Modifier.testTag("diveops_profile_btn")
+                        ) {
+                            UserAvatarView(
+                                photoUri = currentUser?.profilePictureUri,
+                                displayName = currentUser?.fullName ?: "Profile",
+                                size = 28.dp
+                            )
+                        }
 
                         // Return to Personal Profile
                         IconButton(
