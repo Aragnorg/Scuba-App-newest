@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -231,31 +232,34 @@ fun BuddyPushApprovalDialog(
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                Button(
-                    onClick = {
-                        onApprove(dive.id, buddyName, buddyNote)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = SeaGreen,
-                        contentColor = Color(0xFF00382E)
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag("confirm_push_approval_button"),
-                    shape = RoundedCornerShape(12.dp)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Verified,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "${strings.approveAndVerifyDiveButton} #${dive.diveNumber}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp
-                    )
+                    Button(
+                        onClick = {
+                            onApprove(dive.id, buddyName, buddyNote)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = SeaGreen,
+                            contentColor = Color(0xFF00382E)
+                        ),
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                        modifier = Modifier.testTag("confirm_push_approval_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Verified,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${strings.approveAndVerifyDiveButton} #${dive.diveNumber}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }

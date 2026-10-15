@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -270,29 +271,32 @@ fun BuddyApprovalDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(
-                        onClick = {
-                            val json = serializeSignaturePoints(signaturePoints)
-                            onSignApprove(dive.id, buddyNameInput, json, buddyNoteInput)
-                        },
-                        enabled = buddyNameInput.isNotBlank(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SeaGreen,
-                            contentColor = Color(0xFF00382E)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .testTag("save_buddy_signature_button"),
-                        shape = RoundedCornerShape(12.dp)
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = strings.signAndVerifyButton,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
-                        )
+                        Button(
+                            onClick = {
+                                val json = serializeSignaturePoints(signaturePoints)
+                                onSignApprove(dive.id, buddyNameInput, json, buddyNoteInput)
+                            },
+                            enabled = buddyNameInput.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SeaGreen,
+                                contentColor = Color(0xFF00382E)
+                            ),
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                            modifier = Modifier.testTag("save_buddy_signature_button")
+                        ) {
+                            Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = strings.signAndVerifyButton,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
 
                 } else {
@@ -336,29 +340,32 @@ fun BuddyApprovalDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(
-                        onClick = {
-                            onSendPush(dive.id, pushBuddyEmail, pushBuddyName)
-                            pushSentSuccess = true
-                        },
-                        enabled = pushBuddyEmail.isNotBlank(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = OceanPrimary,
-                            contentColor = Color.White
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .testTag("send_buddy_push_request_button"),
-                        shape = RoundedCornerShape(12.dp)
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = strings.sendPushRequestButton,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp
-                        )
+                        Button(
+                            onClick = {
+                                onSendPush(dive.id, pushBuddyEmail, pushBuddyName)
+                                pushSentSuccess = true
+                            },
+                            enabled = pushBuddyEmail.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = OceanPrimary,
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                            modifier = Modifier.testTag("send_buddy_push_request_button")
+                        ) {
+                            Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = strings.sendPushRequestButton,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
 
                     if (pushSentSuccess) {

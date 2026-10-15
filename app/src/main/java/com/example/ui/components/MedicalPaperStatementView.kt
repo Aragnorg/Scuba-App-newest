@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -560,17 +561,21 @@ fun PaperVsDigitalCorrelationCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = { showFullDialog = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("inspect_paper_scan_btn"),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Fullscreen, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(strings.viewEnlargedPaperScan, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Button(
+                    onClick = { showFullDialog = true },
+                    shape = RoundedCornerShape(20.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 9.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                    modifier = Modifier.testTag("inspect_paper_scan_btn")
+                ) {
+                    Icon(Icons.Default.Fullscreen, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(strings.viewEnlargedPaperScan, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -495,32 +496,40 @@ fun DocumentDetailDialog(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            Button(
-                                onClick = onApproveClick,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag("open_sign_approve_btn"),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(strings.approveDocumentTitle, fontWeight = FontWeight.Bold)
+                                Button(
+                                    onClick = onApproveClick,
+                                    modifier = Modifier.testTag("open_sign_approve_btn"),
+                                    shape = RoundedCornerShape(20.dp),
+                                    contentPadding = PaddingValues(horizontal = 22.dp, vertical = 9.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                                ) {
+                                    Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(strings.approveDocumentTitle, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                                }
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedButton(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("close_dialog_btn"),
-                    shape = RoundedCornerShape(14.dp)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(strings.close)
+                    OutlinedButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.testTag("close_dialog_btn"),
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 8.dp)
+                    ) {
+                        Text(strings.close, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                    }
                 }
             }
         }

@@ -376,17 +376,22 @@ fun WorkspaceSelectionDialog(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 // 3. Register New Organization
-                OutlinedButton(
-                    onClick = { showCreateDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = OceanPrimary
-                    )
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(strings.createNewOrg)
+                    OutlinedButton(
+                        onClick = { showCreateDialog = true },
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = OceanPrimary
+                        )
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(strings.createNewOrg)
+                    }
                 }
             }
         },

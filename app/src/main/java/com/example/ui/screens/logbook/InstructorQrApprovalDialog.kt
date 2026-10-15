@@ -18,6 +18,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -486,37 +487,40 @@ fun InstructorQrApprovalDialog(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 // Confirm and Approve Button
-                Button(
-                    onClick = {
-                        val currentStamp = scannedStamp
-                        if (currentStamp != null) {
-                            onApprove(
-                                dive.id,
-                                currentStamp.stampCode,
-                                currentStamp.centerName,
-                                currentStamp.instructorName,
-                                currentStamp.licenseNumber
-                            )
-                        }
-                    },
-                    enabled = scannedStamp != null,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = OceanPrimary,
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag("apply_instructor_stamp_button"),
-                    shape = RoundedCornerShape(12.dp)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "${strings.verifyWithScannedStampButton} #${dive.diveNumber}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
+                    Button(
+                        onClick = {
+                            val currentStamp = scannedStamp
+                            if (currentStamp != null) {
+                                onApprove(
+                                    dive.id,
+                                    currentStamp.stampCode,
+                                    currentStamp.centerName,
+                                    currentStamp.instructorName,
+                                    currentStamp.licenseNumber
+                                )
+                            }
+                        },
+                        enabled = scannedStamp != null,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = OceanPrimary,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                        modifier = Modifier.testTag("apply_instructor_stamp_button")
+                    ) {
+                        Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "${strings.verifyWithScannedStampButton} #${dive.diveNumber}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

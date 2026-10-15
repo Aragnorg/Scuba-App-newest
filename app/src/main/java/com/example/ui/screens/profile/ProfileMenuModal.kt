@@ -1009,24 +1009,24 @@ fun ProfileMenuModal(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
-                            }
-
-                            Button(
-                                onClick = {
-                                    documentToEdit = null
-                                    showAddDocumentDialog = true
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                                    .testTag("profile_add_doc_btn"),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
-                            ) {
-                                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(strings.addDocumentButton, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+                                Button(
+                                    onClick = {
+                                        documentToEdit = null
+                                        showAddDocumentDialog = true
+                                    },
+                                    modifier = Modifier.testTag("profile_add_doc_btn"),
+                                    shape = RoundedCornerShape(20.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = strings.addDocumentButton,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
                             }
                         }
                     }
@@ -1162,22 +1162,26 @@ fun ProfileMenuModal(
                     // Sign Out & Danger Zone
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
-                        OutlinedButton(
-                            onClick = {
-                                onDismiss()
-                                viewModel.logout()
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("profile_logout_btn"),
-                            shape = RoundedCornerShape(14.dp),
-                            border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f))
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(strings.signOut, color = Color(0xFFE53E3E), fontWeight = FontWeight.Bold)
+                            OutlinedButton(
+                                onClick = {
+                                    onDismiss()
+                                    viewModel.logout()
+                                },
+                                modifier = Modifier.testTag("profile_logout_btn"),
+                                shape = RoundedCornerShape(20.dp),
+                                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+                                border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f))
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(strings.signOut, color = Color(0xFFE53E3E), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            }
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
@@ -1509,11 +1513,10 @@ fun EditFullProfileDialog(
                             bcdSize = "M"
                             preferredTank = "12L Stahl DIN (232 bar)"
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        Text("⚡ Mit Test-Taucherdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = OceanPrimary)
+                        Text("⚡ Mit Test-Taucherdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = OceanPrimary)
                     }
 
                     OutlinedTextField(
@@ -1668,11 +1671,10 @@ fun EditFullProfileDialog(
                             homeOrganizationName = "Tauchclub Delphin Bodensee e.V."
                             teachingSpecialtiesJson = "[\"Nitrox EANx\", \"Tieftauchen\", \"Trockentauchen\", \"Wracktauchen\", \"HLW / O2-Provider\"]"
                         },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        Text("⚡ Mit Test-Tauchlehrerdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SeaGreen)
+                        Text("⚡ Mit Test-Tauchlehrerdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = SeaGreen)
                     }
 
                     OutlinedTextField(

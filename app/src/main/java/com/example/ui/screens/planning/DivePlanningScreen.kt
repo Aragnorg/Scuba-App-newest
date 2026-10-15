@@ -1108,14 +1108,13 @@ private fun SpotEmergencyDossierDialog(
                         Button(
                             onClick = { dialPhoneNumber(context, emergency.chamberPhone) },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("call_chamber_btn")
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.testTag("call_chamber_btn")
                         ) {
                             Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Call Chamber: ${emergency.chamberPhone}", fontWeight = FontWeight.Bold)
+                            Text("Call Chamber: ${emergency.chamberPhone}", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
                         }
                     }
                 }
@@ -1184,15 +1183,19 @@ private fun SpotEmergencyDossierDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
-                    onClick = onDismiss,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("close_emergency_modal_btn")
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("Close Dossier", fontWeight = FontWeight.Bold)
+                    Button(
+                        onClick = onDismiss,
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 9.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                        modifier = Modifier.testTag("close_emergency_modal_btn")
+                    ) {
+                        Text("Close Dossier", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
@@ -1386,8 +1389,8 @@ private fun EmergencyInfoDossierTab(
                     Button(
                         onClick = { dialPhoneNumber(context, emergency.chamberPhone) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        shape = RoundedCornerShape(18.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 7.dp)
                     ) {
                         Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(6.dp))
@@ -1748,16 +1751,21 @@ private fun PreDiveBuddyChecklistTab() {
         }
 
         item {
-            OutlinedButton(
-                onClick = {
-                    for (i in 0 until checklistItems.size) {
-                        checklistItems[i] = checklistItems[i].copy(isChecked = false)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text("Reset Checklist")
+                OutlinedButton(
+                    onClick = {
+                        for (i in 0 until checklistItems.size) {
+                            checklistItems[i] = checklistItems[i].copy(isChecked = false)
+                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+                ) {
+                    Text("Reset Checklist")
+                }
             }
         }
     }

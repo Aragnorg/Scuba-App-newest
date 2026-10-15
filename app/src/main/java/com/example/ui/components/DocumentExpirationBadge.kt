@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -431,24 +432,28 @@ fun DocumentExpirationDetailCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Button(
-                    onClick = onRenewClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("renew_document_button"),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (expirationInfo.level == ExpirationAlertLevel.EXPIRED) Color(0xFFE53E3E) else SandGold
-                    )
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = strings.renewNowAction,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = if (expirationInfo.level == ExpirationAlertLevel.EXPIRED) Color.White else DepthNavy
-                    )
+                    Button(
+                        onClick = onRenewClick,
+                        shape = RoundedCornerShape(20.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (expirationInfo.level == ExpirationAlertLevel.EXPIRED) Color(0xFFE53E3E) else SandGold
+                        ),
+                        modifier = Modifier.testTag("renew_document_button")
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = strings.renewNowAction,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = if (expirationInfo.level == ExpirationAlertLevel.EXPIRED) Color.White else DepthNavy
+                        )
+                    }
                 }
             }
         }

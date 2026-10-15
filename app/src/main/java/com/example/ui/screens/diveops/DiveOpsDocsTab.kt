@@ -972,22 +972,27 @@ private fun ViewDocumentPreviewDialog(
                 if (doc.fileUri.isNotBlank()) {
                     val context = LocalContext.current
                     val isDrive = GoogleDriveHelper.isGoogleDriveUrl(doc.fileUri)
-                    Button(
-                        onClick = {
-                            GoogleDriveHelper.openInGoogleDriveOrBrowser(context, doc.fileUri)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isDrive) SeaGreen else OceanPrimary
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(if (isDrive) Icons.Default.Cloud else Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (isDrive) "☁️ Auf Google Drive öffnen" else "📄 Datei öffnen",
-                            fontWeight = FontWeight.Bold
-                        )
+                        Button(
+                            onClick = {
+                                GoogleDriveHelper.openInGoogleDriveOrBrowser(context, doc.fileUri)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isDrive) SeaGreen else OceanPrimary
+                            ),
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+                        ) {
+                            Icon(if (isDrive) Icons.Default.Cloud else Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isDrive) "☁️ Auf Google Drive öffnen" else "📄 Datei öffnen",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }

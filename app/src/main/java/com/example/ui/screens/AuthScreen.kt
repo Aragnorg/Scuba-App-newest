@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -407,17 +408,20 @@ fun LoginForm(
                     .testTag("login_password_input")
             )
 
-            Button(
-                onClick = { onLogin(email.trim(), password) },
-                enabled = email.isNotBlank() && password.isNotBlank(),
-                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .testTag("login_submit_button")
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text(strings.signIn, fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = { onLogin(email.trim(), password) },
+                    enabled = email.isNotBlank() && password.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                    shape = RoundedCornerShape(24.dp),
+                    contentPadding = PaddingValues(horizontal = 36.dp, vertical = 12.dp),
+                    modifier = Modifier.testTag("login_submit_button")
+                ) {
+                    Text(strings.signIn, fontWeight = FontWeight.Bold)
+                }
             }
 
             // Switch to Register link
@@ -656,19 +660,22 @@ fun RegisterForm(
                 )
             }
 
-            Button(
-                onClick = { onRegister(email.trim(), password, fullName, selectedRole) },
-                enabled = email.isNotBlank() && passwordLengthOk && passwordsMatch && agreeMedicalDeclaration,
-                colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .testTag("register_submit_button")
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Email, contentDescription = strings.register)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(strings.register, fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = { onRegister(email.trim(), password, fullName, selectedRole) },
+                    enabled = email.isNotBlank() && passwordLengthOk && passwordsMatch && agreeMedicalDeclaration,
+                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                    shape = RoundedCornerShape(24.dp),
+                    contentPadding = PaddingValues(horizontal = 36.dp, vertical = 12.dp),
+                    modifier = Modifier.testTag("register_submit_button")
+                ) {
+                    Icon(Icons.Default.Email, contentDescription = strings.register)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(strings.register, fontWeight = FontWeight.Bold)
+                }
             }
 
             Row(
@@ -947,25 +954,30 @@ fun EmailVerificationScreen(
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // 1-Click Instant Activation
-                            Button(
-                                onClick = {
-                                    verificationCode = latestEmailMessage.verificationCode
-                                    onVerify(latestEmailMessage.verificationCode)
-                                },
-                                modifier = Modifier.fillMaxWidth().testTag("instant_activate_button"),
-                                colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                shape = RoundedCornerShape(8.dp)
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
-                                        "⚡ 1-Klick Aktivieren & Einloggen"
-                                    else
-                                        "⚡ 1-Click Activate & Sign In",
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Button(
+                                    onClick = {
+                                        verificationCode = latestEmailMessage.verificationCode
+                                        onVerify(latestEmailMessage.verificationCode)
+                                    },
+                                    modifier = Modifier.testTag("instant_activate_button"),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                                    shape = RoundedCornerShape(20.dp),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp)
+                                ) {
+                                    Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
+                                            "⚡ 1-Klick Aktivieren & Einloggen"
+                                        else
+                                            "⚡ 1-Click Activate & Sign In",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
                     }
@@ -1039,18 +1051,22 @@ fun EmailVerificationScreen(
                         .testTag("verification_code_input")
                 )
 
-                Button(
-                    onClick = { onVerify(verificationCode) },
-                    enabled = verificationCode.length == 6,
-                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag("verify_code_submit_button")
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = strings.verifyButton)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(strings.verifyButton, fontWeight = FontWeight.Bold)
+                    Button(
+                        onClick = { onVerify(verificationCode) },
+                        enabled = verificationCode.length == 6,
+                        colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                        shape = RoundedCornerShape(24.dp),
+                        contentPadding = PaddingValues(horizontal = 36.dp, vertical = 12.dp),
+                        modifier = Modifier.testTag("verify_code_submit_button")
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = strings.verifyButton)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(strings.verifyButton, fontWeight = FontWeight.Bold)
+                    }
                 }
 
                 // Resend Code Action

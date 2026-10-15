@@ -1245,28 +1245,32 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(14.dp))
 
                             // Interactive Enroll Now button
-                            Button(
-                                onClick = {
-                                    viewModel.enrollInCourse(course.id)
-                                    enrollmentSuccessMessage = if (currentLanguage == AppLanguage.DE) {
-                                        "Erfolgreich in den Spezialkurs '${course.title}' eingeschrieben!"
-                                    } else {
-                                        "Enrolled in specialty course '${course.title}' successfully!"
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag("enroll_btn_${course.id}"),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
                             ) {
-                                Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "Jetzt einschreiben" else "Enroll in Course Now",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                )
+                                Button(
+                                    onClick = {
+                                        viewModel.enrollInCourse(course.id)
+                                        enrollmentSuccessMessage = if (currentLanguage == AppLanguage.DE) {
+                                            "Erfolgreich in den Spezialkurs '${course.title}' eingeschrieben!"
+                                        } else {
+                                            "Enrolled in specialty course '${course.title}' successfully!"
+                                        }
+                                    },
+                                    modifier = Modifier.testTag("enroll_btn_${course.id}"),
+                                    shape = RoundedCornerShape(20.dp),
+                                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                                ) {
+                                    Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (currentLanguage == AppLanguage.DE) "Einschreiben" else "Enroll",
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 12.sp
+                                    )
+                                }
                             }
                         }
                     }
@@ -1275,7 +1279,7 @@ fun HomeScreen(
         }
 
         item {
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 

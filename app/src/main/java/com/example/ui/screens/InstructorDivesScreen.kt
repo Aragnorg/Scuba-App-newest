@@ -756,28 +756,33 @@ fun InstructorDivesScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    Button(
-                        onClick = {
-                            viewModel.approveDiveWithInstructorQr(
-                                diveId = dive.id,
-                                qrStampCode = "AQUALEARN-CERT-STAMP-ADRIAN-OWSI482910-DIVE-${dive.id}",
-                                centerName = "AquaLearn PADI 5-Star Academy",
-                                instructorName = instructorName,
-                                license = "PADI OWSI #482910"
-                            )
-                            diveForQrPresentation = null
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF00382E))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = strings.directlyStampAndVerifyNow,
-                            color = Color(0xFF00382E),
-                            fontWeight = FontWeight.Bold
-                        )
+                        Button(
+                            onClick = {
+                                viewModel.approveDiveWithInstructorQr(
+                                    diveId = dive.id,
+                                    qrStampCode = "AQUALEARN-CERT-STAMP-ADRIAN-OWSI482910-DIVE-${dive.id}",
+                                    centerName = "AquaLearn PADI 5-Star Academy",
+                                    instructorName = instructorName,
+                                    license = "PADI OWSI #482910"
+                                )
+                                diveForQrPresentation = null
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
+                        ) {
+                            Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF00382E))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = strings.directlyStampAndVerifyNow,
+                                color = Color(0xFF00382E),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
