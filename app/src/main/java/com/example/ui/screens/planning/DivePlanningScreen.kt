@@ -332,6 +332,7 @@ private fun DiveSpotsListTab(
     onEmergencyClick: (DiveSpot) -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
