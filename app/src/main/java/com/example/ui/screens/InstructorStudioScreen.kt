@@ -87,7 +87,9 @@ import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.data.model.QuizQuestion
 import com.example.data.model.SlideItem
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.CoralAlert
 import com.example.ui.theme.OceanPrimary
@@ -794,6 +796,8 @@ fun CreatePresentationDialog(
     onSave: (moduleId: String, title: String, desc: String, slides: List<SlideItem>, documentUri: String?) -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedModuleId by remember { mutableStateOf(modules.firstOrNull()?.id ?: "mod_physics") }
@@ -802,16 +806,20 @@ fun CreatePresentationDialog(
     var expandedDropdown by remember { mutableStateOf(false) }
 
     // Slides in deck
-    val slides = remember {
+    val slides = remember(isGerman) {
         mutableStateListOf(
             SlideItem(
                 slideNumber = 1,
-                title = "Introduction to Dive Technique",
-                subtitle = "Foundational concepts for candidates",
-                bulletPoints = listOf("Review basic buddy principles", "Confirm depth gauges and dive plan"),
+                title = if (isGerman) "Einführung in die Tauchtechnik" else "Introduction to Dive Technique",
+                subtitle = if (isGerman) "Grundlagenkonzepte für Schüler" else "Foundational concepts for candidates",
+                bulletPoints = if (isGerman) {
+                    listOf("Grundlegende Buddy-Prinzipien wiederholen", "Finimeter- und Tauchgangsplanung bestätigen")
+                } else {
+                    listOf("Review basic buddy principles", "Confirm depth gauges and dive plan")
+                },
                 diagramType = "GENERAL_CHECKLIST",
-                instructorNotes = "Emphasize buddy communication.",
-                keyTakeaway = "Never dive alone."
+                instructorNotes = if (isGerman) "Buddy-Kommunikation und Handzeichen hervorheben." else "Emphasize buddy communication.",
+                keyTakeaway = if (isGerman) "Niemals alleine tauchen." else "Never dive alone."
             )
         )
     }
@@ -823,7 +831,7 @@ fun CreatePresentationDialog(
         if (uri != null) {
             selectedDocumentUri = uri.toString()
             if (title.isBlank()) {
-                title = "Uploaded Presentation Deck"
+                title = if (isGerman) "Hochgeladene Präsentation" else "Uploaded Presentation Deck"
             }
         }
     }
@@ -856,7 +864,7 @@ fun CreatePresentationDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.FileUpload,
-                            contentDescription = "Upload Document",
+                            contentDescription = if (isGerman) "Dokument hochladen" else "Upload Document",
                             tint = OceanPrimary
                         )
                         Spacer(modifier = Modifier.width(10.dp))
@@ -979,18 +987,23 @@ fun CreatePresentationDialog(
                         slides.add(
                             SlideItem(
                                 slideNumber = num,
-                                title = "Slide $num: Safety Checklist",
-                                subtitle = "Candidate Review Points",
-                                bulletPoints = listOf("Check air consumption rate", "Safety stop execution at 5m"),
+                                title = if (isGerman) "Folie $num: Sicherheits-Checkliste" else "Slide $num: Safety Checklist",
+                                subtitle = if (isGerman) "Wiederholungspunkte für Schüler" else "Candidate Review Points",
+                                bulletPoints = if (isGerman) {
+                                    listOf("Atemgasverbrauch prüfen", "Sicherheitsstopp auf 5 m korrekt durchführen")
+                                } else {
+                                    listOf("Check air consumption rate", "Safety stop execution at 5m")
+                                },
                                 diagramType = if (num % 2 == 0) "ASCENT_PROFILE" else "BWRAF_BUDDY",
-                                instructorNotes = "Discuss real-life scenarios with students.",
-                                keyTakeaway = "Always ascend at 9m/min or slower."
+                                instructorNotes = if (isGerman) "Praxiserfahrungen mit den Schülern diskutieren." else "Discuss real-life scenarios with students.",
+                                keyTakeaway = if (isGerman) "Aufstiegsgeschwindigkeit von max. 9 m/min strikt einhalten." else "Always ascend at 9m/min or slower."
                             )
                         )
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Slide")
+                    Icon(Icons.Default.Add, contentDescription = if (isGerman) "Folie hinzufügen" else "Add Slide")
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(strings.addAnotherSlideButton)
                 }
@@ -1002,12 +1015,14 @@ fun CreatePresentationDialog(
                     val finalUri = googleDriveUrlText.ifBlank { selectedDocumentUri }
                     onSave(
                         selectedModuleId,
-                        title.ifBlank { "Instructor Deck" },
-                        description.ifBlank { "Presentation for students." },
+                        title.ifBlank { if (isGerman) "Tauchlehrer-Präsentation" else "Instructor Deck" },
+                        description.ifBlank { if (isGerman) "Präsentation für Schüler." else "Presentation for students." },
                         slides,
                         finalUri
                     )
                 },
+                shape = RoundedCornerShape(14.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                 modifier = Modifier.testTag("save_presentation_button")
             ) {
@@ -1015,7 +1030,10 @@ fun CreatePresentationDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.cancel)
             }
         }
@@ -1188,13 +1206,13 @@ fun CreateVideoDialog(
                 onClick = {
                     val durationMin = durationMinutesText.toIntOrNull() ?: 4
                     val chapters = listOf(
-                        Pair(0, "Introduction & Skill Briefing"),
-                        Pair(45, "Demonstration in Confined Water"),
-                        Pair(120, "Common Mistakes & Solution")
+                        Pair(0, "Einführung & Übungsbriefing"),
+                        Pair(45, "Demonstration im Flachwasser / Pool"),
+                        Pair(120, "Häufige Fehler & Korrektur")
                     )
                     val takeaways = listOf(
-                        "Maintain steady breathing throughout skill execution.",
-                        "Buddy observes and signals confirmation."
+                        "Stetige und ruhige Atmung während der Übungsausführung beibehalten.",
+                        "Buddy beobachtet aufmerksam und signalisiert Bestätigung."
                     )
                     val finalVideoUri = googleDriveUrlText.ifBlank { videoUriText.ifBlank { "scuba://video/uploaded_${System.currentTimeMillis()}" } }
                     onSave(
@@ -1248,17 +1266,17 @@ fun CreateQuizDialog(
         mutableStateListOf(
             QuizQuestion(
                 id = "custom_q1",
-                question = "What should a diver do if they experience a sinus squeeze on descent?",
+                question = "Was sollte ein Taucher tun, wenn er beim Abtauchen einen Druckschmerz in den Nebenhöhlen spürt?",
                 options = listOf(
-                    "Ascend slightly until pain stops, equalize, and continue descent slowly",
-                    "Descend faster to pop the air pocket",
-                    "Take off their mask underwater",
-                    "Inflate BCD to maximum"
+                    "Leicht aufsteigen bis der Schmerz nachlässt, Druckausgleich durchführen und langsam weitertauchen",
+                    "Schneller abtauchen, um den Hohlraum zu öffnen",
+                    "Unter Wasser die Maske abnehmen",
+                    "Tarierweste voll aufblasen"
                 ),
                 correctIndex = 0,
-                explanation = "Ascending reduces ambient water pressure, allowing trapped sinus air to equalize safely without tissue trauma.",
-                safetyRule = "Never force descent against pain.",
-                depthOrContext = "Descent Protocol"
+                explanation = "Durch leichtes Aufsteigen verringert sich der Umgebungsdruck, sodass der Druckausgleich ohne Gewebetrauma gelingt.",
+                safetyRule = "Niemals gegen Schmerzen abtauchen.",
+                depthOrContext = "Abtauchprotokoll"
             )
         )
     }
@@ -1276,7 +1294,7 @@ fun CreateQuizDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Create Quiz or Mock Exam",
+                text = "Quiz oder Probeprüfung erstellen",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -1291,8 +1309,8 @@ fun CreateQuizDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Quiz Title") },
-                    placeholder = { Text("e.g. Scuba Navigation & Compass Quiz") },
+                    label = { Text("Quiz-Titel") },
+                    placeholder = { Text("z.B. Navigation & Kompass-Quiz") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("quiz_title_input")
@@ -1301,7 +1319,7 @@ fun CreateQuizDialog(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") },
+                    label = { Text("Beschreibung") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -1310,7 +1328,7 @@ fun CreateQuizDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Official Mock Exam Mode", fontWeight = FontWeight.Bold)
+                    Text("Offizieller Probeprüfungs-Modus", fontWeight = FontWeight.Bold)
                     Switch(
                         checked = isMockExam,
                         onCheckedChange = { isMockExam = it }
@@ -1320,7 +1338,7 @@ fun CreateQuizDialog(
                 OutlinedTextField(
                     value = passScoreText,
                     onValueChange = { passScoreText = it },
-                    label = { Text("Passing Mark (%)") },
+                    label = { Text("Bestehensgrenze (%)") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -1330,10 +1348,10 @@ fun CreateQuizDialog(
                     onExpandedChange = { expandedDropdown = !expandedDropdown }
                 ) {
                     OutlinedTextField(
-                        value = modules.find { it.id == selectedModuleId }?.title ?: "Select Module",
+                        value = modules.find { it.id == selectedModuleId }?.title ?: "Modul auswählen",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Course Module") },
+                        label = { Text("Kursmodul") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1357,7 +1375,7 @@ fun CreateQuizDialog(
 
                 // Existing Questions
                 Text(
-                    text = "Questions in this Quiz (${questions.size})",
+                    text = "Fragen in diesem Quiz (${questions.size})",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -1373,12 +1391,12 @@ fun CreateQuizDialog(
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "Q${i + 1}: ${q.question}",
+                                text = "Frage ${i + 1}: ${q.question}",
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                text = "Correct: Option ${q.correctIndex + 1} (${q.options.getOrNull(q.correctIndex) ?: ""})",
+                                text = "Richtig: Option ${q.correctIndex + 1} (${q.options.getOrNull(q.correctIndex) ?: ""})",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = SeaGreen,
                                 fontWeight = FontWeight.SemiBold
@@ -1397,14 +1415,14 @@ fun CreateQuizDialog(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "+ Add Question to Quiz",
+                            text = "+ Frage zum Quiz hinzufügen",
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.titleSmall
                         )
                         OutlinedTextField(
                             value = newQText,
                             onValueChange = { newQText = it },
-                            label = { Text("Question Text") },
+                            label = { Text("Fragentext") },
                             modifier = Modifier.fillMaxWidth()
                         )
                         OutlinedTextField(
@@ -1432,7 +1450,7 @@ fun CreateQuizDialog(
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        Text("Select Correct Option:", style = MaterialTheme.typography.labelMedium)
+                        Text("Richtige Option auswählen:", style = MaterialTheme.typography.labelMedium)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             listOf("A", "B", "C", "D").forEachIndexed { idx, letter ->
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1448,7 +1466,7 @@ fun CreateQuizDialog(
                         OutlinedTextField(
                             value = newExpl,
                             onValueChange = { newExpl = it },
-                            label = { Text("Explanation for Candidates") },
+                            label = { Text("Erklärung für Schüler / Prüflinge") },
                             modifier = Modifier.fillMaxWidth()
                         )
 
@@ -1466,9 +1484,9 @@ fun CreateQuizDialog(
                                                 newOpt3.ifBlank { "Option D" }
                                             ),
                                             correctIndex = newCorrectIdx,
-                                            explanation = newExpl.ifBlank { "Review diving procedures carefully." },
-                                            safetyRule = "Always maintain dive safety protocols.",
-                                            depthOrContext = "Instructor Evaluation"
+                                            explanation = newExpl.ifBlank { "Tauchverfahren sorgfältig wiederholen." },
+                                            safetyRule = "Sicherheitsregeln stets einhalten.",
+                                            depthOrContext = "Ausbildungsbewertung"
                                         )
                                     )
                                     newQText = ""
@@ -1480,11 +1498,13 @@ fun CreateQuizDialog(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = OceanSecondary)
                         ) {
                             Icon(Icons.Default.Add, contentDescription = "Add")
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Insert Question")
+                            Text("Frage hinzufügen")
                         }
                     }
                 }
@@ -1496,22 +1516,27 @@ fun CreateQuizDialog(
                     val pass = passScoreText.toIntOrNull() ?: 80
                     onSave(
                         selectedModuleId,
-                        title.ifBlank { "Custom Dive Quiz" },
-                        description.ifBlank { "Self-paced evaluation." },
+                        title.ifBlank { "Tauch-Quiz" },
+                        description.ifBlank { "Wissensüberprüfung" },
                         pass,
                         questions,
                         isMockExam
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                shape = RoundedCornerShape(10.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("save_quiz_button")
             ) {
-                Text("Publish Quiz")
+                Text("Quiz veröffentlichen")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Abbrechen")
             }
         }
     )

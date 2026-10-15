@@ -414,12 +414,12 @@ private fun DiveSpotsListTab(
                         Icon(Icons.Default.Search, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(36.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No dive spots match your filter",
+                            text = if (isGerman) "Keine Tauchplätze entsprechen deinem Filter" else "No dive spots match your filter",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Try clearing search filters or selecting All Levels",
+                            text = if (isGerman) "Suchfilter zurücksetzen oder 'Alle Erfahrungsstufen' wählen" else "Try clearing search filters or selecting All Levels",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -447,6 +447,8 @@ private fun DiveSpotSummaryCard(
     onEmergencyClick: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     val depthLabel = if (isImperial) {
         val minFt = (spot.minDepthMeters * 3.28084).toInt()
         val maxFt = (spot.maxDepthMeters * 3.28084).toInt()
@@ -583,11 +585,11 @@ private fun DiveSpotSummaryCard(
                 TextButton(
                     onClick = onEmergencyClick,
                     modifier = Modifier.testTag("spot_emergency_btn_${spot.id}"),
-                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
                 ) {
                     Icon(Icons.Default.HealthAndSafety, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Emergency Dossier", color = Color(0xFFE53E3E), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", color = Color(0xFFE53E3E), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Button(
@@ -599,7 +601,7 @@ private fun DiveSpotSummaryCard(
                 ) {
                     Icon(Icons.Default.Map, contentDescription = null, modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Briefing & Map", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(if (isGerman) "Briefing & Karte" else "Briefing & Map", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -636,6 +638,7 @@ private fun DiveSpotDetailDialog(
 ) {
     val strings = LocalAppStrings.current
     val context = LocalContext.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     val depthLabel = if (isImperial) {
         val minFt = (spot.minDepthMeters * 3.28084).toInt()
@@ -767,19 +770,19 @@ private fun DiveSpotDetailDialog(
                 ) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Depth Range:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(if (isGerman) "Tiefenbereich:" else "Depth Range:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(depthLabel, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Entry Type:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("${spot.entryType} Entry (${spot.waterType} Water)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                            Text(if (isGerman) "Einstiegsart:" else "Entry Type:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("${spot.entryType} (${spot.waterType})", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Current & Drift:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(if (isGerman) "Strömung & Drift:" else "Current & Drift:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(spot.currentStrength, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Best Diving Season:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(if (isGerman) "Beste Tauchsaison:" else "Best Diving Season:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(spot.bestSeason, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
                     }
@@ -789,7 +792,7 @@ private fun DiveSpotDetailDialog(
 
                 // Description
                 Text(
-                    text = "Description & Topography:",
+                    text = if (isGerman) "Beschreibung & Topografie:" else "Description & Topography:",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -841,6 +844,7 @@ private fun DiveSpotDetailDialog(
                     Button(
                         onClick = onEmergencyClick,
                         shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
                         modifier = Modifier
                             .weight(1f)
@@ -848,12 +852,13 @@ private fun DiveSpotDetailDialog(
                     ) {
                         Icon(Icons.Default.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Emergency Dossier", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
 
                     OutlinedButton(
                         onClick = onDismiss,
                         shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                         modifier = Modifier
                             .weight(1f)
                             .testTag("spot_detail_close_btn")
@@ -1011,6 +1016,7 @@ private fun SpotEmergencyDossierDialog(
 ) {
     val context = LocalContext.current
     val emergency = spot.emergencyInfo
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -1050,7 +1056,7 @@ private fun SpotEmergencyDossierDialog(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "Emergency Safety Dossier",
+                                text = if (isGerman) "Notfall- & Sicherheitsdossier" else "Emergency Safety Dossier",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFFC53030)
@@ -1064,7 +1070,7 @@ private fun SpotEmergencyDossierDialog(
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = if (isGerman) "Schließen" else "Close")
                     }
                 }
 
@@ -1082,7 +1088,7 @@ private fun SpotEmergencyDossierDialog(
                             Icon(Icons.Default.LocalHospital, contentDescription = null, tint = Color(0xFFC53030), modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "NEAREST HYPERBARIC CHAMBER",
+                                text = if (isGerman) "NÄCHSTE DRUCKKAMMER" else "NEAREST HYPERBARIC CHAMBER",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF9B2C2C)
@@ -1098,7 +1104,7 @@ private fun SpotEmergencyDossierDialog(
                             color = Color(0xFF742A2A)
                         )
                         Text(
-                            text = "${emergency.chamberLocation} • ~${emergency.chamberDistanceKm} km away",
+                            text = "${emergency.chamberLocation} • ~${emergency.chamberDistanceKm} km ${if (isGerman) "entfernt" else "away"}",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFF742A2A)
                         )
@@ -1108,13 +1114,17 @@ private fun SpotEmergencyDossierDialog(
                         Button(
                             onClick = { dialPhoneNumber(context, emergency.chamberPhone) },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                            shape = RoundedCornerShape(20.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             modifier = Modifier.testTag("call_chamber_btn")
                         ) {
                             Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Call Chamber: ${emergency.chamberPhone}", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                            Text(
+                                text = "${if (isGerman) "Druckkammer anrufen" else "Call Chamber"}: ${emergency.chamberPhone}",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.sp
+                            )
                         }
                     }
                 }
@@ -1130,27 +1140,31 @@ private fun SpotEmergencyDossierDialog(
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         EmergencyRowItem(
                             icon = Icons.Default.Radio,
-                            title = "Coast Guard / Marine VHF:",
+                            title = if (isGerman) "Küstenwache / Seefunk (VHF):" else "Coast Guard / Marine VHF:",
                             value = emergency.coastGuardVHF,
                             color = OceanPrimary
                         )
                         EmergencyRowItem(
                             icon = Icons.Default.Phone,
-                            title = "DAN 24/7 International Diving Hotline:",
+                            title = if (isGerman) "DAN 24/7 Internationale Notfall-Hotline:" else "DAN 24/7 International Diving Hotline:",
                             value = emergency.danHotline,
                             color = OceanSecondary,
                             onActionClick = { dialPhoneNumber(context, emergency.danHotline.split(" ").firstOrNull() ?: "") }
                         )
                         EmergencyRowItem(
                             icon = Icons.Default.LocalHospital,
-                            title = "Local Hospital & Trauma Center:",
+                            title = if (isGerman) "Krankenhaus & Notaufnahme:" else "Local Hospital & Trauma Center:",
                             value = "${emergency.localHospitalName} (${emergency.localHospitalPhone})",
                             color = SeaGreen
                         )
                         EmergencyRowItem(
                             icon = Icons.Default.Air,
-                            title = "Oxygen Resuscitation Protocol:",
-                            value = if (emergency.oxygenOnSite) "100% Demand Valve O2 Kit on standby on boat & base." else "O2 Kit requested from local base.",
+                            title = if (isGerman) "Notfall-Sauerstoffversorgung:" else "Oxygen Resuscitation Protocol:",
+                            value = if (emergency.oxygenOnSite) {
+                                if (isGerman) "100% Demand-Ventil Sauerstoffkoffer einsatzbereit an Bord & Basis." else "100% Demand Valve O2 Kit on standby on boat & base."
+                            } else {
+                                if (isGerman) "O2-Koffer bei lokaler Basis angefordert." else "O2 Kit requested from local base."
+                            },
                             color = AquaCyan
                         )
                     }
@@ -1166,7 +1180,7 @@ private fun SpotEmergencyDossierDialog(
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
-                            text = "Diver Evacuation Protocol:",
+                            text = if (isGerman) "Taucher-Evakuierungsprotokoll:" else "Diver Evacuation Protocol:",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
@@ -1189,12 +1203,12 @@ private fun SpotEmergencyDossierDialog(
                 ) {
                     Button(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 9.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 9.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                         modifier = Modifier.testTag("close_emergency_modal_btn")
                     ) {
-                        Text("Close Dossier", fontWeight = FontWeight.Bold)
+                        Text(if (isGerman) "Dossier schließen" else "Close Dossier", fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1243,6 +1257,7 @@ private fun EmergencyInfoDossierTab(
 ) {
     val strings = LocalAppStrings.current
     val context = LocalContext.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -1271,13 +1286,13 @@ private fun EmergencyInfoDossierTab(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "GLOBAL DIVE EMERGENCY & DAN",
+                                text = if (isGerman) "WELTWEITER TAUCHNOTRUF & DAN" else "GLOBAL DIVE EMERGENCY & DAN",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Black,
                                 color = Color.White
                             )
                             Text(
-                                text = "24/7 International Emergency Response Hotlines",
+                                text = if (isGerman) "24/7 Internationale Notfall-Hotlines" else "24/7 International Emergency Response Hotlines",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -1293,7 +1308,8 @@ private fun EmergencyInfoDossierTab(
                         Button(
                             onClick = { dialPhoneNumber(context, "+19196849111") },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp),
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.Call, contentDescription = null, tint = Color(0xFF742A2A), modifier = Modifier.size(16.dp))
@@ -1304,7 +1320,8 @@ private fun EmergencyInfoDossierTab(
                         Button(
                             onClick = { dialPhoneNumber(context, "+39066954000") },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp),
                             modifier = Modifier.weight(1f)
                         ) {
                             Icon(Icons.Default.Call, contentDescription = null, tint = Color(0xFF742A2A), modifier = Modifier.size(16.dp))
@@ -1319,7 +1336,7 @@ private fun EmergencyInfoDossierTab(
         // Section Title: Regional Chambers
         item {
             Text(
-                text = "Regional Decompression Chambers & Medical Bases:",
+                text = if (isGerman) "Regionale Druckkammern & Notfallzentren:" else "Regional Decompression Chambers & Medical Bases:",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -1389,12 +1406,16 @@ private fun EmergencyInfoDossierTab(
                     Button(
                         onClick = { dialPhoneNumber(context, emergency.chamberPhone) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                        shape = RoundedCornerShape(18.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 7.dp)
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
                     ) {
                         Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Call: ${emergency.chamberPhone}", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "${if (isGerman) "Anrufen" else "Call"}: ${emergency.chamberPhone}",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
@@ -1407,6 +1428,7 @@ private fun GasAndModCalculatorTab(
     isImperial: Boolean
 ) {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
     var o2Percent by remember { mutableIntStateOf(32) } // Standard EAN32
     var ppo2Limit by remember { mutableDoubleStateOf(1.4) } // Standard 1.4 bar bottom limit
     var plannedDepth by remember { mutableDoubleStateOf(28.0) } // 28m
@@ -1465,7 +1487,13 @@ private fun GasAndModCalculatorTab(
                             border = BorderStroke(1.dp, if (result.isPlanSafe) SeaGreen else Color(0xFFE53E3E))
                         ) {
                             Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("MAX OPERATING DEPTH (MOD)", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = Color.White.copy(alpha = 0.7f), textAlign = TextAlign.Center)
+                                Text(
+                                    text = if (isGerman) "MAXIMALE EINSATZTIEFE (MOD)" else "MAX OPERATING DEPTH (MOD)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    textAlign = TextAlign.Center
+                                )
                                 Text(
                                     text = if (isImperial) "${(result.maxOperatingDepthMeters * 3.28084).toInt()} ft" else "${result.maxOperatingDepthMeters.toInt()} m",
                                     style = MaterialTheme.typography.titleLarge,
@@ -1482,7 +1510,13 @@ private fun GasAndModCalculatorTab(
                             border = BorderStroke(1.dp, OceanPrimary)
                         ) {
                             Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("TURN PRESSURE (1/3 RULE)", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = Color.White.copy(alpha = 0.7f), textAlign = TextAlign.Center)
+                                Text(
+                                    text = if (isGerman) "WENDEDRUCK (1/3-REGEL)" else "TURN PRESSURE (1/3 RULE)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    textAlign = TextAlign.Center
+                                )
                                 Text(
                                     text = if (isImperial) "${(result.turnPressureBar * 14.5038).toInt()} PSI" else "${result.turnPressureBar} bar",
                                     style = MaterialTheme.typography.titleLarge,
@@ -1534,7 +1568,11 @@ private fun GasAndModCalculatorTab(
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(strings.nitroxO2Fraction, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                             Text(
-                                text = if (o2Percent == 21) "21% (Standard Air)" else "EAN$o2Percent (${o2Percent}% O2)",
+                                text = if (o2Percent == 21) {
+                                    if (isGerman) "21% (Standardluft)" else "21% (Standard Air)"
+                                } else {
+                                    "EAN$o2Percent (${o2Percent}% O2)"
+                                },
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
@@ -1555,7 +1593,7 @@ private fun GasAndModCalculatorTab(
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(strings.maxPPO2Limit, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                             Text(
-                                text = "${String.format("%.1f", ppo2Limit)} bar ${if (ppo2Limit == 1.4) "(Recreational)" else if (ppo2Limit == 1.6) "(Deco Max)" else ""}",
+                                text = "${String.format("%.1f", ppo2Limit)} bar ${if (ppo2Limit == 1.4) (if (isGerman) "(Sporttauchen)" else "(Recreational)") else if (ppo2Limit == 1.6) (if (isGerman) "(Deko-Max)" else "(Deco Max)") else ""}",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = if (ppo2Limit > 1.4) Color(0xFFD97706) else SeaGreen
@@ -1623,14 +1661,35 @@ private fun GasAndModCalculatorTab(
 @Composable
 private fun PreDiveBuddyChecklistTab() {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
-    val checklistItems = remember {
+    val checklistItems = remember(isGerman) {
         mutableStateListOf(
-            ChecklistItem("B", "Buoyancy (BCD)", "Check power inflator, oral inflation, and dump valves. Verify BCD holds air and inflates effortlessly.", false),
-            ChecklistItem("W", "Weights", "Verify weight belt or integrated pouches right-hand release. Check trim weights and security.", false),
-            ChecklistItem("R", "Releases", "Check shoulder straps, chest clip, cummerbund, and tank cylinder cam band tightness.", false),
-            ChecklistItem("A", "Air & Regulators", "Breathe 3 deep cycles from primary and alternate octopus while watching the SPG pressure gauge.", false),
-            ChecklistItem("F", "Final OK", "Mask defogged, fins on, computer active, compass set, entry signals agreed upon. Ready to splash!", false)
+            if (isGerman) {
+                ChecklistItem("B", "Tarierung (BCD)", "Inflator, Mundstück und Schnellablässe prüfen. Tarierweste hält dicht und füllt sich einwandfrei.", false)
+            } else {
+                ChecklistItem("B", "Buoyancy (BCD)", "Check power inflator, oral inflation, and dump valves. Verify BCD holds air and inflates effortlessly.", false)
+            },
+            if (isGerman) {
+                ChecklistItem("W", "Blei (Weights)", "Bleigurt oder integrierte Bleitaschen mit Rechtsauslösung prüfen. Trimmblei sichern.", false)
+            } else {
+                ChecklistItem("W", "Weights", "Verify weight belt or integrated pouches right-hand release. Check trim weights and security.", false)
+            },
+            if (isGerman) {
+                ChecklistItem("R", "Verschlüsse (Releases)", "Schultergurte, Brustgurt, Bauchgurt und Flaschenspanngurt auf festen Sitz prüfen.", false)
+            } else {
+                ChecklistItem("R", "Releases", "Check shoulder straps, chest clip, cummerbund, and tank cylinder cam band tightness.", false)
+            },
+            if (isGerman) {
+                ChecklistItem("A", "Atemregler (Air)", "3 tiefe Atemzüge aus Hauptregler und Oktopus bei gleichzeitigem Blick auf das Finimeter (SPG).", false)
+            } else {
+                ChecklistItem("A", "Air & Regulators", "Breathe 3 deep cycles from primary and alternate octopus while watching the SPG pressure gauge.", false)
+            },
+            if (isGerman) {
+                ChecklistItem("F", "Finaler Check (Final OK)", "Maske antibeschlagen, Flossen an, Computer aktiv, Kompass peilen, Signale abgestimmt. Bereit zum Abtauchen!", false)
+            } else {
+                ChecklistItem("F", "Final OK", "Mask defogged, fins on, computer active, compass set, entry signals agreed upon. Ready to splash!", false)
+            }
         )
     }
 
@@ -1672,7 +1731,7 @@ private fun PreDiveBuddyChecklistTab() {
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "$completedCount of ${checklistItems.size} checks verified with buddy",
+                                    text = if (isGerman) "$completedCount von ${checklistItems.size} Sicherheitsprüfungen mit Buddy bestätigt" else "$completedCount of ${checklistItems.size} checks verified with buddy",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

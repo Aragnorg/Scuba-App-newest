@@ -308,7 +308,7 @@ fun ProfileMenuModal(
                                             ) {
                                                 Icon(
                                                     Icons.Default.DriveFileRenameOutline,
-                                                    contentDescription = "Edit Name",
+                                                    contentDescription = if (currentLanguage == AppLanguage.DE) "Name bearbeiten" else "Edit Name",
                                                     tint = OceanPrimary,
                                                     modifier = Modifier.size(16.dp)
                                                 )
@@ -1004,7 +1004,7 @@ fun ProfileMenuModal(
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
-                                        text = "${documents.size} saved documents",
+                                        text = if (currentLanguage == AppLanguage.DE) "${documents.size} Dokumente hinterlegt" else "${documents.size} saved documents",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -1015,7 +1015,7 @@ fun ProfileMenuModal(
                                         showAddDocumentDialog = true
                                     },
                                     modifier = Modifier.testTag("profile_add_doc_btn"),
-                                    shape = RoundedCornerShape(20.dp),
+                                    shape = RoundedCornerShape(14.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                                 ) {
@@ -1046,12 +1046,16 @@ fun ProfileMenuModal(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.setDocumentSearchQuery(it) },
-                            placeholder = { Text("Search certifications, medical statement, waivers...") },
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                            placeholder = {
+                                Text(if (currentLanguage == AppLanguage.DE) "Zertifikate, TTU, Brevets durchsuchen..." else "Search certifications, medical statement, waivers...")
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Search, contentDescription = if (currentLanguage == AppLanguage.DE) "Suchen" else "Search")
+                            },
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setDocumentSearchQuery("") }) {
-                                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                        Icon(Icons.Default.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "Löschen" else "Clear")
                                     }
                                 }
                             },

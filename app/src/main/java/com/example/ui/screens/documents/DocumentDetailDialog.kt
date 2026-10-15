@@ -337,7 +337,7 @@ fun DocumentDetailDialog(
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
-                                text = "Diver Notes",
+                                text = if (isGerman) "Tauchernotizen" else "Diver Notes",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -390,25 +390,25 @@ fun DocumentDetailDialog(
 
                         if (isApproved) {
                             Text(
-                                text = "Approver: ${document.approverName}",
+                                text = "${if (isGerman) "Prüfer / Aussteller" else "Approver"}: ${document.approverName}",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Credential: ${document.approverTitleOrLicense}",
+                                text = "${if (isGerman) "Qualifikation / Lizenz" else "Credential"}: ${document.approverTitleOrLicense}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             if (document.approverOrganization.isNotBlank()) {
                                 Text(
-                                    text = "Organization: ${document.approverOrganization}",
+                                    text = "${if (isGerman) "Organisation" else "Organization"}: ${document.approverOrganization}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Text(
-                                text = "Verified on: ${document.approvalDate}",
+                                text = "${if (isGerman) "Verifiziert am" else "Verified on"}: ${document.approvalDate}",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -421,7 +421,7 @@ fun DocumentDetailDialog(
                                     border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.2f))
                                 ) {
                                     Text(
-                                        text = "Assessment: ${document.approverNotes}",
+                                        text = "${if (isGerman) "Prüfbericht" else "Assessment"}: ${document.approverNotes}",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.padding(10.dp)
@@ -488,8 +488,18 @@ fun DocumentDetailDialog(
                                 }
                             }
                         } else {
+                            val approverRoleGerman = when (document.requiredApproverType) {
+                                "DOCTOR" -> "einen Arzt"
+                                "INSTRUCTOR" -> "einen Tauchlehrer"
+                                "DIVE_CENTER" -> "eine Tauchbasis"
+                                else -> "einen Prüfer"
+                            }
                             Text(
-                                text = "This document is currently awaiting review and signature from a ${document.requiredApproverType.lowercase().replace("_", " ")}.",
+                                text = if (isGerman) {
+                                    "Dieses Dokument wartet aktuell auf Prüfung und Unterschrift durch $approverRoleGerman."
+                                } else {
+                                    "This document is currently awaiting review and signature from a ${document.requiredApproverType.lowercase().replace("_", " ")}."
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -503,8 +513,8 @@ fun DocumentDetailDialog(
                                 Button(
                                     onClick = onApproveClick,
                                     modifier = Modifier.testTag("open_sign_approve_btn"),
-                                    shape = RoundedCornerShape(20.dp),
-                                    contentPadding = PaddingValues(horizontal = 22.dp, vertical = 9.dp),
+                                    shape = RoundedCornerShape(14.dp),
+                                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
                                 ) {
                                     Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))

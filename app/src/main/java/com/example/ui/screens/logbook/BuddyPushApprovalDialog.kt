@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiveLogEntity
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
 
@@ -64,8 +66,15 @@ fun BuddyPushApprovalDialog(
     onDismiss: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     var buddyName by remember { mutableStateOf(dive.buddyName.ifBlank { "Elena Rostova" }) }
-    var buddyNote by remember { mutableStateOf("Verified buddy dive! We had fantastic visibility and great safety stop timing.") }
+    var buddyNote by remember(isGerman) {
+        mutableStateOf(
+            if (isGerman) "Bestätigter Buddy-Tauchgang! Fantastische Sichtweiten und perfektes Timing beim Sicherheitsstopp."
+            else "Verified buddy dive! We had fantastic visibility and great safety stop timing."
+        )
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -244,8 +253,8 @@ fun BuddyPushApprovalDialog(
                             containerColor = SeaGreen,
                             contentColor = Color(0xFF00382E)
                         ),
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp),
                         modifier = Modifier.testTag("confirm_push_approval_button")
                     ) {
                         Icon(

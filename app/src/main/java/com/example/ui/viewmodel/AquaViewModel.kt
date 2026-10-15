@@ -99,7 +99,7 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- Language Preference & Management ---
     private val _currentLanguage = MutableStateFlow(
-        AppLanguage.fromCode(prefs.getString("app_language", "en"))
+        AppLanguage.fromCode(prefs.getString("app_language", "de"))
     )
     val currentLanguage: StateFlow<AppLanguage> = _currentLanguage.asStateFlow()
 
@@ -169,12 +169,13 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     fun registerUser(email: String, passwordPlain: String, fullName: String, role: String = "STUDENT") {
         _authError.value = null
         _authSuccess.value = null
+        val isDe = _currentLanguage.value == AppLanguage.DE
         if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
-            _authError.value = "Please enter a valid email address."
+            _authError.value = if (isDe) "Bitte gib eine gültige E-Mail-Adresse ein." else "Please enter a valid email address."
             return
         }
         if (passwordPlain.length < 6) {
-            _authError.value = "Password must be at least 6 characters long."
+            _authError.value = if (isDe) "Das Passwort muss mindestens 6 Zeichen lang sein." else "Password must be at least 6 characters long."
             return
         }
 
@@ -188,10 +189,14 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                         fullName = account.fullName,
                         lastEmailMessage = emailMessage
                     )
-                    _authSuccess.value = "Verification email automatically sent by Adrian Scheid to ${account.email}!"
+                    _authSuccess.value = if (isDe) {
+                        "Bestätigungs-E-Mail wurde automatisch an ${account.email} gesendet!"
+                    } else {
+                        "Verification email automatically sent by Adrian Scheid to ${account.email}!"
+                    }
                 },
                 onFailure = { err ->
-                    _authError.value = err.message ?: "Registration failed."
+                    _authError.value = err.message ?: if (isDe) "Registrierung fehlgeschlagen." else "Registration failed."
                 }
             )
         }
@@ -208,8 +213,13 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     fun verifyUserEmail(email: String, code: String) {
         _authError.value = null
         _authSuccess.value = null
+        val isDe = _currentLanguage.value == AppLanguage.DE
         if (code.isBlank() || code.trim().length != 6) {
-            _authError.value = "Please enter the 6-digit verification code sent to your email."
+            _authError.value = if (isDe) {
+                "Bitte gib den 6-stelligen Bestätigungscode ein, der an deine E-Mail gesendet wurde."
+            } else {
+                "Please enter the 6-digit verification code sent to your email."
+            }
             return
         }
 
@@ -220,10 +230,14 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                     prefs.edit().putString("logged_in_user_id", verifiedAccount.id).apply()
                     _currentUser.value = verifiedAccount
                     _authState.value = AuthState.Authenticated(verifiedAccount)
-                    _authSuccess.value = "Registration finalised! Welcome to AquaLearn, ${verifiedAccount.fullName}."
+                    _authSuccess.value = if (isDe) {
+                        "Registrierung abgeschlossen! Willkommen bei AquaLearn, ${verifiedAccount.fullName}."
+                    } else {
+                        "Registration finalised! Welcome to AquaLearn, ${verifiedAccount.fullName}."
+                    }
                 },
                 onFailure = { err ->
-                    _authError.value = err.message ?: "Verification failed."
+                    _authError.value = err.message ?: if (isDe) "Verifizierung fehlgeschlagen." else "Verification failed."
                 }
             )
         }
@@ -232,15 +246,20 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     fun resendVerificationEmail(email: String) {
         _authError.value = null
         _authSuccess.value = null
+        val isDe = _currentLanguage.value == AppLanguage.DE
         viewModelScope.launch {
             val result = repository.resendVerificationCode(email)
             result.fold(
                 onSuccess = { newMsg ->
                     _latestVerificationEmail.value = newMsg
-                    _authSuccess.value = "A new verification code was sent to ${newMsg.recipientEmail}."
+                    _authSuccess.value = if (isDe) {
+                        "Ein neuer Bestätigungscode wurde an ${newMsg.recipientEmail} gesendet."
+                    } else {
+                        "A new verification code was sent to ${newMsg.recipientEmail}."
+                    }
                 },
                 onFailure = { err ->
-                    _authError.value = err.message ?: "Failed to resend code."
+                    _authError.value = err.message ?: if (isDe) "Code konnte nicht erneut gesendet werden." else "Failed to resend code."
                 }
             )
         }
@@ -249,8 +268,9 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     fun loginUser(email: String, passwordPlain: String) {
         _authError.value = null
         _authSuccess.value = null
+        val isDe = _currentLanguage.value == AppLanguage.DE
         if (email.isBlank() || passwordPlain.isBlank()) {
-            _authError.value = "Please enter your email and password."
+            _authError.value = if (isDe) "Bitte E-Mail-Adresse und Passwort eingeben." else "Please enter your email and password."
             return
         }
 
@@ -273,9 +293,13 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                             fullName = "Candidate",
                             lastEmailMessage = emailMsg
                         )
-                        _authError.value = "Your email is not verified yet. We have re-sent a 6-digit verification code to your email."
+                        _authError.value = if (isDe) {
+                            "Deine E-Mail-Adresse ist noch nicht verifiziert. Wir haben einen neuen 6-stelligen Bestätigungscode gesendet."
+                        } else {
+                            "Your email is not verified yet. We have re-sent a 6-digit verification code to your email."
+                        }
                     } else {
-                        _authError.value = err.message ?: "Invalid email or password."
+                        _authError.value = err.message ?: if (isDe) "Ungültige E-Mail-Adresse oder falsches Passwort." else "Invalid email or password."
                     }
                 }
             )
@@ -1206,67 +1230,67 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             com.example.data.model.ScubaCourse(
                 id = "course_owd",
                 title = "Open Water Diver",
-                subtitle = "Recreational Entry-Level Certification",
-                description = "Learn the fundamentals of scuba diving, including diving physics, safety procedures, confined water skill mastery, and 4 qualifying open water ocean dives.",
-                depthLimit = "18m / 60ft",
-                duration = "3-4 Days",
-                prerequisites = "None / Swim 200m",
+                subtitle = "Einstiegs-Zertifizierung für Sporttaucher",
+                description = "Lerne die Grundlagen des Gerätetauchens: Tauchphysik, Notfallprozeduren, Fertigkeiten im Pool und 4 Freiwasser-Tauchgänge.",
+                depthLimit = "18m",
+                duration = "3-4 Tage",
+                prerequisites = "Keine / 200m Schwimmen",
                 isEnrolled = true,
                 iconEmoji = "🤿",
                 lessonsCount = 5,
-                difficulty = "Beginner"
+                difficulty = "Einsteiger"
             ),
             com.example.data.model.ScubaCourse(
                 id = "course_nitrox",
                 title = "Enriched Air Nitrox Specialty",
-                subtitle = "Most Popular Specialty Course",
-                description = "Extend your bottom time and dive safer by learning how to analyze oxygen percentages, calculate oxygen toxicity, and program dive computers for nitrox gas up to 40% O2.",
-                depthLimit = "Prerequisite Rating Limit",
-                duration = "1 Day",
+                subtitle = "Beliebtester Spezialkurs weltweit",
+                description = "Verlängere deine Grundzeit und tauche sicherer durch Sauerstoffanalyse, Berechnung der Sauerstofftoxizität und Computerprogrammierung bis 40% O2.",
+                depthLimit = "Gemäß Brevet-Stufe",
+                duration = "1 Tag",
                 prerequisites = "Open Water Diver",
                 isEnrolled = false,
                 iconEmoji = "🧪",
                 lessonsCount = 3,
-                difficulty = "Easy"
+                difficulty = "Leicht"
             ),
             com.example.data.model.ScubaCourse(
                 id = "course_deep",
                 title = "Deep Diver Specialty",
-                subtitle = "Dive down to the recreational limit",
-                description = "Learn the safety protocols, physical adjustments, narcosis checks, and dual tank redundant gas supply management needed to safely explore deeper waters down to 40 meters / 130 feet.",
-                depthLimit = "40m / 130ft",
-                duration = "2 Days",
+                subtitle = "Tauchen bis an das Sporttauchlimit",
+                description = "Sicherheitsprotokolle, physiologische Anpassungen, Tiefenrausch-Checks und redundantes Gasmanagement für Tauchgänge bis zu 40 Metern Tiefe.",
+                depthLimit = "40m",
+                duration = "2 Tage",
                 prerequisites = "Advanced Open Water",
                 isEnrolled = false,
                 iconEmoji = "⚓",
                 lessonsCount = 4,
-                difficulty = "Advanced"
+                difficulty = "Fortgeschritten"
             ),
             com.example.data.model.ScubaCourse(
                 id = "course_wreck",
                 title = "Wreck Diver Specialty",
-                subtitle = "Explore historic artificial reefs",
-                description = "Acquire the skills to chart sunken vessels, lay guide penetration lines, avoid kicking up silt, and safely explore wreck interiors without getting trapped.",
-                depthLimit = "Prerequisite Rating Limit",
-                duration = "2 Days",
+                subtitle = "Historische Wracks & künstliche Riffe",
+                description = "Sicheres Erkunden versunkener Schiffe: Navigation mit Führungsleine, Vermeidung von Sediment-Aufwirbelung und Notfallverfahren im Wrack.",
+                depthLimit = "Gemäß Brevet-Stufe",
+                duration = "2 Tage",
                 prerequisites = "Advanced Open Water",
                 isEnrolled = false,
                 iconEmoji = "🚢",
                 lessonsCount = 4,
-                difficulty = "Challenging"
+                difficulty = "Anspruchsvoll"
             ),
             com.example.data.model.ScubaCourse(
                 id = "course_night",
                 title = "Night Diver Specialty",
-                subtitle = "Experience dive sites under a new light",
-                description = "Navigate in complete darkness, master light communications, observe nocturnal marine life patterns, and experience the thrill of pitch-black diving.",
-                depthLimit = "Prerequisite Rating Limit",
-                duration = "3 Nights",
+                subtitle = "Tauchplätze in neuem Licht erleben",
+                description = "Orientierung bei Dunkelheit, Handhabung der Unterwasserlampe, Lichtsignale und faszinierende nachtaktive Meeresbewohner.",
+                depthLimit = "Gemäß Brevet-Stufe",
+                duration = "3 Abende",
                 prerequisites = "Open Water Diver",
                 isEnrolled = false,
                 iconEmoji = "🔦",
                 lessonsCount = 3,
-                difficulty = "Medium"
+                difficulty = "Mittel"
             )
         )
     )
@@ -1694,8 +1718,8 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             val deck = PresentationDeckEntity(
                 id = "pres_custom_${UUID.randomUUID().toString().take(8)}",
                 moduleId = moduleId,
-                title = title.ifBlank { "Instructor Presentation" },
-                description = description.ifBlank { "Custom uploaded slide deck." },
+                title = title.ifBlank { if (_currentLanguage.value == AppLanguage.DE) "Tauchlehrer-Präsentation" else "Instructor Presentation" },
+                description = description.ifBlank { if (_currentLanguage.value == AppLanguage.DE) "Hochgeladene Präsentationsfolien." else "Custom uploaded slide deck." },
                 slidesJson = jsonArray.toString(),
                 documentUri = documentUri,
                 totalSlides = slides.size.coerceAtLeast(1),
@@ -1734,8 +1758,8 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             val video = LearningVideoEntity(
                 id = "vid_custom_${UUID.randomUUID().toString().take(8)}",
                 moduleId = moduleId,
-                title = title.ifBlank { "Instructor Training Video" },
-                description = description.ifBlank { "Custom dive skill video." },
+                title = title.ifBlank { if (_currentLanguage.value == AppLanguage.DE) "Tauchlehrer-Lehrvideo" else "Instructor Training Video" },
+                description = description.ifBlank { if (_currentLanguage.value == AppLanguage.DE) "Praxisnahes Tauchfertigkeiten-Video." else "Custom dive skill video." },
                 durationSeconds = (durationMinutes * 60).coerceAtLeast(60),
                 videoUrlOrUri = videoUriOrUrl.ifBlank { "scuba://video/custom_${System.currentTimeMillis()}" },
                 chaptersJson = chaptersJson.toString(),
@@ -1776,8 +1800,8 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             val quiz = QuizEntity(
                 id = "quiz_custom_${UUID.randomUUID().toString().take(8)}",
                 moduleId = moduleId,
-                title = title.ifBlank { "Custom Dive Quiz" },
-                description = description.ifBlank { "Instructor-prepared quiz." },
+                title = title.ifBlank { if (_currentLanguage.value == AppLanguage.DE) "Tauchquiz" else "Custom Dive Quiz" },
+                description = description.ifBlank { if (_currentLanguage.value == AppLanguage.DE) "Vom Tauchlehrer erstelltes Prüfungsquiz." else "Instructor-prepared quiz." },
                 passScorePercentage = passPercentage.coerceIn(50, 100),
                 questionsJson = questionsArray.toString(),
                 isMockExam = isMockExam,

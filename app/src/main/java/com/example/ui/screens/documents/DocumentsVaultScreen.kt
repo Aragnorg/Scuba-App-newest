@@ -244,8 +244,8 @@ fun DocumentsVaultScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.setDocumentSearchQuery(it) },
-                    placeholder = { Text("Search certifications, doctor forms, ID...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    placeholder = { Text("Zertifikate, TTU, Brevets durchsuchen...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Suchen") },
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
                             IconButton(onClick = { viewModel.setDocumentSearchQuery("") }) {
@@ -454,22 +454,27 @@ fun DocumentsVaultScreen(
     documentToDelete?.let { doc ->
         AlertDialog(
             onDismissRequest = { documentToDelete = null },
-            title = { Text("Delete Document") },
-            text = { Text("Are you sure you want to delete '${doc.title}'? This action cannot be undone.") },
+            title = { Text("Dokument löschen") },
+            text = { Text("Möchtest du das Dokument '${doc.title}' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.") },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
                     },
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
                 ) {
-                    Text("Delete")
+                    Text("Löschen")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { documentToDelete = null }) {
-                    Text("Cancel")
+                TextButton(
+                    onClick = { documentToDelete = null },
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text("Abbrechen")
                 }
             }
         )
@@ -681,7 +686,7 @@ fun DocumentVaultCard(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = if (isApproved) "Approved by ${document.approverName}" else "Sign-off required: ${document.requiredApproverType.lowercase().replace("_", " ")}",
+                                text = if (isApproved) "Freigegeben von ${document.approverName}" else "Freigabe erforderlich: ${document.requiredApproverType.lowercase().replace("_", " ")}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -692,7 +697,7 @@ fun DocumentVaultCard(
 
                         if (!isApproved) {
                             Text(
-                                text = "Sign Now",
+                                text = "Jetzt prüfen",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
@@ -714,11 +719,12 @@ fun DocumentVaultCard(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("doc_details_btn_${document.id}"),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
                         Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("View Details", fontSize = 12.sp)
+                        Text("Details", fontSize = 12.sp)
                     }
 
                     if (!isApproved) {
@@ -728,11 +734,12 @@ fun DocumentVaultCard(
                                 .weight(1f)
                                 .testTag("doc_approve_btn_${document.id}"),
                             shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
                         ) {
                             Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Approve", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Freigeben", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

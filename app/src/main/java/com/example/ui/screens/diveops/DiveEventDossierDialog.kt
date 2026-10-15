@@ -546,7 +546,7 @@ private fun OrganizationTabContent(
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            Text("➕ Check-in", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text("➕ Einchecken", fontSize = 11.sp, fontWeight = FontWeight.Bold)
         }
 
         OutlinedButton(

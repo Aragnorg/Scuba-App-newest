@@ -59,7 +59,9 @@ import com.example.data.model.DiveLogEntity
 import com.example.ui.components.InteractiveSignaturePad
 import com.example.ui.components.SignaturePoint
 import com.example.ui.components.serializeSignaturePoints
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
 
@@ -82,12 +84,19 @@ fun BuddyApprovalDialog(
     onDismiss: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Hand Signature, 1: Send Push Message
 
     // Hand Signature State
     val signaturePoints = remember { mutableStateListOf<SignaturePoint>() }
     var buddyNameInput by remember { mutableStateOf(dive.buddyName.ifBlank { "Alex Rivera" }) }
-    var buddyNoteInput by remember { mutableStateOf("Verified buddy dive. Excellent buoyancy, trim, and gas management!") }
+    var buddyNoteInput by remember(isGerman) {
+        mutableStateOf(
+            if (isGerman) "Bestätigter Buddy-Tauchgang. Hervorragende Tarierung, Trimm und Gasmanagement!"
+            else "Verified buddy dive. Excellent buoyancy, trim, and gas management!"
+        )
+    }
 
     // Push Message State
     var pushBuddyName by remember { mutableStateOf(dive.buddyName.ifBlank { "Elena Rostova" }) }

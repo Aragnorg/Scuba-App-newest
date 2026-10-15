@@ -56,7 +56,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.components.ExamReadinessGauge
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
@@ -78,8 +80,9 @@ fun StudentProgressScreen(
     val videos by viewModel.deployedVideos.collectAsState()
     val quizzes by viewModel.deployedQuizzes.collectAsState()
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
 
-    val studentName = currentUser?.fullName ?: progress?.studentName ?: "Diver Student"
+    val studentName = currentUser?.fullName ?: progress?.studentName ?: if (currentLanguage == AppLanguage.DE) "Tauchschüler" else "Diver Student"
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),

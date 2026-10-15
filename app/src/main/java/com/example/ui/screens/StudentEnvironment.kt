@@ -75,10 +75,10 @@ fun StudentEnvironment(
     val currentUser by viewModel.currentUser.collectAsState()
     val progress by viewModel.userProgress.collectAsState()
     val documents by viewModel.allDocuments.collectAsState()
-    val studentName = currentUser?.fullName ?: progress?.studentName ?: "Diver Student"
-    val profilePicUri = currentUser?.profilePictureUri ?: progress?.profilePictureUri
     val strings = LocalAppStrings.current
     val currentLanguage = LocalCurrentLanguage.current
+    val studentName = currentUser?.fullName ?: progress?.studentName ?: if (currentLanguage == AppLanguage.DE) "Tauchschüler" else "Diver Student"
+    val profilePicUri = currentUser?.profilePictureUri ?: progress?.profilePictureUri
     val hasExpirationAlerts = remember(documents) {
         com.example.util.DocumentExpirationHelper.hasUrgentExpirationAlerts(documents)
     }

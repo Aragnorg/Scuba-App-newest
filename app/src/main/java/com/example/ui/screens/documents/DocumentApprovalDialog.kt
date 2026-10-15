@@ -81,7 +81,9 @@ import com.example.ui.components.PaperStatementInspectDialog
 import com.example.ui.components.RealisticMedicalStatementPaper
 import com.example.ui.components.SignaturePoint
 import com.example.ui.components.serializeSignaturePoints
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -107,6 +109,8 @@ fun DocumentApprovalDialog(
     onDismiss: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     val todayDate = remember {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     }
@@ -177,23 +181,35 @@ fun DocumentApprovalDialog(
         )
     }
 
-    var approverOrg by remember {
+    var approverOrg by remember(isGerman, approverRole) {
         mutableStateOf(
             when (approverRole) {
-                "DOCTOR" -> "Hyperbaric & Sports Medicine Clinic"
+                "DOCTOR" -> if (isGerman) "Klinik für Hyperbar- & Tauchmedizin" else "Hyperbaric & Sports Medicine Clinic"
                 "INSTRUCTOR" -> "AquaLearn Diving Academy"
-                "DIVE_CENTER" -> "AquaLearn Dive Resort & Base"
-                else -> "International Scuba Accreditation Board"
+                "DIVE_CENTER" -> if (isGerman) "AquaLearn Tauchbasis & Center" else "AquaLearn Dive Resort & Base"
+                else -> if (isGerman) "Internationaler Tauchsportverband" else "International Scuba Accreditation Board"
             }
         )
     }
 
-    var assessmentNotes by remember {
+    var assessmentNotes by remember(isGerman, approverRole) {
         mutableStateOf(
             when (approverRole) {
-                "DOCTOR" -> "Candidate physically examined: Ear drums healthy, lung function normal, cardiovascular parameters fit for unrestricted scuba diving to 30m."
-                "INSTRUCTOR" -> "All prerequisites, theoretical knowledge, and practical skill demonstrations verified in compliance with international training standards."
-                else -> "Document verified authentic and currently in full legal compliance."
+                "DOCTOR" -> if (isGerman) {
+                    "Kandidat tauchsportärztlich untersucht: Trommelfelle intakt, Lungenfunktion normal, kardiovaskuläre Parameter unauffällig. Tauchtauglichkeit ohne Einschränkung bis 30m bescheinigt."
+                } else {
+                    "Candidate physically examined: Ear drums healthy, lung function normal, cardiovascular parameters fit for unrestricted scuba diving to 30m."
+                }
+                "INSTRUCTOR" -> if (isGerman) {
+                    "Alle theoretischen Prüfungen, Standards und praktischen Übungen gemäß den geltenden Ausbildungsrichtlinien erfolgreich demonstriert und abgenommen."
+                } else {
+                    "All prerequisites, theoretical knowledge, and practical skill demonstrations verified in compliance with international training standards."
+                }
+                else -> if (isGerman) {
+                    "Dokument auf Echtheit und Gültigkeit geprüft. Entspricht den gesetzlichen und verbandsspezifischen Vorgaben."
+                } else {
+                    "Document verified authentic and currently in full legal compliance."
+                }
             }
         )
     }
@@ -343,13 +359,13 @@ fun DocumentApprovalDialog(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (isScanningQr) "Active QR-Code Scanner Mode" else "Instant QR-Code Verification",
+                                text = if (isScanningQr) "QR-Code Scanner aktiv" else "Sofortige QR-Code Prüfung",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isScanningQr) OceanPrimary else SeaGreen
                             )
                             Text(
-                                text = if (isScanningQr) "Camera is actively searching for verified seals" else "Scan an official stamp QR-code to verify and sign instantly",
+                                text = if (isScanningQr) "Kamera sucht nach verifizierten Siegeln / Stempeln" else "Offiziellen Stempel-QR-Code scannen zum sofortigen Signieren",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 10.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -367,12 +383,12 @@ fun DocumentApprovalDialog(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.QrCodeScanner,
-                                contentDescription = "Scan QR",
+                                contentDescription = "QR scannen",
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = if (isScanningQr) "Cancel Scan" else "Open Camera",
+                                text = if (isScanningQr) "Abbrechen" else "Kamera öffnen",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -437,13 +453,13 @@ fun DocumentApprovalDialog(
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Align Official QR Seal",
+                                text = "Offizielles QR-Siegel im Rahmen ausrichten",
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "Camera active. Simulating certificate QR detection...",
+                                text = "Kamera aktiv. Suche nach Zertifikats-QR-Code...",
                                 color = Color.LightGray,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp
@@ -461,7 +477,7 @@ fun DocumentApprovalDialog(
                                 ) {
                                     Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Grant Camera Permission", fontSize = 11.sp, color = Color(0xFF00382E), fontWeight = FontWeight.Bold)
+                                    Text("Kamerazugriff erlauben", fontSize = 11.sp, color = Color(0xFF00382E), fontWeight = FontWeight.Bold)
                                 }
                             } else {
                                 Surface(
@@ -469,7 +485,7 @@ fun DocumentApprovalDialog(
                                     color = SeaGreen.copy(alpha = 0.25f)
                                 ) {
                                     Text(
-                                        text = "SCANNER CAMERA ONLINE",
+                                        text = "KAMERA BEREIT",
                                         color = SeaGreen,
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -638,11 +654,12 @@ fun DocumentApprovalDialog(
                                 .weight(1.5f)
                                 .testTag("confirm_doc_approval_btn"),
                             shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
                         ) {
                             Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Verify via QR Code", fontWeight = FontWeight.Bold)
+                            Text("Per QR-Code verifizieren", fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {
@@ -663,7 +680,7 @@ fun DocumentApprovalDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ApproverRoleChip(
-                        title = "Doctor",
+                        title = "Arzt",
                         icon = Icons.Default.LocalHospital,
                         isSelected = approverRole == "DOCTOR",
                         color = Color(0xFF00875A),
@@ -671,14 +688,14 @@ fun DocumentApprovalDialog(
                             approverRole = "DOCTOR"
                             approverName = "Dr. med. Thomas Weber"
                             approverLicense = "EDTC / GTMÜ Diving Medicine Lic. #DE-77492"
-                            approverOrg = "Hyperbaric & Sports Medicine Clinic"
-                            assessmentNotes = "Candidate physically examined: Ear drums healthy, lung function normal, fit for recreational diving to 30m."
+                            approverOrg = "Tauch- und Sportmedizinisches Zentrum"
+                            assessmentNotes = "Kandidat ärztlich untersucht: Trommelfelle intakt, Lungenfunktion altersgerecht, uneingeschränkt tauchtauglich."
                         },
                         modifier = Modifier.weight(1f)
                     )
 
                     ApproverRoleChip(
-                        title = "Instructor",
+                        title = "Tauchlehrer",
                         icon = Icons.Default.School,
                         isSelected = approverRole == "INSTRUCTOR",
                         color = OceanPrimary,
@@ -686,23 +703,23 @@ fun DocumentApprovalDialog(
                             approverRole = "INSTRUCTOR"
                             approverName = "Adrian Scheid"
                             approverLicense = "PADI Master Scuba Diver Trainer #391024"
-                            approverOrg = "AquaLearn Diving Academy"
-                            assessmentNotes = "All training requirements, confined and open water check-out dives verified."
+                            approverOrg = "AquaLearn Tauchakademie"
+                            assessmentNotes = "Alle Ausbildungsstandards, Pool- und Freiwassertauchgänge erfolgreich absolviert und bestätigt."
                         },
                         modifier = Modifier.weight(1f)
                     )
 
                     ApproverRoleChip(
-                        title = "Dive Base",
+                        title = "Tauchbasis",
                         icon = Icons.Default.Business,
                         isSelected = approverRole == "DIVE_CENTER",
                         color = Color(0xFFD97706),
                         onClick = {
                             approverRole = "DIVE_CENTER"
                             approverName = "AquaLearn Dive Base"
-                            approverLicense = "Dive Center #DC-9842"
-                            approverOrg = "AquaLearn Dive Resort & Base"
-                            assessmentNotes = "Document verified authentic and on file for active diving activities."
+                            approverLicense = "Tauchbasis-Lizenz #DC-9842"
+                            approverOrg = "AquaLearn Tauchbasis & Resort"
+                            assessmentNotes = "Dokument auf Echtheit geprüft und für aktive Tauchaktivitäten im System hinterlegt."
                         },
                         modifier = Modifier.weight(1f)
                     )
@@ -836,7 +853,8 @@ fun DocumentApprovalDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("cancel_doc_approval_btn"),
-                            shape = RoundedCornerShape(14.dp)
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                         ) {
                             Text(strings.cancel)
                         }
@@ -861,6 +879,7 @@ fun DocumentApprovalDialog(
                                 .weight(1.5f)
                                 .testTag("confirm_doc_approval_btn"),
                             shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = SeaGreen
                             )
@@ -936,22 +955,22 @@ val authorizedDocumentStamps = listOf(
     AuthorizedDocumentStamp(
         approverName = "Dr. med. Thomas Weber",
         approverLicense = "EDTC / GTMÜ Diving Medicine Lic. #DE-77492",
-        approverOrg = "Hyperbaric & Sports Medicine Clinic",
+        approverOrg = "Tauch- und Sportmedizinisches Zentrum",
         stampCode = "STAMP-MD-WEBER-9842",
-        assessmentNotes = "Candidate physically fit. Ears and lungs healthy, fit for recreational diving."
+        assessmentNotes = "Kandidat uneingeschränkt tauchtauglich. Herz, Lunge und HNO ohne pathologischen Befund."
     ),
     AuthorizedDocumentStamp(
         approverName = "Adrian Scheid",
         approverLicense = "PADI Master Scuba Diver Trainer #391024",
-        approverOrg = "AquaLearn Diving Academy",
+        approverOrg = "AquaLearn Tauchakademie",
         stampCode = "STAMP-INST-SCHEID-1024",
-        assessmentNotes = "All training requirements, classroom and practical standards verified."
+        assessmentNotes = "Alle Ausbildungsstandards, Theorie- und Praxisanforderungen vollständig erfüllt."
     ),
     AuthorizedDocumentStamp(
         approverName = "AquaLearn Dive Base",
-        approverLicense = "Dive Center Licence #DC-9842",
-        approverOrg = "AquaLearn Dive Resort & Base",
+        approverLicense = "Tauchbasis-Lizenz #DC-9842",
+        approverOrg = "AquaLearn Tauchbasis & Resort",
         stampCode = "STAMP-DC-AQUALEARN-8422",
-        assessmentNotes = "Document checked authentic and registered with base record system."
+        assessmentNotes = "Dokument auf Echtheit geprüft und im Basissystem hinterlegt."
     )
 )

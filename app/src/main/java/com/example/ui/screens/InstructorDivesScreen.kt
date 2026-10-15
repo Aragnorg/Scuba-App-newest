@@ -66,7 +66,9 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiveLogEntity
 import com.example.data.model.DiverDocumentEntity
 import com.example.ui.components.QrCodeRenderer
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.screens.documents.DocumentApprovalDialog
 import com.example.ui.screens.documents.DocumentDetailDialog
 import com.example.ui.screens.logbook.authorizedDiveCenterStamps
@@ -94,6 +96,7 @@ fun InstructorDivesScreen(
     val currentUser by viewModel.currentUser.collectAsState()
     val instructorName = currentUser?.fullName ?: "Adrian Scheid"
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
 
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Student Dives to Stamp, 1: Provide Center QR Code, 2: Student Documents
     var diveForQrPresentation by remember { mutableStateOf<DiveLogEntity?>(null) }
@@ -421,7 +424,7 @@ fun InstructorDivesScreen(
                                         border = androidx.compose.foundation.BorderStroke(1.dp, SandGold)
                                     ) {
                                         Text(
-                                            text = "AWAITING APPROVAL",
+                                            text = if (currentLanguage == AppLanguage.DE) "WARTE AUF PRÜFUNG" else "AWAITING APPROVAL",
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 9.sp,
@@ -439,7 +442,7 @@ fun InstructorDivesScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Candidate: ${doc.diverName} (${doc.diverEmail}) • #${doc.documentNumber}",
+                                    text = "${if (currentLanguage == AppLanguage.DE) "Kandidat" else "Candidate"}: ${doc.diverName} (${doc.diverEmail}) • #${doc.documentNumber}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -458,7 +461,7 @@ fun InstructorDivesScreen(
                                             Icon(Icons.Default.Description, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = "📄 Physical Paper Statement Attached (Ready for Cross-Check)",
+                                                text = if (currentLanguage == AppLanguage.DE) "📄 Physisches Dokument angehängt (Prüfbereit)" else "📄 Physical Paper Statement Attached (Ready for Cross-Check)",
                                                 fontSize = 9.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = SeaGreen
@@ -470,7 +473,7 @@ fun InstructorDivesScreen(
                                 if (doc.notes.isNotBlank()) {
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
-                                        text = "Remarks: \"${doc.notes}\"",
+                                        text = "${if (currentLanguage == AppLanguage.DE) "Bemerkungen" else "Remarks"}: \"${doc.notes}\"",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                                     )
@@ -485,20 +488,22 @@ fun InstructorDivesScreen(
                                     OutlinedButton(
                                         onClick = { documentForDetails = doc },
                                         modifier = Modifier.weight(1f),
-                                        shape = RoundedCornerShape(10.dp)
+                                        shape = RoundedCornerShape(10.dp),
+                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                                     ) {
-                                        Text("View Details", fontSize = 11.sp)
+                                        Text(if (currentLanguage == AppLanguage.DE) "Details ansehen" else "View Details", fontSize = 11.sp)
                                     }
 
                                     Button(
                                         onClick = { documentForApproval = doc },
                                         modifier = Modifier.weight(1.3f),
                                         shape = RoundedCornerShape(10.dp),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
                                     ) {
                                         Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Sign & Approve", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                        Text(if (currentLanguage == AppLanguage.DE) "Prüfen & Signieren" else "Sign & Approve", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
@@ -510,7 +515,7 @@ fun InstructorDivesScreen(
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "Recently Verified Documents (${approvedDocs.size})",
+                            text = "${if (currentLanguage == AppLanguage.DE) "Kürzlich verifizierte Dokumente" else "Recently Verified Documents"} (${approvedDocs.size})",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = SeaGreen
@@ -538,7 +543,7 @@ fun InstructorDivesScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Approved by: ${doc.approverName} • Stamp: ${doc.approvalStampCode}",
+                                        text = "${if (currentLanguage == AppLanguage.DE) "Freigegeben von" else "Approved by"}: ${doc.approverName} • ${if (currentLanguage == AppLanguage.DE) "Stempel" else "Stamp"}: ${doc.approvalStampCode}",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )

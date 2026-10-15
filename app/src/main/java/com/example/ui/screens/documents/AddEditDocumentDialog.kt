@@ -311,8 +311,8 @@ fun AddEditDocumentDialog(
                                 category = "MEDICAL_FORM"
                                 requiredApproverType = "DOCTOR"
                                 cardColorHex = "#00875A"
-                                if (title.isBlank()) title = "RSTC Medical Statement & Fitness to Dive"
-                                if (issuingOrganization.isBlank()) issuingOrganization = "Dr. med. Weber (Diving Physician)"
+                                if (title.isBlank()) title = "RSTC Tauchtauglichkeit (TTU)"
+                                if (issuingOrganization.isBlank()) issuingOrganization = "Dr. med. Weber (Tauchmediziner)"
                                 categoryDropdownExpanded = false
                             }
                         )
@@ -322,7 +322,7 @@ fun AddEditDocumentDialog(
                                 category = "INSURANCE"
                                 requiredApproverType = "AGENCY"
                                 cardColorHex = "#C93B2B"
-                                if (title.isBlank()) title = "DAN Diving Accident Insurance"
+                                if (title.isBlank()) title = "DAN Tauchunfall-Versicherung"
                                 if (issuingOrganization.isBlank()) issuingOrganization = "DAN Europe"
                                 categoryDropdownExpanded = false
                             }
@@ -333,8 +333,8 @@ fun AddEditDocumentDialog(
                                 category = "LIABILITY_WAIVER"
                                 requiredApproverType = "DIVE_CENTER"
                                 cardColorHex = "#4A5568"
-                                if (title.isBlank()) title = "Standard Safe Diving Liability Waiver"
-                                if (issuingOrganization.isBlank()) issuingOrganization = "AquaLearn Academy"
+                                if (title.isBlank()) title = "Haftungsausschluss & Taucherklärung"
+                                if (issuingOrganization.isBlank()) issuingOrganization = "AquaLearn Akademie"
                                 categoryDropdownExpanded = false
                             }
                         )
@@ -344,8 +344,8 @@ fun AddEditDocumentDialog(
                                 category = "EQUIPMENT_RECORD"
                                 requiredApproverType = "DIVE_CENTER"
                                 cardColorHex = "#D97706"
-                                if (title.isBlank()) title = "Regulator Overhaul & Hydrostatic Tank Test"
-                                if (issuingOrganization.isBlank()) issuingOrganization = "Certified Scuba Service Center"
+                                if (title.isBlank()) title = "Atemregler-Revision & TÜV Flaschenprüfung"
+                                if (issuingOrganization.isBlank()) issuingOrganization = "Zertifizierter Tauch-Servicebetrieb"
                                 categoryDropdownExpanded = false
                             }
                         )
@@ -368,7 +368,7 @@ fun AddEditDocumentDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text(strings.documentTitleLabel) },
-                    placeholder = { Text("e.g. Open Water Diver (18m) or Medical Statement") },
+                    placeholder = { Text("z.B. Open Water Diver (18m) oder TTU-Attest") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("doc_title_input"),
@@ -427,7 +427,7 @@ fun AddEditDocumentDialog(
                             trailingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.CalendarMonth,
-                                    contentDescription = "Select Date",
+                                    contentDescription = "Datum auswählen",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -458,7 +458,7 @@ fun AddEditDocumentDialog(
                             trailingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.CalendarMonth,
-                                    contentDescription = "Select Expiry Date",
+                                    contentDescription = "Ablaufdatum auswählen",
                                     tint = if (isLifetime) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -706,7 +706,7 @@ fun AddEditDocumentDialog(
                                             diverId = "preview",
                                             diverName = initialDocument?.diverName ?: "Alex Rivera",
                                             diverEmail = "",
-                                            title = title.ifBlank { "Medical Clearance" },
+                                            title = title.ifBlank { "Tauchtauglichkeit" },
                                             category = category,
                                             documentNumber = documentNumber.ifBlank { "MED-2026-99" },
                                             issuingOrganization = issuingOrganization.ifBlank { "Dr. Weber" },
@@ -739,19 +739,19 @@ fun AddEditDocumentDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     RoleSelectButton(
-                        title = "Doctor",
+                        title = "Arzt",
                         isSelected = requiredApproverType == "DOCTOR",
                         onClick = { requiredApproverType = "DOCTOR" },
                         modifier = Modifier.weight(1f)
                     )
                     RoleSelectButton(
-                        title = "Instructor",
+                        title = "Tauchlehrer",
                         isSelected = requiredApproverType == "INSTRUCTOR",
                         onClick = { requiredApproverType = "INSTRUCTOR" },
                         modifier = Modifier.weight(1f)
                     )
                     RoleSelectButton(
-                        title = "Dive Center",
+                        title = "Tauchbasis",
                         isSelected = requiredApproverType == "DIVE_CENTER",
                         onClick = { requiredApproverType = "DIVE_CENTER" },
                         modifier = Modifier.weight(1f)
@@ -764,8 +764,8 @@ fun AddEditDocumentDialog(
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
-                    label = { Text("Notes & Diver Remarks") },
-                    placeholder = { Text("e.g. Annual checkup passed without limitations, Nitrox blending approved...") },
+                    label = { Text("Notizen & Taucher-Bemerkungen") },
+                    placeholder = { Text("z.B. Jährliche TTU ohne Einschränkungen bestanden, Nitrox freigegeben...") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("doc_notes_input"),
@@ -786,7 +786,8 @@ fun AddEditDocumentDialog(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("cancel_add_doc_btn"),
-                        shape = RoundedCornerShape(14.dp)
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(strings.cancel)
                     }
@@ -812,6 +813,7 @@ fun AddEditDocumentDialog(
                             .weight(1.5f)
                             .testTag("save_doc_btn"),
                         shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
                     ) {
                         Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))

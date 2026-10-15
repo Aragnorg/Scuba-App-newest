@@ -61,6 +61,8 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.DiveEventParticipantEntity
 import com.example.data.model.OrganizationEntity
+import com.example.ui.i18n.AppLanguage
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -79,6 +81,8 @@ fun DiveOpsBuddyBoardTab(
     onNavigateToTrips: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     val events by viewModel.currentOrgEvents.collectAsState()
     val selectedEvent by viewModel.selectedEvent.collectAsState()
     val participants by viewModel.selectedEventParticipants.collectAsState()
@@ -235,11 +239,15 @@ fun DiveOpsBuddyBoardTab(
                             // Auto-Suggest Button
                             Button(
                                 onClick = { viewModel.autoSuggestBuddyTeams(activeEvent.id) },
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6B46C1)),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                             ) {
-                                Text(text = "⚡ Auto-Suggest", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = if (isGerman) "⚡ Auto-Zuteilung" else "⚡ Auto-Suggest",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
 
