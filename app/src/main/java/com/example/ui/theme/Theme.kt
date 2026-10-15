@@ -18,19 +18,25 @@ private val DarkColorScheme = darkColorScheme(
     onPrimaryContainer = Color(0xFF97F0FF),
     secondary = OceanSecondary,
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = OceanSurfaceVariantDark,
+    secondaryContainer = Color(0xFF13364C),
     onSecondaryContainer = Color(0xFFCAF0F8),
     tertiary = OceanTertiary,
     onTertiary = Color(0xFFFFFFFF),
     tertiaryContainer = Color(0xFF5C2000),
     onTertiaryContainer = Color(0xFFFFDBCF),
     background = OceanBackgroundDark,
-    onBackground = Color(0xFFE1EDF2),
+    onBackground = Color(0xFFE2E8F0),
     surface = OceanSurfaceDark,
-    onSurface = Color(0xFFE1EDF2),
+    onSurface = Color(0xFFF1F5F9),
     surfaceVariant = OceanSurfaceVariantDark,
-    onSurfaceVariant = Color(0xFFB5D1DE),
-    outline = OceanOutlineDark
+    onSurfaceVariant = Color(0xFF94A3B8),
+    outline = OceanOutlineDark,
+    outlineVariant = OceanOutlineVariantDark,
+    surfaceContainerLowest = OceanSurfaceContainerLowestDark,
+    surfaceContainerLow = OceanSurfaceContainerLowDark,
+    surfaceContainer = OceanSurfaceContainerDark,
+    surfaceContainerHigh = OceanSurfaceContainerHighDark,
+    surfaceContainerHighest = OceanSurfaceContainerHighestDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -47,18 +53,24 @@ private val LightColorScheme = lightColorScheme(
     tertiaryContainer = OceanTertiaryContainer,
     onTertiaryContainer = OceanOnTertiaryContainer,
     background = OceanBackgroundLight,
-    onBackground = Color(0xFF102A36),
+    onBackground = Color(0xFF0F172A),
     surface = OceanSurfaceLight,
-    onSurface = Color(0xFF102A36),
+    onSurface = Color(0xFF0F172A),
     surfaceVariant = OceanSurfaceVariantLight,
-    onSurfaceVariant = Color(0xFF3E5A69),
-    outline = OceanOutlineLight
+    onSurfaceVariant = Color(0xFF475569),
+    outline = OceanOutlineLight,
+    outlineVariant = OceanOutlineVariantLight,
+    surfaceContainerLowest = OceanSurfaceContainerLowestLight,
+    surfaceContainerLow = OceanSurfaceContainerLowLight,
+    surfaceContainer = OceanSurfaceContainerLight,
+    surfaceContainerHigh = OceanSurfaceContainerHighLight,
+    surfaceContainerHighest = OceanSurfaceContainerHighestLight
 )
 
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Keep oceanic brand consistency
+    dynamicColor: Boolean = false, // Preserve oceanic brand identity
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

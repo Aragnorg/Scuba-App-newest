@@ -163,10 +163,10 @@ fun DocumentExpirationAlertBanner(
         modifier = modifier
             .fillMaxWidth()
             .testTag("document_expiration_alert_banner"),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.5.dp, borderColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        border = BorderStroke(1.dp, borderColor.copy(alpha = 0.8f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier

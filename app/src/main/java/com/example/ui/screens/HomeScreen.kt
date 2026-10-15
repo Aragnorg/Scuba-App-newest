@@ -1,6 +1,9 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,25 +26,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Signpost
-import androidx.compose.material.icons.filled.Slideshow
-import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.DriveFileRenameOutline
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.Movie
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Quiz
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Signpost
+import androidx.compose.material.icons.rounded.Slideshow
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -151,22 +154,23 @@ fun HomeScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = SeaGreen.copy(alpha = 0.15f)),
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, SeaGreen)
+                    colors = CardDefaults.cardColors(containerColor = SeaGreen.copy(alpha = 0.12f)),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(20.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
                             Text(text = msg, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = SeaGreen)
                         }
-                        IconButton(onClick = { enrollmentSuccessMessage = null }, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.Default.Close, contentDescription = strings.close, tint = SeaGreen, modifier = Modifier.size(16.dp))
+                        IconButton(onClick = { enrollmentSuccessMessage = null }, modifier = Modifier.size(28.dp)) {
+                            Icon(Icons.Rounded.Close, contentDescription = strings.close, tint = SeaGreen, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -179,11 +183,12 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("diver_header_card"),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -194,8 +199,8 @@ fun HomeScreen(
                     Surface(
                         modifier = Modifier.size(54.dp),
                         shape = CircleShape,
-                        color = AquaCyan.copy(alpha = 0.2f),
-                        border = BorderStroke(2.dp, AquaCyan)
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(text = "🤿", fontSize = 28.sp)
@@ -218,41 +223,42 @@ fun HomeScreen(
                                 modifier = Modifier.size(28.dp)
                             ) {
                                 Icon(
-                                    Icons.Default.DriveFileRenameOutline,
+                                    Icons.Rounded.DriveFileRenameOutline,
                                     contentDescription = strings.updateStudentName,
-                                    tint = OceanPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
                         }
                         Text(
                             text = strings.studentEnvironmentCandidate,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = OceanSecondary,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
 
                     // Streak Badge
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = OceanTertiary.copy(alpha = 0.15f)
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f))
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Default.LocalFireDepartment,
+                                Icons.Rounded.LocalFireDepartment,
                                 contentDescription = "Streak",
-                                tint = OceanTertiary,
+                                tint = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "${progress?.studyStreakDays ?: 1}d",
                                 fontWeight = FontWeight.Black,
-                                color = OceanTertiary,
+                                color = MaterialTheme.colorScheme.tertiary,
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
@@ -266,8 +272,8 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainer)
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
@@ -278,9 +284,19 @@ fun HomeScreen(
                 )
                 tabsList.forEachIndexed { index, label ->
                     val isSelected = activeSubTab == index
+                    val tabBgColor by animateColorAsState(
+                        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                        animationSpec = tween(200),
+                        label = "tab_bg_$index"
+                    )
+                    val tabTextColor by animateColorAsState(
+                        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        animationSpec = tween(200),
+                        label = "tab_text_$index"
+                    )
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isSelected) OceanPrimary else Color.Transparent,
+                        shape = RoundedCornerShape(12.dp),
+                        color = tabBgColor,
                         modifier = Modifier
                             .weight(1f)
                             .clickable { activeSubTab = index }
@@ -290,9 +306,9 @@ fun HomeScreen(
                             text = label,
                             modifier = Modifier.padding(vertical = 10.dp, horizontal = 2.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = tabTextColor,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                             maxLines = 1
                         )
@@ -311,78 +327,80 @@ fun HomeScreen(
                     text = if (currentLanguage == AppLanguage.DE) "Meine aktiven Kurse" else "My Enrolled Courses",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(enrolledCourses, key = { it.id }) { course ->
                         val isSelected = course.id == selectedCourseId
                         Card(
                             modifier = Modifier
-                                .width(220.dp)
+                                .width(230.dp)
                                 .clickable { selectedCourseId = course.id }
                                 .testTag("enrolled_course_${course.id}"),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surface
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surfaceContainerLow
                             ),
-                            border = BorderStroke(if (isSelected) 2.5.dp else 1.dp, if (isSelected) OceanPrimary else OceanPrimary.copy(alpha = 0.2f))
+                            border = BorderStroke(
+                                width = if (isSelected) 2.dp else 1.dp,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
+                            Column(modifier = Modifier.padding(14.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Surface(
-                                        modifier = Modifier.size(32.dp),
+                                        modifier = Modifier.size(36.dp),
                                         shape = CircleShape,
-                                        color = if (isSelected) OceanPrimary else OceanPrimary.copy(alpha = 0.1f)
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHigh
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
-                                            Text(text = course.iconEmoji, fontSize = 16.sp)
+                                            Text(text = course.iconEmoji, fontSize = 18.sp)
                                         }
                                     }
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(10.dp))
                                     Column {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text(
-                                                text = course.title,
-                                                style = MaterialTheme.typography.titleSmall,
-                                                fontWeight = FontWeight.Bold,
-                                                maxLines = 1,
-                                                color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier.weight(1f, fill = false)
-                                            )
-                                        }
+                                        Text(
+                                            text = course.title,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        )
                                         Text(
                                             text = course.subtitle,
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            fontSize = 9.sp,
+                                            fontSize = 10.sp,
                                             maxLines = 1
                                         )
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Surface(
-                                        shape = RoundedCornerShape(6.dp),
-                                        color = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else SeaGreen.copy(alpha = 0.12f)
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else SeaGreen.copy(alpha = 0.12f)
                                     ) {
                                         Text(
-                                            text = if (isSelected) "SELECTED" else "ACTIVE",
-                                            fontSize = 8.sp,
+                                            text = if (isSelected) (if (currentLanguage == AppLanguage.DE) "AUSGEWÄHLT" else "SELECTED") else (if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE"),
+                                            fontSize = 9.sp,
                                             fontWeight = FontWeight.Black,
-                                            color = if (isSelected) OceanPrimary else SeaGreen,
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            color = if (isSelected) MaterialTheme.colorScheme.primary else SeaGreen,
+                                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
                                         )
                                     }
                                     Text(
-                                        text = "${course.lessonsCount} lessons • ${course.duration}",
-                                        fontSize = 9.sp,
+                                        text = "${course.lessonsCount} ${if (currentLanguage == AppLanguage.DE) "Einheiten" else "lessons"} • ${course.duration}",
+                                        fontSize = 10.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
@@ -401,13 +419,13 @@ fun HomeScreen(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
                         QuickActionTile(
                             title = strings.tileHandSignalsTitle,
                             subtitle = if (currentLanguage == AppLanguage.DE) "20+ Signale im Kurs" else "20+ Signals in Course",
-                            icon = Icons.Default.Signpost,
+                            icon = Icons.Rounded.Signpost,
                             color = OceanSecondary,
                             onClick = { showHandSignalsTrainerDialog = true },
                             testTag = "tile_hand_signals"
@@ -418,7 +436,7 @@ fun HomeScreen(
                         QuickActionTile(
                             title = strings.tileMockExamTitle,
                             subtitle = if (mockExam?.isPassed == true) "${strings.tileMockExamSubtitlePassed} (${mockExam.highestScore}%)" else strings.tileMockExamSubtitle50Q,
-                            icon = Icons.Default.School,
+                            icon = Icons.Rounded.School,
                             color = SandGold,
                             onClick = {
                                 if (mockExam != null) {
@@ -438,9 +456,10 @@ fun HomeScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("course_curriculum_wrapper_header"),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = OceanPrimary.copy(alpha = 0.08f)),
-                    border = BorderStroke(1.5.dp, OceanPrimary.copy(alpha = 0.35f))
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(14.dp),
@@ -449,7 +468,8 @@ fun HomeScreen(
                         Surface(
                             modifier = Modifier.size(44.dp),
                             shape = CircleShape,
-                            color = OceanPrimary
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(text = selectedCourse?.iconEmoji ?: "🤿", fontSize = 22.sp)
@@ -461,7 +481,7 @@ fun HomeScreen(
                                 text = "${AppLocalizer.localizeCourseTitle(selectedCourse?.title ?: "Open Water Diver", currentLanguage == AppLanguage.DE)} ${if (currentLanguage == AppLanguage.DE) "Lehrplan" else "Curriculum"}",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (currentLanguage == AppLanguage.DE) "Kurslehrplan & Module" else "Active Course Curriculum & Study Units",
@@ -501,16 +521,17 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("nitrox_curriculum_module"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
                                 text = if (isGerman) "Spezialkurs: Sauerstoffanalyse & Gasmischung" else "Specialty Unit: Oxygen Analysis & Gas Mixing",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isGerman) "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
@@ -520,7 +541,7 @@ fun HomeScreen(
                             ModuleItemRow(
                                 title = if (isGerman) "Nitrox-Gasanalyse & Maximaltiefen-Berechnung (MOD)" else "Nitrox Gas Analysis & Max Depth (MOD) calculations",
                                 type = if (isGerman) "Präsentation (2 Folien)" else "Slide Deck (2 Slides)",
-                                icon = Icons.Default.Slideshow,
+                                icon = Icons.Rounded.Slideshow,
                                 isDone = nitroxPres?.isCompleted == true,
                                 onClick = {
                                     if (nitroxPres != null) {
@@ -531,7 +552,7 @@ fun HomeScreen(
                             ModuleItemRow(
                                 title = if (isGerman) "Enriched Air Sicherheit & Sauerstofftoxizität" else "Enriched Air Safety & Oxygen Toxicity Exams",
                                 type = if (isGerman) "Übungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
-                                icon = Icons.Default.Quiz,
+                                icon = Icons.Rounded.Quiz,
                                 isDone = nitroxQuiz?.isPassed == true,
                                 onClick = {
                                     if (nitroxQuiz != null) {
@@ -549,16 +570,17 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("deep_curriculum_module"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
                                 text = if (isGerman) "Spezialkurs: Tieftauchgrenzen & Tiefenrausch" else "Specialty Unit: Deep Diving Limits & Narcosis Safety",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isGerman) "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management bis 40m Tiefe." else "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving to 40m/130ft.",
@@ -568,7 +590,7 @@ fun HomeScreen(
                             ModuleItemRow(
                                 title = if (isGerman) "Dekompressionssicherheit & redundante Gassysteme" else "Decompression Safety & Redundant Gas Systems",
                                 type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
-                                icon = Icons.Default.Slideshow,
+                                icon = Icons.Rounded.Slideshow,
                                 isDone = deepPres?.isCompleted == true,
                                 onClick = {
                                     if (deepPres != null) {
@@ -579,7 +601,7 @@ fun HomeScreen(
                             ModuleItemRow(
                                 title = if (isGerman) "Tiefenrausch-Symptome & Sicherheitsprotokoll" else "Narcosis Symptoms & Safety Protocol Quiz",
                                 type = if (isGerman) "Übungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
-                                icon = Icons.Default.Quiz,
+                                icon = Icons.Rounded.Quiz,
                                 isDone = deepQuiz?.isPassed == true,
                                 onClick = {
                                     if (deepQuiz != null) {
@@ -596,16 +618,17 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("wreck_curriculum_module"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
                                 text = if (isGerman) "Spezialkurs: Wrackvermessung & Führungsleinen" else "Specialty Unit: Wreck Surveying & Line Laying",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isGerman) "Verfahren zur Kartierung von Wracks, Verlegen von Penetrationsleinen und Vermeidung von Sedimentaufwirbelung." else "Procedures and protocols for mapping artificial reefs, deploying penetration guidelines, and avoiding silt-outs.",
@@ -615,7 +638,7 @@ fun HomeScreen(
                             ModuleItemRow(
                                 title = if (isGerman) "Wrackgefahren, Navigation & Penetrationsleinen" else "Wreck Hazards, Navigation & Penetration Lines",
                                 type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
-                                icon = Icons.Default.Slideshow,
+                                icon = Icons.Rounded.Slideshow,
                                 isDone = wreckPres?.isCompleted == true,
                                 onClick = {
                                     if (wreckPres != null) {
@@ -632,16 +655,17 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("night_curriculum_module"),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
                                 text = if (isGerman) "Spezialkurs: Nachtnavigation & Lampenkommunikation" else "Specialty Unit: Dark Navigation & Light Communication",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isGerman) "Nachttauchnavigation, Buddy-Signale mit der Lampe und sicheres Erkunden nachtaktiver Rifflebewesen." else "Master night dive navigation, specialized buddy communication signals, and explore nocturnal reef environments safely.",
@@ -651,7 +675,7 @@ fun HomeScreen(
                             ModuleItemRow(
                                 title = if (isGerman) "Nachtaktive Meeresbewohner & Lampen-Management" else "Nocturnal Wildlife & Dive Torch Management",
                                 type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
-                                icon = Icons.Default.Slideshow,
+                                icon = Icons.Rounded.Slideshow,
                                 isDone = nightPres?.isCompleted == true,
                                 onClick = {
                                     if (nightPres != null) {
@@ -673,41 +697,57 @@ fun HomeScreen(
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Surface(
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(14.dp),
-                        color = OceanTertiary.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, OceanTertiary.copy(alpha = 0.2f))
+                        shape = RoundedCornerShape(20.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                     ) {
                         Row(
-                            modifier = Modifier.padding(14.dp),
+                            modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.LocalFireDepartment, contentDescription = strings.studyStreak, tint = OceanTertiary, modifier = Modifier.size(24.dp))
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Surface(
+                                modifier = Modifier.size(40.dp),
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Rounded.LocalFireDepartment, contentDescription = strings.studyStreak, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(22.dp))
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(strings.studyStreak, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text("${progress?.studyStreakDays ?: 1} ${strings.daysUnit}", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleSmall)
+                                Text("${progress?.studyStreakDays ?: 1} ${strings.daysUnit}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                             }
                         }
                     }
                     Surface(
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(14.dp),
-                        color = OceanPrimary.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.2f))
+                        shape = RoundedCornerShape(20.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                     ) {
                         Row(
-                            modifier = Modifier.padding(14.dp),
+                            modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = strings.studyTime, tint = OceanPrimary, modifier = Modifier.size(24.dp))
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Surface(
+                                modifier = Modifier.size(40.dp),
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Rounded.PlayArrow, contentDescription = strings.studyTime, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(strings.studyTime, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text("${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit}", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleSmall)
+                                Text("${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                             }
                         }
                     }
@@ -720,7 +760,7 @@ fun HomeScreen(
                     text = if (currentLanguage == AppLanguage.DE) "Kursfortschritt im Klassenzimmer" else "Classroom Course Progress",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
@@ -771,12 +811,12 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("course_progress_card_${course.id}"),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -784,9 +824,9 @@ fun HomeScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Surface(
-                                    modifier = Modifier.size(40.dp),
+                                    modifier = Modifier.size(42.dp),
                                     shape = CircleShape,
-                                    color = OceanPrimary.copy(alpha = 0.1f)
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(text = course.iconEmoji, fontSize = 20.sp)
@@ -797,7 +837,8 @@ fun HomeScreen(
                                     Text(
                                         text = course.title,
                                         style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = course.subtitle,
@@ -807,8 +848,8 @@ fun HomeScreen(
                                 }
                             }
                             Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = if (percentProgress == 100) SeaGreen.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.1f)
+                                shape = RoundedCornerShape(10.dp),
+                                color = if (percentProgress == 100) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                             ) {
                                 Text(
                                     text = if (percentProgress == 100) {
@@ -819,7 +860,7 @@ fun HomeScreen(
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                     fontWeight = FontWeight.Black,
                                     fontSize = 11.sp,
-                                    color = if (percentProgress == 100) SeaGreen else OceanPrimary
+                                    color = if (percentProgress == 100) SeaGreen else MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -830,8 +871,8 @@ fun HomeScreen(
                                 .fillMaxWidth()
                                 .height(8.dp)
                                 .clip(RoundedCornerShape(4.dp)),
-                            color = if (percentProgress == 100) SeaGreen else OceanPrimary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            color = if (percentProgress == 100) SeaGreen else MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
 
                         // Breakdown lists
@@ -849,7 +890,8 @@ fun HomeScreen(
                                     Text(
                                         text = "$presDone / $presTotal",
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -866,7 +908,8 @@ fun HomeScreen(
                                     Text(
                                         text = "$vidsDone / $vidsTotal",
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -883,7 +926,8 @@ fun HomeScreen(
                                     Text(
                                         text = "$quizzesDone / $quizzesTotal",
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -899,10 +943,12 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("certificate_qualification_card"),
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(24.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = DepthNavy
-                        )
+                        ),
+                        border = BorderStroke(1.dp, SandGold.copy(alpha = 0.4f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(20.dp),
@@ -915,7 +961,7 @@ fun HomeScreen(
                                 border = BorderStroke(2.dp, SandGold)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.EmojiEvents, contentDescription = "Certificate", tint = SandGold, modifier = Modifier.size(30.dp))
+                                    Icon(Icons.Rounded.EmojiEvents, contentDescription = "Certificate", tint = SandGold, modifier = Modifier.size(30.dp))
                                 }
                             }
 
@@ -949,7 +995,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 color = Color.White.copy(alpha = 0.1f)
                               ) {
                                 Text(
@@ -972,7 +1018,7 @@ fun HomeScreen(
                         text = strings.myQuizPerformance,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = if (currentLanguage == AppLanguage.DE) 
@@ -992,9 +1038,10 @@ fun HomeScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("no_exam_attempts_card"),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Text(
                             text = if (currentLanguage == AppLanguage.DE) "Noch keine Prüfungsversuche. Absolviere deine erste Prüfung im Klassenzimmer!" else "No exam attempts yet. Take your first exam in the Classroom section!",
@@ -1011,12 +1058,13 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("student_quiz_card_${quiz.id}"),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(
                             1.dp,
-                            if (quiz.isPassed) SeaGreen.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant
-                        )
+                            if (quiz.isPassed) SeaGreen.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -1027,13 +1075,13 @@ fun HomeScreen(
                             Surface(
                                 modifier = Modifier.size(44.dp),
                                 shape = CircleShape,
-                                color = if (quiz.isPassed) SeaGreen.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.12f)
+                                color = if (quiz.isPassed) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = if (quiz.isPassed) Icons.Default.CheckCircle else Icons.Default.Quiz,
+                                        imageVector = if (quiz.isPassed) Icons.Rounded.CheckCircle else Icons.Rounded.Quiz,
                                         contentDescription = "Quiz Status",
-                                        tint = if (quiz.isPassed) SeaGreen else OceanPrimary,
+                                        tint = if (quiz.isPassed) SeaGreen else MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }
@@ -1045,7 +1093,8 @@ fun HomeScreen(
                                 Text(
                                     text = quiz.title,
                                     style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = if (quiz.isMockExam) "${strings.finalExamPrefix} • ${strings.passReqPrefix}: ${quiz.passScorePercentage}%" else "${strings.passReqPrefix}: ${quiz.passScorePercentage}%",
@@ -1084,21 +1133,29 @@ fun HomeScreen(
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Default.Shield,
-                            contentDescription = "Privacy Shield",
-                            tint = OceanPrimary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Surface(
+                            modifier = Modifier.size(36.dp),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Rounded.Shield,
+                                    contentDescription = "Privacy Shield",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = strings.studentEnvironmentDisclosure,
                             style = MaterialTheme.typography.bodySmall,
@@ -1120,7 +1177,7 @@ fun HomeScreen(
                     text = if (currentLanguage == AppLanguage.DE) "Verfügbare Spezialkurse" else "Available Specialty Courses",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = if (currentLanguage == AppLanguage.DE) "Erweitern Sie Ihre Grenzen mit zertifizierten Zusatzausbildungen." else "Expand your limits and acquire advanced certifications with our premium specialties.",
@@ -1135,8 +1192,10 @@ fun HomeScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-                        shape = RoundedCornerShape(16.dp)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        shape = RoundedCornerShape(22.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier
@@ -1150,6 +1209,7 @@ fun HomeScreen(
                                 text = if (currentLanguage == AppLanguage.DE) "Sie sind in alle Kurse eingeschrieben!" else "You are Enrolled in All Available Courses!",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(6.dp))
@@ -1168,9 +1228,10 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("available_course_card_${course.id}"),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             // Row with Icon + Title + Difficulty
@@ -1194,7 +1255,8 @@ fun HomeScreen(
                                         Text(
                                             text = course.title,
                                             style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
                                             text = course.subtitle,
@@ -1209,7 +1271,7 @@ fun HomeScreen(
                                     color = when (course.difficulty.lowercase()) {
                                         "easy" -> SeaGreen.copy(alpha = 0.12f)
                                         "medium" -> SandGold.copy(alpha = 0.12f)
-                                        else -> OceanPrimary.copy(alpha = 0.12f)
+                                        else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                     }
                                 ) {
                                     Text(
@@ -1219,7 +1281,7 @@ fun HomeScreen(
                                         color = when (course.difficulty.lowercase()) {
                                             "easy" -> SeaGreen
                                             "medium" -> SandGold
-                                            else -> OceanPrimary
+                                            else -> MaterialTheme.colorScheme.primary
                                         },
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                     )
@@ -1258,17 +1320,17 @@ fun HomeScreen(
                                     onClick = {
                                         viewModel.enrollInCourse(course.id)
                                         enrollmentSuccessMessage = if (currentLanguage == AppLanguage.DE) {
-                                            "Erfolgreich in den Spezialkurs '${course.title}' eingeschrieben!"
+                                             "Erfolgreich in den Spezialkurs '${course.title}' eingeschrieben!"
                                         } else {
                                             "Enrolled in specialty course '${course.title}' successfully!"
                                         }
                                     },
                                     modifier = Modifier.testTag("enroll_btn_${course.id}"),
-                                    shape = RoundedCornerShape(20.dp),
+                                    shape = RoundedCornerShape(16.dp),
                                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 ) {
-                                    Icon(Icons.Default.School, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.School, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = if (currentLanguage == AppLanguage.DE) "Einschreiben" else "Enroll",
@@ -1329,7 +1391,7 @@ fun HomeScreen(
                             onClick = { showHandSignalsTrainerDialog = false },
                             modifier = Modifier.testTag("close_hand_signals_dialog_btn")
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = strings.close)
+                            Icon(Icons.Rounded.Close, contentDescription = strings.close)
                         }
                     }
 
@@ -1344,13 +1406,23 @@ fun HomeScreen(
     if (showEditNameDialog) {
         AlertDialog(
             onDismissRequest = { showEditNameDialog = false },
-            title = { Text(strings.updateStudentName) },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            title = {
+                Text(
+                    text = strings.updateStudentName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            },
             text = {
                 OutlinedTextField(
                     value = editNameText,
                     onValueChange = { editNameText = it },
                     label = { Text(strings.studentNameLabel) },
                     singleLine = true,
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
             },
@@ -1361,7 +1433,8 @@ fun HomeScreen(
                             viewModel.updateStudentName(editNameText.trim())
                         }
                         showEditNameDialog = false
-                    }
+                    },
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(strings.save)
                 }
@@ -1386,13 +1459,14 @@ fun QuickActionTile(
 ) {
     Card(
         modifier = Modifier
-            .width(160.dp)
+            .fillMaxWidth()
             .height(110.dp)
             .clickable { onClick() }
             .testTag(testTag),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -1401,26 +1475,28 @@ fun QuickActionTile(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Surface(
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(38.dp),
                 shape = CircleShape,
-                color = color.copy(alpha = 0.15f)
+                color = color.copy(alpha = 0.14f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(icon, contentDescription = title, tint = color, modifier = Modifier.size(20.dp))
                 }
             }
 
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
                 )
             }
         }
@@ -1453,10 +1529,12 @@ fun ModuleCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize()
             .testTag("module_card_${module.id}"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -1473,7 +1551,7 @@ fun ModuleCard(
                         text = "${strings.tabCurriculum.take(6)} ${module.orderIndex}: ${AppLocalizer.localizeModuleTitle(module.title, isGerman)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = AppLocalizer.localizeModuleSubtitle(module.subtitle, isGerman),
@@ -1487,8 +1565,8 @@ fun ModuleCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant
+                        shape = RoundedCornerShape(10.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh
                     ) {
                         Text(
                             text = "~${module.estimatedMin}m",
@@ -1526,14 +1604,14 @@ fun ModuleCard(
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
                                 color = SeaGreen.copy(alpha = 0.15f),
-                                border = BorderStroke(1.dp, SeaGreen)
+                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
                             ) {
                                 Row(
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.CheckCircle,
+                                        imageVector = Icons.Rounded.CheckCircle,
                                         contentDescription = strings.downloadedOfflineLabel,
                                         tint = SeaGreen,
                                         modifier = Modifier.size(12.dp)
@@ -1553,7 +1631,7 @@ fun ModuleCard(
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Delete,
+                                    imageVector = Icons.Rounded.Delete,
                                     contentDescription = strings.deleteOfflineLabel,
                                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
                                     modifier = Modifier.size(16.dp)
@@ -1566,9 +1644,9 @@ fun ModuleCard(
                             modifier = Modifier.size(28.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Download,
+                                imageVector = Icons.Rounded.Download,
                                 contentDescription = strings.downloadOfflineLabel,
-                                tint = OceanPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -1584,7 +1662,7 @@ fun ModuleCard(
 
             AnimatedVisibility(visible = isDownloaded) {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = SeaGreen.copy(alpha = 0.08f),
                     border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.2f)),
                     modifier = Modifier.fillMaxWidth()
@@ -1592,7 +1670,7 @@ fun ModuleCard(
                     Text(
                         text = "✈️ " + strings.offlineReadyNotice,
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(10.dp),
                         color = SeaGreen
                     )
                 }
@@ -1603,8 +1681,8 @@ fun ModuleCard(
                 LinearProgressIndicator(
                     progress = { progressFraction },
                     modifier = Modifier.fillMaxWidth(),
-                    color = if (progressFraction >= 1f) SeaGreen else OceanPrimary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    color = if (progressFraction >= 1f) SeaGreen else MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1632,7 +1710,7 @@ fun ModuleCard(
                     ModuleItemRow(
                         title = AppLocalizer.localizePresentationTitle(pres.title, isGerman),
                         type = "${strings.slideDeckType} (${pres.totalSlides} ${strings.slidesCountLabel})",
-                        icon = Icons.Default.Slideshow,
+                        icon = Icons.Rounded.Slideshow,
                         isDone = pres.isCompleted,
                         isInstructorUploaded = pres.isInstructorUploaded,
                         onClick = { onOpenPresentation(pres) }
@@ -1643,7 +1721,7 @@ fun ModuleCard(
                     ModuleItemRow(
                         title = AppLocalizer.localizeVideoTitle(vid.title, isGerman),
                         type = "${strings.videoType} (${vid.durationSeconds / 60} ${strings.durationMinutesSuffix})",
-                        icon = Icons.Default.Movie,
+                        icon = Icons.Rounded.Movie,
                         isDone = vid.isCompleted,
                         isInstructorUploaded = vid.isInstructorUploaded,
                         onClick = { onOpenVideo(vid) }
@@ -1654,7 +1732,7 @@ fun ModuleCard(
                     ModuleItemRow(
                         title = AppLocalizer.localizeQuizTitle(quiz.title, isGerman),
                         type = if (quiz.isMockExam) strings.mockExamType else "${strings.practiceQuizType} (${quiz.parseQuestions().size}Q)",
-                        icon = Icons.Default.Quiz,
+                        icon = Icons.Rounded.Quiz,
                         isDone = quiz.isPassed,
                         isInstructorUploaded = quiz.isInstructorUploaded,
                         onClick = { onOpenQuiz(quiz) }
@@ -1675,65 +1753,80 @@ fun ModuleItemRow(
     onClick: () -> Unit
 ) {
     val strings = LocalAppStrings.current
-    Row(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .clickable { onClick() }
-            .padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clip(RoundedCornerShape(14.dp))
+            .clickable { onClick() },
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = type,
-            tint = if (isDone) SeaGreen else OceanPrimary,
-            modifier = Modifier.size(22.dp)
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = type,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                // Tag distinguishing General Material vs Instructor Deployed Material
-                Surface(
-                    shape = RoundedCornerShape(4.dp),
-                    color = if (isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
-                ) {
-                    Text(
-                        text = if (isInstructorUploaded) strings.instructorDeployedTag else strings.generalMaterialTag,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isInstructorUploaded) OceanPrimary else OceanSecondary,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                color = if (isDone) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = type,
+                        tint = if (isDone) SeaGreen else MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
-        }
-        if (isDone) {
-            Icon(
-                Icons.Default.CheckCircle,
-                contentDescription = strings.completedBadge,
-                tint = SeaGreen,
-                modifier = Modifier.size(20.dp)
-            )
-        } else {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = strings.startButton,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(18.dp)
-            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = type,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    // Tag distinguishing General Material vs Instructor Deployed Material
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = if (isInstructorUploaded) AquaCyan.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHigh
+                    ) {
+                        Text(
+                            text = if (isInstructorUploaded) strings.instructorDeployedTag else strings.generalMaterialTag,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isInstructorUploaded) OceanPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            if (isDone) {
+                Icon(
+                    imageVector = Icons.Rounded.CheckCircle,
+                    contentDescription = strings.completedBadge,
+                    tint = SeaGreen,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                    contentDescription = strings.startButton,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }
@@ -1741,9 +1834,9 @@ fun ModuleItemRow(
 @Composable
 private fun SpecPill(label: String) {
     Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Text(
             text = label,
