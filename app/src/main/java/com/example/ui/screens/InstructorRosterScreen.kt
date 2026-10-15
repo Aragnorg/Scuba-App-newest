@@ -342,6 +342,7 @@ fun StudentRosterItemCard(
     onToggleStatus: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
     val isActive = student.status == "ACTIVE"
 
     Card(
@@ -605,6 +606,7 @@ fun StudentDetailDialog(
     onUpdateStatus: (String) -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
     var notesText by remember { mutableStateOf(student.instructorNotes) }
 
     AlertDialog(
