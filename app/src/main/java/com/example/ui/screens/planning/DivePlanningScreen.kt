@@ -29,30 +29,29 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Calculate
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Navigation
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Radio
-import androidx.compose.material.icons.filled.SafetyCheck
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Water
-import androidx.compose.material.icons.outlined.CheckCircleOutline
-import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material.icons.rounded.Navigation
+import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.icons.rounded.Radio
+import androidx.compose.material.icons.rounded.SafetyCheck
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -163,10 +162,10 @@ fun DivePlanningScreen(
         // Top Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 2.dp
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            tonalElevation = 0.dp
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 0.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -190,86 +189,96 @@ fun DivePlanningScreen(
 
                     Surface(
                         shape = CircleShape,
-                        color = SeaGreen.copy(alpha = 0.15f),
-                        modifier = Modifier.size(40.dp)
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(42.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                Icons.Default.Explore,
+                                Icons.Rounded.Explore,
                                 contentDescription = null,
-                                tint = SeaGreen,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Sub-Tabs for Dive Planning
                 TabRow(
                     selectedTabIndex = selectedSubTab,
                     containerColor = Color.Transparent,
-                    contentColor = OceanPrimary,
+                    contentColor = MaterialTheme.colorScheme.primary,
                     indicator = { tabPositions ->
                         TabRowDefaults.SecondaryIndicator(
                             Modifier.tabIndicatorOffset(tabPositions[selectedSubTab]),
-                            color = OceanPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             height = 3.dp
                         )
                     },
-                    divider = {}
+                    divider = {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                    }
                 ) {
                     Tab(
                         selected = selectedSubTab == 0,
                         onClick = { selectedSubTab = 0 },
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         text = {
                             Text(
                                 strings.subTabDiveSpots,
-                                fontWeight = if (selectedSubTab == 0) FontWeight.Bold else FontWeight.Normal,
+                                fontWeight = if (selectedSubTab == 0) FontWeight.Bold else FontWeight.Medium,
                                 fontSize = 11.sp
                             )
                         },
-                        icon = { Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        icon = { Icon(Icons.Rounded.LocationOn, contentDescription = null, modifier = Modifier.size(18.dp)) },
                         modifier = Modifier.testTag("tab_planning_spots")
                     )
                     Tab(
                         selected = selectedSubTab == 1,
                         onClick = { selectedSubTab = 1 },
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         text = {
                             Text(
                                 strings.subTabEmergencyInfo,
-                                fontWeight = if (selectedSubTab == 1) FontWeight.Bold else FontWeight.Normal,
+                                fontWeight = if (selectedSubTab == 1) FontWeight.Bold else FontWeight.Medium,
                                 fontSize = 11.sp
                             )
                         },
-                        icon = { Icon(Icons.Default.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        icon = { Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, modifier = Modifier.size(18.dp)) },
                         modifier = Modifier.testTag("tab_planning_emergency")
                     )
                     Tab(
                         selected = selectedSubTab == 2,
                         onClick = { selectedSubTab = 2 },
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         text = {
                             Text(
                                 strings.subTabGasPlanner,
-                                fontWeight = if (selectedSubTab == 2) FontWeight.Bold else FontWeight.Normal,
+                                fontWeight = if (selectedSubTab == 2) FontWeight.Bold else FontWeight.Medium,
                                 fontSize = 11.sp
                             )
                         },
-                        icon = { Icon(Icons.Default.Calculate, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        icon = { Icon(Icons.Rounded.Calculate, contentDescription = null, modifier = Modifier.size(18.dp)) },
                         modifier = Modifier.testTag("tab_planning_calculator")
                     )
                     Tab(
                         selected = selectedSubTab == 3,
                         onClick = { selectedSubTab = 3 },
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         text = {
                             Text(
                                 strings.subTabPreDiveChecklist,
-                                fontWeight = if (selectedSubTab == 3) FontWeight.Bold else FontWeight.Normal,
+                                fontWeight = if (selectedSubTab == 3) FontWeight.Bold else FontWeight.Medium,
                                 fontSize = 11.sp
                             )
                         },
-                        icon = { Icon(Icons.Default.SafetyCheck, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        icon = { Icon(Icons.Rounded.SafetyCheck, contentDescription = null, modifier = Modifier.size(18.dp)) },
                         modifier = Modifier.testTag("tab_planning_checklist")
                     )
                 }
@@ -345,11 +354,11 @@ private fun DiveSpotsListTab(
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 placeholder = { Text(strings.searchSpotsPlaceholder, fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = strings.searchSpotsPlaceholder) },
+                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = strings.searchSpotsPlaceholder) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { onSearchChange("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = if (isGerman) "Löschen" else "Clear")
+                            Icon(Icons.Rounded.Clear, contentDescription = if (isGerman) "Löschen" else "Clear")
                         }
                     }
                 },
@@ -377,20 +386,31 @@ private fun DiveSpotsListTab(
                         "ADVANCED" -> strings.difficultyAdvanced
                         else -> strings.allDifficulties
                     }
+                    val containerColor by animateColorAsState(
+                        targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow,
+                        label = "chip_bg_$diff"
+                    )
+                    val contentColor by animateColorAsState(
+                        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        label = "chip_fg_$diff"
+                    )
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        shape = RoundedCornerShape(12.dp),
+                        color = containerColor,
+                        border = BorderStroke(
+                            1.dp,
+                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        ),
                         modifier = Modifier
                             .clickable { onDifficultyChange(diff) }
                             .testTag("filter_diff_$diff")
                     ) {
                         Text(
                             text = label,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = contentColor
                         )
                     }
                 }
@@ -403,8 +423,10 @@ private fun DiveSpotsListTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 24.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -412,7 +434,7 @@ private fun DiveSpotsListTab(
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(36.dp))
+                        Icon(Icons.Rounded.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = if (isGerman) "Keine Tauchplätze entsprechen deinem Filter" else "No dive spots match your filter",
@@ -476,9 +498,10 @@ private fun DiveSpotSummaryCard(
             .fillMaxWidth()
             .clickable { onClick() }
             .testTag("spot_card_${spot.id}"),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -489,7 +512,7 @@ private fun DiveSpotSummaryCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
+                            shape = RoundedCornerShape(8.dp),
                             color = difficultyColor.copy(alpha = 0.15f),
                             border = BorderStroke(1.dp, difficultyColor.copy(alpha = 0.3f))
                         ) {
@@ -504,15 +527,15 @@ private fun DiveSpotSummaryCard(
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = OceanSecondary.copy(alpha = 0.15f)
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
                         ) {
                             Text(
                                 text = "${spot.spotType} • ${spot.entryType}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = OceanSecondary,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
@@ -535,13 +558,13 @@ private fun DiveSpotSummaryCard(
 
                 // Mini Map Visual Badge
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = DepthNavy,
-                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f)),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                     modifier = Modifier.size(52.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Outlined.Map, contentDescription = "View Map", tint = AquaCyan, modifier = Modifier.size(26.dp))
+                        Icon(Icons.Rounded.Map, contentDescription = "View Map", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(26.dp))
                     }
                 }
             }
@@ -571,7 +594,7 @@ private fun DiveSpotSummaryCard(
             Text(
                 text = "✨ " + spot.highlights.take(2).joinToString(" • "),
                 style = MaterialTheme.typography.bodySmall,
-                color = OceanPrimary,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
@@ -595,19 +618,22 @@ private fun DiveSpotSummaryCard(
                     modifier = Modifier.testTag("spot_emergency_btn_${spot.id}"),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
                 ) {
-                    Icon(Icons.Default.HealthAndSafety, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                    Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", color = Color(0xFFE53E3E), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Button(
                     onClick = onClick,
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
                     modifier = Modifier.testTag("spot_view_map_btn_${spot.id}")
                 ) {
-                    Icon(Icons.Default.Map, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Rounded.Map, contentDescription = null, modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(if (isGerman) "Briefing & Karte" else "Briefing & Map", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
@@ -624,8 +650,9 @@ private fun SpotMetricPill(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
     ) {
         Column(
             modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp),
@@ -666,8 +693,9 @@ private fun DiveSpotDetailDialog(
                 .padding(vertical = 16.dp)
                 .testTag("spot_detail_dialog"),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -696,7 +724,7 @@ private fun DiveSpotDetailDialog(
                     }
 
                     IconButton(onClick = onDismiss, modifier = Modifier.testTag("close_spot_dialog_btn")) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Rounded.Close, contentDescription = "Close")
                     }
                 }
 
@@ -704,24 +732,24 @@ private fun DiveSpotDetailDialog(
 
                 // GPS Coordinates & Open in Google Maps Banner
                 Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = DepthNavy,
-                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.LocationOn, contentDescription = null, tint = AquaCyan, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "GPS Coordinates:",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 10.sp
                                 )
                             }
@@ -729,7 +757,7 @@ private fun DiveSpotDetailDialog(
                                 text = "${String.format("%.4f", spot.latitude)}° N, ${String.format("%.4f", spot.longitude)}° E",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = AquaCyan
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
 
@@ -737,12 +765,15 @@ private fun DiveSpotDetailDialog(
                             onClick = {
                                 openExternalMap(context, spot.latitude, spot.longitude, spot.name)
                             },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                             modifier = Modifier.testTag("open_external_map_btn")
                         ) {
-                            Icon(Icons.Default.Navigation, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Rounded.Navigation, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Google Maps", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
@@ -773,8 +804,10 @@ private fun DiveSpotDetailDialog(
                 // Quick Parameters Grid
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -816,20 +849,20 @@ private fun DiveSpotDetailDialog(
 
                 // Route & Navigation Advice
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = OceanPrimary.copy(alpha = 0.08f),
-                    border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.25f)),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier.padding(14.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Explore, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Explore, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = strings.diveSpotRouteAdvice,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -851,22 +884,26 @@ private fun DiveSpotDetailDialog(
                 ) {
                     Button(
                         onClick = onEmergencyClick,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .testTag("spot_detail_emergency_btn")
                     ) {
-                        Icon(Icons.Default.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
 
                     OutlinedButton(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                         modifier = Modifier
                             .weight(1f)
                             .testTag("spot_detail_close_btn")
@@ -1036,8 +1073,9 @@ private fun SpotEmergencyDossierDialog(
                 .padding(vertical = 16.dp)
                 .testTag("spot_emergency_dossier_dialog"),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -1054,11 +1092,11 @@ private fun SpotEmergencyDossierDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = CircleShape,
-                            color = Color(0xFFC53030).copy(alpha = 0.15f),
-                            modifier = Modifier.size(40.dp)
+                            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f),
+                            modifier = Modifier.size(42.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.HealthAndSafety, contentDescription = null, tint = Color(0xFFC53030), modifier = Modifier.size(24.dp))
+                                Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(24.dp))
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -1067,7 +1105,7 @@ private fun SpotEmergencyDossierDialog(
                                 text = if (isGerman) "Notfall- & Sicherheitsdossier" else "Emergency Safety Dossier",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFC53030)
+                                color = MaterialTheme.colorScheme.error
                             )
                             Text(
                                 text = spot.name,
@@ -1078,7 +1116,7 @@ private fun SpotEmergencyDossierDialog(
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = if (isGerman) "Schließen" else "Close")
+                        Icon(Icons.Rounded.Close, contentDescription = if (isGerman) "Schließen" else "Close")
                     }
                 }
 
@@ -1087,19 +1125,20 @@ private fun SpotEmergencyDossierDialog(
                 // Primary Chamber Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF5F5)),
-                    border = BorderStroke(1.dp, Color(0xFFFEB2B2))
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.LocalHospital, contentDescription = null, tint = Color(0xFFC53030), modifier = Modifier.size(20.dp))
+                            Icon(Icons.Rounded.LocalHospital, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = if (isGerman) "NÄCHSTE DRUCKKAMMER" else "NEAREST HYPERBARIC CHAMBER",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF9B2C2C)
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
 
@@ -1109,24 +1148,27 @@ private fun SpotEmergencyDossierDialog(
                             text = emergency.nearestChamberName,
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF742A2A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = "${emergency.chamberLocation} • ~${emergency.chamberDistanceKm} km ${if (isGerman) "entfernt" else "away"}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF742A2A)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Button(
                             onClick = { dialPhoneNumber(context, emergency.chamberPhone) },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            ),
                             shape = RoundedCornerShape(14.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             modifier = Modifier.testTag("call_chamber_btn")
                         ) {
-                            Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "${if (isGerman) "Druckkammer anrufen" else "Call Chamber"}: ${emergency.chamberPhone}",
@@ -1137,36 +1179,38 @@ private fun SpotEmergencyDossierDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Radio & Maritime Contacts Grid
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         EmergencyRowItem(
-                            icon = Icons.Default.Radio,
+                            icon = Icons.Rounded.Radio,
                             title = if (isGerman) "Küstenwache / Seefunk (VHF):" else "Coast Guard / Marine VHF:",
                             value = emergency.coastGuardVHF,
                             color = OceanPrimary
                         )
                         EmergencyRowItem(
-                            icon = Icons.Default.Phone,
+                            icon = Icons.Rounded.Phone,
                             title = if (isGerman) "DAN 24/7 Internationale Notfall-Hotline:" else "DAN 24/7 International Diving Hotline:",
                             value = emergency.danHotline,
                             color = OceanSecondary,
                             onActionClick = { dialPhoneNumber(context, emergency.danHotline.split(" ").firstOrNull() ?: "") }
                         )
                         EmergencyRowItem(
-                            icon = Icons.Default.LocalHospital,
+                            icon = Icons.Rounded.LocalHospital,
                             title = if (isGerman) "Krankenhaus & Notaufnahme:" else "Local Hospital & Trauma Center:",
                             value = "${emergency.localHospitalName} (${emergency.localHospitalPhone})",
                             color = SeaGreen
                         )
                         EmergencyRowItem(
-                            icon = Icons.Default.Air,
+                            icon = Icons.Rounded.Air,
                             title = if (isGerman) "Notfall-Sauerstoffversorgung:" else "Oxygen Resuscitation Protocol:",
                             value = if (emergency.oxygenOnSite) {
                                 if (isGerman) "100% Demand-Ventil Sauerstoffkoffer einsatzbereit an Bord & Basis." else "100% Demand Valve O2 Kit on standby on boat & base."
@@ -1178,12 +1222,13 @@ private fun SpotEmergencyDossierDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Evacuation Notes
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
@@ -1212,8 +1257,11 @@ private fun SpotEmergencyDossierDialog(
                     Button(
                         onClick = onDismiss,
                         shape = RoundedCornerShape(14.dp),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 9.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
                         modifier = Modifier.testTag("close_emergency_modal_btn")
                     ) {
                         Text(if (isGerman) "Dossier schließen" else "Close Dossier", fontWeight = FontWeight.Bold)
@@ -1239,10 +1287,10 @@ private fun EmergencyRowItem(
         Surface(
             shape = CircleShape,
             color = color.copy(alpha = 0.15f),
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(34.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
+                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
             }
         }
         Spacer(modifier = Modifier.width(10.dp))
@@ -1251,8 +1299,8 @@ private fun EmergencyRowItem(
             Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
         }
         if (onActionClick != null) {
-            IconButton(onClick = onActionClick, modifier = Modifier.size(28.dp)) {
-                Icon(Icons.Default.Call, contentDescription = "Call", tint = color, modifier = Modifier.size(16.dp))
+            IconButton(onClick = onActionClick, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Rounded.Call, contentDescription = "Call", tint = color, modifier = Modifier.size(16.dp))
             }
         }
     }
@@ -1276,19 +1324,20 @@ private fun EmergencyInfoDossierTab(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF742A2A)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = CircleShape,
-                            color = Color.White.copy(alpha = 0.2f),
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
                             modifier = Modifier.size(44.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Warning, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+                                Icon(Icons.Rounded.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(24.dp))
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -1297,12 +1346,12 @@ private fun EmergencyInfoDossierTab(
                                 text = if (isGerman) "WELTWEITER TAUCHNOTRUF & DAN" else "GLOBAL DIVE EMERGENCY & DAN",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Black,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onErrorContainer
                             )
                             Text(
                                 text = if (isGerman) "24/7 Internationale Notfall-Hotlines" else "24/7 International Emergency Response Hotlines",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color.White.copy(alpha = 0.8f)
+                                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
                             )
                         }
                     }
@@ -1315,26 +1364,32 @@ private fun EmergencyInfoDossierTab(
                     ) {
                         Button(
                             onClick = { dialPhoneNumber(context, "+19196849111") },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            ),
                             shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                             modifier = Modifier.weight(1f)
                         ) {
-                            Icon(Icons.Default.Call, contentDescription = null, tint = Color(0xFF742A2A), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("DAN America", color = Color(0xFF742A2A), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("DAN America", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
 
                         Button(
                             onClick = { dialPhoneNumber(context, "+39066954000") },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            ),
                             shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                             modifier = Modifier.weight(1f)
                         ) {
-                            Icon(Icons.Default.Call, contentDescription = null, tint = Color(0xFF742A2A), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("DAN Europe", color = Color(0xFF742A2A), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("DAN Europe", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -1357,9 +1412,10 @@ private fun EmergencyInfoDossierTab(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onSelectSpotEmergency(spot) },
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
                     Row(
@@ -1371,7 +1427,8 @@ private fun EmergencyInfoDossierTab(
                             Text(
                                 text = spot.name,
                                 style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = spot.region,
@@ -1409,15 +1466,18 @@ private fun EmergencyInfoDossierTab(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
                         onClick = { dialPhoneNumber(context, emergency.chamberPhone) },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
+                        ),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
                     ) {
-                        Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${if (isGerman) "Anrufen" else "Call"}: ${emergency.chamberPhone}",
@@ -1464,21 +1524,22 @@ private fun GasAndModCalculatorTab(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = DepthNavy),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Text(
                         text = strings.gasPlannerTitle,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = AquaCyan
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = strings.gasPlannerSubtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.75f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -1490,46 +1551,48 @@ private fun GasAndModCalculatorTab(
                     ) {
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (result.isPlanSafe) SeaGreen.copy(alpha = 0.2f) else Color(0xFFE53E3E).copy(alpha = 0.2f),
-                            border = BorderStroke(1.dp, if (result.isPlanSafe) SeaGreen else Color(0xFFE53E3E))
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (result.isPlanSafe) MaterialTheme.colorScheme.surfaceContainerLow else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f),
+                            border = BorderStroke(1.dp, if (result.isPlanSafe) SeaGreen.copy(alpha = 0.6f) else MaterialTheme.colorScheme.error)
                         ) {
-                            Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = if (isGerman) "MAXIMALE EINSATZTIEFE (MOD)" else "MAX OPERATING DEPTH (MOD)",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = if (isImperial) "${(result.maxOperatingDepthMeters * 3.28084).toInt()} ft" else "${result.maxOperatingDepthMeters.toInt()} m",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Black,
-                                    color = if (result.isPlanSafe) Color(0xFF68D391) else Color(0xFFFC8181)
+                                    color = if (result.isPlanSafe) SeaGreen else MaterialTheme.colorScheme.error
                                 )
                             }
                         }
 
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            color = OceanPrimary.copy(alpha = 0.2f),
-                            border = BorderStroke(1.dp, OceanPrimary)
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                         ) {
-                            Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = if (isGerman) "WENDEDRUCK (1/3-REGEL)" else "TURN PRESSURE (1/3 RULE)",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = if (isImperial) "${(result.turnPressureBar * 14.5038).toInt()} PSI" else "${result.turnPressureBar} bar",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Black,
-                                    color = AquaCyan
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -1538,20 +1601,20 @@ private fun GasAndModCalculatorTab(
                     if (result.warningMessage != null) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Surface(
-                            shape = RoundedCornerShape(10.dp),
-                            color = Color(0xFF742A2A),
-                            border = BorderStroke(1.dp, Color(0xFFFEB2B2))
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.errorContainer,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(10.dp),
+                                modifier = Modifier.padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Warning, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Rounded.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = result.warningMessage,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 11.sp
                                 )
@@ -1566,9 +1629,10 @@ private fun GasAndModCalculatorTab(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     // 1. Oxygen Percentage
@@ -1583,7 +1647,7 @@ private fun GasAndModCalculatorTab(
                                 },
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                         Slider(
@@ -1591,7 +1655,11 @@ private fun GasAndModCalculatorTab(
                             onValueChange = { o2Percent = it.toInt() },
                             valueRange = 21f..40f,
                             steps = 18,
-                            colors = SliderDefaults.colors(thumbColor = OceanPrimary, activeTrackColor = OceanPrimary),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
                             modifier = Modifier.testTag("slider_o2_percent")
                         )
                     }
@@ -1612,7 +1680,11 @@ private fun GasAndModCalculatorTab(
                             onValueChange = { ppo2Limit = Math.round(it * 10.0) / 10.0 },
                             valueRange = 1.2f..1.6f,
                             steps = 3,
-                            colors = SliderDefaults.colors(thumbColor = OceanSecondary, activeTrackColor = OceanSecondary),
+                            colors = SliderDefaults.colors(
+                                thumbColor = OceanSecondary,
+                                activeTrackColor = OceanSecondary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
                             modifier = Modifier.testTag("slider_ppo2_limit")
                         )
                     }
@@ -1635,7 +1707,11 @@ private fun GasAndModCalculatorTab(
                             onValueChange = { plannedDepth = it.toDouble() },
                             valueRange = 5f..40f,
                             steps = 34,
-                            colors = SliderDefaults.colors(thumbColor = AquaCyan, activeTrackColor = AquaCyan),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
                             modifier = Modifier.testTag("slider_planned_depth")
                         )
                     }
@@ -1656,7 +1732,11 @@ private fun GasAndModCalculatorTab(
                             onValueChange = { plannedBottomTime = it.toInt() },
                             valueRange = 10f..60f,
                             steps = 9,
-                            colors = SliderDefaults.colors(thumbColor = OceanTertiary, activeTrackColor = OceanTertiary),
+                            colors = SliderDefaults.colors(
+                                thumbColor = OceanTertiary,
+                                activeTrackColor = OceanTertiary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            ),
                             modifier = Modifier.testTag("slider_bottom_time")
                         )
                     }
@@ -1714,9 +1794,13 @@ private fun PreDiveBuddyChecklistTab() {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isAllChecked) SeaGreen.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.12f)
+                    containerColor = if (isAllChecked) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainerLow
                 ),
-                border = BorderStroke(1.dp, if (isAllChecked) SeaGreen else OceanPrimary)
+                border = BorderStroke(
+                    1.dp,
+                    if (isAllChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(
@@ -1726,9 +1810,9 @@ private fun PreDiveBuddyChecklistTab() {
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = if (isAllChecked) Icons.Default.CheckCircle else Icons.Default.SafetyCheck,
+                                imageVector = if (isAllChecked) Icons.Rounded.CheckCircle else Icons.Rounded.SafetyCheck,
                                 contentDescription = null,
-                                tint = if (isAllChecked) SeaGreen else OceanPrimary,
+                                tint = if (isAllChecked) SeaGreen else MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(28.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -1736,7 +1820,8 @@ private fun PreDiveBuddyChecklistTab() {
                                 Text(
                                     text = strings.preDiveChecklistTitle,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = if (isGerman) "$completedCount von ${checklistItems.size} Sicherheitsprüfungen mit Buddy bestätigt" else "$completedCount of ${checklistItems.size} checks verified with buddy",
@@ -1761,14 +1846,15 @@ private fun PreDiveBuddyChecklistTab() {
                         }
                     }
                     .testTag("checklist_item_${item.letter}"),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (item.isChecked) SeaGreen.copy(alpha = 0.08f) else MaterialTheme.colorScheme.surface
+                    containerColor = if (item.isChecked) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerLow
                 ),
                 border = BorderStroke(
                     1.dp,
-                    if (item.isChecked) SeaGreen.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outlineVariant
-                )
+                    if (item.isChecked) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -1778,7 +1864,7 @@ private fun PreDiveBuddyChecklistTab() {
                 ) {
                     Surface(
                         shape = CircleShape,
-                        color = if (item.isChecked) SeaGreen else OceanPrimary,
+                        color = if (item.isChecked) SeaGreen else MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(36.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
@@ -1811,7 +1897,7 @@ private fun PreDiveBuddyChecklistTab() {
                                 checklistItems[index] = item.copy(isChecked = checked)
                             }
                         },
-                        colors = CheckboxDefaults.colors(checkedColor = SeaGreen)
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                     )
                 }
             }
@@ -1828,10 +1914,11 @@ private fun PreDiveBuddyChecklistTab() {
                             checklistItems[i] = checklistItems[i].copy(isChecked = false)
                         }
                     },
-                    shape = RoundedCornerShape(20.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
                 ) {
-                    Text("Reset Checklist")
+                    Text(if (isGerman) "Checkliste zurücksetzen" else "Reset Checklist")
                 }
             }
         }

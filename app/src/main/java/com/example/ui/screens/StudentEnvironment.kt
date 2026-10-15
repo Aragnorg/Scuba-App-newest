@@ -10,21 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DirectionsBoat
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.outlined.DirectionsBoat
-import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Explore
-import androidx.compose.material.icons.outlined.MenuBook
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.DirectionsBoat
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.MenuBook
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -126,7 +121,8 @@ fun StudentEnvironment(
                         Text(
                             text = when (selectedTab) {
                                 0 -> strings.tabLearn
-                                1 -> strings.tabDivePlanning
+                                1 -> strings.tabExcursions
+                                2 -> strings.tabDivePlanning
                                 else -> strings.tabLogbook
                             },
                             style = MaterialTheme.typography.titleLarge,
@@ -136,26 +132,27 @@ fun StudentEnvironment(
                         Spacer(modifier = Modifier.width(8.dp))
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = SeaGreen.copy(alpha = 0.15f),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
                             modifier = Modifier.testTag("student_profile_pill_badge")
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    Icons.Default.CheckCircle,
+                                    Icons.Rounded.CheckCircle,
                                     contentDescription = strings.studentLabel,
-                                    tint = SeaGreen,
-                                    modifier = Modifier.size(12.dp)
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(14.dp)
                                 )
-                                Spacer(modifier = Modifier.width(3.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = studentName,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = SeaGreen,
+                                    color = MaterialTheme.colorScheme.primary,
                                     maxLines = 1
                                 )
                             }
@@ -169,9 +166,9 @@ fun StudentEnvironment(
                         modifier = Modifier.testTag("quick_profile_menu_action_btn")
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = Icons.Rounded.Person,
                             contentDescription = strings.profileTitle,
-                            tint = SeaGreen
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
 
@@ -188,29 +185,29 @@ fun StudentEnvironment(
                         modifier = Modifier.testTag("student_logout_button")
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                            imageVector = Icons.AutoMirrored.Rounded.Logout,
                             contentDescription = strings.signOut,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
             )
         },
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.testTag("student_navigation_bar"),
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 0.dp
             ) {
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 0) Icons.Filled.School else Icons.Outlined.School,
+                            imageVector = Icons.Rounded.School,
                             contentDescription = strings.tabLearn
                         )
                     },
@@ -223,7 +220,7 @@ fun StudentEnvironment(
                     onClick = { selectedTab = 1 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 1) Icons.Filled.DirectionsBoat else Icons.Outlined.DirectionsBoat,
+                            imageVector = Icons.Rounded.DirectionsBoat,
                             contentDescription = strings.tabExcursions
                         )
                     },
@@ -236,7 +233,7 @@ fun StudentEnvironment(
                     onClick = { selectedTab = 2 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 2) Icons.Filled.Explore else Icons.Outlined.Explore,
+                            imageVector = Icons.Rounded.Explore,
                             contentDescription = strings.tabDivePlanning
                         )
                     },
@@ -249,7 +246,7 @@ fun StudentEnvironment(
                     onClick = { selectedTab = 3 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 3) Icons.Filled.MenuBook else Icons.Outlined.MenuBook,
+                            imageVector = Icons.Rounded.MenuBook,
                             contentDescription = strings.tabLogbook
                         )
                     },
