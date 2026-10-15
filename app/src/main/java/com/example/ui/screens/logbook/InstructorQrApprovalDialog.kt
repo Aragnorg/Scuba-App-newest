@@ -11,6 +11,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,14 +33,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -162,10 +163,11 @@ fun InstructorQrApprovalDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.94f)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("instructor_qr_approval_dialog"),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -183,13 +185,13 @@ fun InstructorQrApprovalDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(OceanPrimary.copy(alpha = 0.15f)),
+                                .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.QrCodeScanner,
+                                imageVector = Icons.Rounded.QrCodeScanner,
                                 contentDescription = null,
-                                tint = OceanPrimary,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -211,30 +213,30 @@ fun InstructorQrApprovalDialog(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_qr_dialog_button")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Mandatory Role Policy Banner: Scan-Only for Divers
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFFF0F4F8),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.3f)),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(10.dp),
+                        modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Lock,
+                            imageVector = Icons.Rounded.Lock,
                             contentDescription = null,
-                            tint = OceanPrimary,
-                            modifier = Modifier.size(18.dp)
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = strings.scanOnlyNotice,
                             style = MaterialTheme.typography.labelSmall,
@@ -292,7 +294,7 @@ fun InstructorQrApprovalDialog(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.QrCodeScanner,
+                            imageVector = Icons.Rounded.QrCodeScanner,
                             contentDescription = null,
                             tint = SeaGreen,
                             modifier = Modifier.size(42.dp)
@@ -316,12 +318,12 @@ fun InstructorQrApprovalDialog(
                             Button(
                                 onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                                 colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 modifier = Modifier
                                     .height(32.dp)
                                     .testTag("enable_camera_scan_button")
                             ) {
-                                Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
+                                Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(strings.enableCamera, fontSize = 11.sp, color = Color(0xFF00382E), fontWeight = FontWeight.Bold)
                             }
@@ -369,10 +371,10 @@ fun InstructorQrApprovalDialog(
                             .padding(vertical = 4.dp)
                             .testTag("stamp_option_${stamp.instructorName.replace(" ", "_")}"),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceContainer
                         ),
-                        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.5.dp, SeaGreen) else null,
-                        shape = RoundedCornerShape(12.dp)
+                        border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        shape = RoundedCornerShape(14.dp)
                     ) {
                         Row(
                             modifier = Modifier
@@ -384,13 +386,13 @@ fun InstructorQrApprovalDialog(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
-                                    .background(if (isSelected) SeaGreen else Color.LightGray.copy(alpha = 0.5f)),
+                                    .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.School,
+                                    imageVector = if (isSelected) Icons.Rounded.CheckCircle else Icons.Rounded.School,
                                     contentDescription = null,
-                                    tint = if (isSelected) Color(0xFF00382E) else Color.DarkGray,
+                                    tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -399,7 +401,8 @@ fun InstructorQrApprovalDialog(
                                 Text(
                                     text = stamp.centerName,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "${strings.instructorLabel}: ${stamp.instructorName} • ${stamp.licenseNumber}",
@@ -409,15 +412,15 @@ fun InstructorQrApprovalDialog(
                             }
                             if (isSelected) {
                                 Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = SeaGreen.copy(alpha = 0.2f)
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.primaryContainer
                                 ) {
                                     Text(
                                         text = strings.scannedBadge,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF00695C)
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                 }
                             }
@@ -429,19 +432,28 @@ fun InstructorQrApprovalDialog(
                 AnimatedVisibility(visible = scanValidationErrorMessage != null) {
                     scanValidationErrorMessage?.let { err ->
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = Color(0xFFFFEBEE),
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.errorContainer,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                         ) {
                             Row(
-                                modifier = Modifier.padding(10.dp),
+                                modifier = Modifier.padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = Color(0xFFC62828), modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(text = err, color = Color(0xFFB71C1C), style = MaterialTheme.typography.labelSmall)
+                                Icon(
+                                    Icons.Rounded.ErrorOutline, 
+                                    contentDescription = null, 
+                                    tint = MaterialTheme.colorScheme.error, 
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = err, 
+                                    color = MaterialTheme.colorScheme.onErrorContainer, 
+                                    style = MaterialTheme.typography.labelSmall
+                                )
                             }
                         }
                     }
@@ -452,25 +464,25 @@ fun InstructorQrApprovalDialog(
                 // Verification Confirmation Box for the scanned instructor stamp
                 scannedStamp?.let { stamp ->
                     Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFFE8F5E9),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF81C784)),
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    Icons.Default.Verified,
+                                    Icons.Rounded.Verified,
                                     contentDescription = null,
-                                    tint = Color(0xFF2E7D32),
-                                    modifier = Modifier.size(18.dp)
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = strings.authenticQrVerifiedBadge,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1B5E20)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -478,13 +490,13 @@ fun InstructorQrApprovalDialog(
                                 text = "${strings.stampCodeLabel}: ${stamp.stampCode}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
-                                color = Color(0xFF388E3C)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Confirm and Approve Button
                 Box(
@@ -506,14 +518,14 @@ fun InstructorQrApprovalDialog(
                         },
                         enabled = scannedStamp != null,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = OceanPrimary,
-                            contentColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                         modifier = Modifier.testTag("apply_instructor_stamp_button")
                     ) {
-                        Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "${strings.verifyWithScannedStampButton} #${dive.diveNumber}",

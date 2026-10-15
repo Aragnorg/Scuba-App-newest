@@ -1,5 +1,6 @@
 package com.example.ui.screens.logbook
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,13 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Draw
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Draw
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.Send
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -110,10 +111,11 @@ fun BuddyApprovalDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.94f)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("buddy_approval_dialog"),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -131,13 +133,13 @@ fun BuddyApprovalDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(SeaGreen.copy(alpha = 0.15f)),
+                                .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.People,
+                                imageVector = Icons.Rounded.People,
                                 contentDescription = null,
-                                tint = SeaGreen,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -159,7 +161,7 @@ fun BuddyApprovalDialog(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_buddy_dialog_button")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 }
 
@@ -167,15 +169,15 @@ fun BuddyApprovalDialog(
 
                 TabRow(
                     selectedTabIndex = selectedTab,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp))
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    modifier = Modifier.clip(RoundedCornerShape(14.dp))
                 ) {
                     Tab(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
                         text = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Draw, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.Draw, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(strings.tabHandSignature, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                             }
@@ -187,7 +189,7 @@ fun BuddyApprovalDialog(
                         onClick = { selectedTab = 1 },
                         text = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.NotificationsActive, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(strings.tabPushNotification, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                             }
@@ -241,12 +243,12 @@ fun BuddyApprovalDialog(
 
                         OutlinedButton(
                             onClick = { signaturePoints.clear() },
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(10.dp),
                             modifier = Modifier
                                 .height(32.dp)
                                 .testTag("clear_signature_button")
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(strings.clearSignature, fontSize = 11.sp)
                         }
@@ -262,7 +264,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("buddy_signature_name_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -275,7 +277,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("buddy_signature_note_input"),
                         maxLines = 2,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -291,14 +293,14 @@ fun BuddyApprovalDialog(
                             },
                             enabled = buddyNameInput.isNotBlank(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = SeaGreen,
-                                contentColor = Color(0xFF00382E)
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            shape = RoundedCornerShape(20.dp),
-                            contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 28.dp, vertical = 12.dp),
                             modifier = Modifier.testTag("save_buddy_signature_button")
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = strings.signAndVerifyButton,
@@ -331,7 +333,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("push_buddy_name_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -344,7 +346,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("push_buddy_email_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -360,14 +362,14 @@ fun BuddyApprovalDialog(
                             },
                             enabled = pushBuddyEmail.isNotBlank(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = OceanPrimary,
-                                contentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            shape = RoundedCornerShape(20.dp),
-                            contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 28.dp, vertical = 12.dp),
                             modifier = Modifier.testTag("send_buddy_push_request_button")
                         ) {
-                            Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Rounded.Send, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = strings.sendPushRequestButton,

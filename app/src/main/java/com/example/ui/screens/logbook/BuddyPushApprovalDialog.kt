@@ -1,5 +1,6 @@
 package com.example.ui.screens.logbook
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,12 +18,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.Water
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -52,8 +53,6 @@ import com.example.data.model.DiveLogEntity
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
-import com.example.ui.theme.OceanPrimary
-import com.example.ui.theme.SeaGreen
 
 /**
  * Incoming Push Request Review & Approval Dialog:
@@ -83,10 +82,11 @@ fun BuddyPushApprovalDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.94f)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("buddy_push_approval_dialog"),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -104,13 +104,13 @@ fun BuddyPushApprovalDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(SeaGreen.copy(alpha = 0.2f)),
+                                .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.NotificationsActive,
+                                imageVector = Icons.Rounded.NotificationsActive,
                                 contentDescription = null,
-                                tint = SeaGreen,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -132,7 +132,7 @@ fun BuddyPushApprovalDialog(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_push_approval_button")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 }
 
@@ -141,9 +141,10 @@ fun BuddyPushApprovalDialog(
                 // Dive Summary Card
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = OceanPrimary.copy(alpha = 0.08f)
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
@@ -155,17 +156,17 @@ fun BuddyPushApprovalDialog(
                                 text = "${strings.diveNumberPrefix}${dive.diveNumber}: ${dive.siteName}",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = SeaGreen.copy(alpha = 0.15f)
+                                shape = RoundedCornerShape(10.dp),
+                                color = MaterialTheme.colorScheme.secondaryContainer
                             ) {
                                 Text(
                                     text = dive.date,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = SeaGreen,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -186,17 +187,17 @@ fun BuddyPushApprovalDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             MetricPill(
-                                icon = Icons.Default.Water,
+                                icon = Icons.Rounded.Water,
                                 label = strings.maxDepth,
                                 value = "${dive.maxDepthMeters} m"
                             )
                             MetricPill(
-                                icon = Icons.Default.Timer,
+                                icon = Icons.Rounded.Timer,
                                 label = strings.bottomTime,
                                 value = "${dive.durationMinutes} min"
                             )
                             MetricPill(
-                                icon = Icons.Default.Air,
+                                icon = Icons.Rounded.Air,
                                 label = strings.usedPressure,
                                 value = "${(dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0)} bar"
                             )
@@ -207,7 +208,8 @@ fun BuddyPushApprovalDialog(
                             Text(
                                 text = "${strings.diverNotesLabel}: \"${dive.notes}\"",
                                 style = MaterialTheme.typography.bodySmall,
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -223,7 +225,7 @@ fun BuddyPushApprovalDialog(
                         .fillMaxWidth()
                         .testTag("push_approval_buddy_name_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -236,7 +238,7 @@ fun BuddyPushApprovalDialog(
                         .fillMaxWidth()
                         .testTag("push_approval_note_input"),
                     maxLines = 3,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
@@ -250,15 +252,15 @@ fun BuddyPushApprovalDialog(
                             onApprove(dive.id, buddyName, buddyNote)
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = SeaGreen,
-                            contentColor = Color(0xFF00382E)
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(14.dp),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                         modifier = Modifier.testTag("confirm_push_approval_button")
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Verified,
+                            imageVector = Icons.Rounded.Verified,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
@@ -282,19 +284,34 @@ private fun MetricPill(
     value: String
 ) {
     Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.4f))
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(14.dp), tint = OceanPrimary)
-            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                icon, 
+                contentDescription = null, 
+                modifier = Modifier.size(16.dp), 
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(6.dp))
             Column {
-                Text(text = label, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = Color.Gray)
-                Text(text = value, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    text = label, 
+                    style = MaterialTheme.typography.labelSmall, 
+                    fontSize = 9.sp, 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = value, 
+                    style = MaterialTheme.typography.labelMedium, 
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }

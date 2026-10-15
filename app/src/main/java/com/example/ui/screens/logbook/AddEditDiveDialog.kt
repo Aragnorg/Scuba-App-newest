@@ -1,5 +1,6 @@
 package com.example.ui.screens.logbook
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,16 +19,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Navigation
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Thermostat
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Water
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Navigation
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.Thermostat
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -154,10 +155,12 @@ fun AddEditDiveDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("add_edit_dive_dialog"),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -179,7 +182,7 @@ fun AddEditDiveDialog(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = Icons.Rounded.Add,
                                 contentDescription = null,
                                 tint = OceanPrimary,
                                 modifier = Modifier.size(24.dp)
@@ -190,7 +193,8 @@ fun AddEditDiveDialog(
                             Text(
                                 text = "${strings.logNewDiveTitle} #$diveNumber",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = strings.logNewDiveSubtitle,
@@ -203,14 +207,14 @@ fun AddEditDiveDialog(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_add_dive_button")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // SECTION 1: SITE & LOCATION
-                SectionHeader(title = strings.siteAndLocationSection, icon = Icons.Default.Place)
+                SectionHeader(title = strings.siteAndLocationSection, icon = Icons.Rounded.Place)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
@@ -254,7 +258,7 @@ fun AddEditDiveDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // SECTION 2: DEPTH & TIME
-                SectionHeader(title = strings.depthTimeSection, icon = Icons.Default.Speed)
+                SectionHeader(title = strings.depthTimeSection, icon = Icons.Rounded.Speed)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
@@ -341,7 +345,7 @@ fun AddEditDiveDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // SECTION 3: TEMPERATURE & CONDITIONS
-                SectionHeader(title = strings.tempConditionsSection, icon = Icons.Default.Thermostat)
+                SectionHeader(title = strings.tempConditionsSection, icon = Icons.Rounded.Thermostat)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
@@ -384,7 +388,7 @@ fun AddEditDiveDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // SECTION 4: GAS & EQUIPMENT
-                SectionHeader(title = strings.gasCylinderSection, icon = Icons.Default.Air)
+                SectionHeader(title = strings.gasCylinderSection, icon = Icons.Rounded.Air)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(text = strings.gasMixLabel, style = MaterialTheme.typography.labelSmall)
@@ -474,7 +478,7 @@ fun AddEditDiveDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // SECTION 5: MARINE LIFE SIGHTINGS
-                SectionHeader(title = strings.sightingsNotesSection, icon = Icons.Default.Water)
+                SectionHeader(title = strings.sightingsNotesSection, icon = Icons.Rounded.Water)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
@@ -494,7 +498,7 @@ fun AddEditDiveDialog(
                                     Surface(
                                         shape = RoundedCornerShape(16.dp),
                                         color = if (isSelected) SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.dp, SeaGreen) else null,
+                                        border = if (isSelected) BorderStroke(1.dp, SeaGreen) else null,
                                         modifier = Modifier
                                             .clickable {
                                                 if (isSelected) selectedSightings.remove(sighting) else selectedSightings.add(sighting)
@@ -506,7 +510,7 @@ fun AddEditDiveDialog(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             if (isSelected) {
-                                                Icon(Icons.Default.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
+                                                Icon(Icons.Rounded.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
                                                 Spacer(modifier = Modifier.width(3.dp))
                                             }
                                             Text(
@@ -526,7 +530,7 @@ fun AddEditDiveDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // SECTION 6: BUDDY & DIVE CENTER INFO
-                SectionHeader(title = strings.buddyCenterSection, icon = Icons.Default.Navigation)
+                SectionHeader(title = strings.buddyCenterSection, icon = Icons.Rounded.Navigation)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
@@ -615,16 +619,16 @@ fun AddEditDiveDialog(
                         )
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = OceanPrimary,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("submit_save_dive_button"),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "${strings.saveDiveLogButton} #$diveNumber",
@@ -640,13 +644,21 @@ fun AddEditDiveDialog(
 @Composable
 private fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
-        Spacer(modifier = Modifier.width(6.dp))
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+            modifier = Modifier.size(26.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(15.dp))
+            }
+        }
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            color = OceanPrimary
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -664,16 +676,19 @@ private fun ChipSelector(
         options.forEach { opt ->
             val isSelected = opt == selected
             Surface(
-                shape = RoundedCornerShape(14.dp),
-                color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.clickable { onSelect(opt) }
+                shape = RoundedCornerShape(10.dp),
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer,
+                border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .clickable { onSelect(opt) }
             ) {
                 Text(
                     text = opt,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 11.sp,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )
             }

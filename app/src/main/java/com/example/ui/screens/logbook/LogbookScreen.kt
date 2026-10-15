@@ -1,6 +1,10 @@
 package com.example.ui.screens.logbook
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,25 +21,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Draw
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Thermostat
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.Water
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Draw
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.Thermostat
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -117,16 +124,17 @@ fun LogbookScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddDiveDialog = true },
-                containerColor = OceanPrimary,
-                contentColor = Color.White,
-                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(18.dp),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
                 modifier = Modifier.testTag("fab_log_new_dive")
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = strings.logNewDive, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Rounded.Add, contentDescription = strings.logNewDive, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(text = strings.logNewDive, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
@@ -184,8 +192,10 @@ fun LogbookScreen(
                 if (filteredDives.isEmpty()) {
                     item {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                            shape = RoundedCornerShape(22.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp)
@@ -196,23 +206,33 @@ fun LogbookScreen(
                                     .padding(32.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Water,
-                                    contentDescription = null,
-                                    tint = OceanPrimary,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Surface(
+                                    modifier = Modifier.size(56.dp),
+                                    shape = CircleShape,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Water,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(28.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(14.dp))
                                 Text(
                                     text = strings.noDivesFound,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = strings.noDivesFoundDesc,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                                 )
                             }
                         }
@@ -357,10 +377,9 @@ private fun LogbookHeaderHero(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(20.dp),
-        color = Color(0xFF0A2333),
-        contentColor = Color.White,
-        tonalElevation = 4.dp
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
             Row(
@@ -371,29 +390,29 @@ private fun LogbookHeaderHero(
                 Column {
                     Text(
                         text = strings.logbookHeroTitle,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = AquaCyan
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = diverName,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = SeaGreen.copy(alpha = 0.2f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f))
+                    color = SeaGreen.copy(alpha = 0.12f),
+                    border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = "$verifiedDives/$totalDives ${strings.verifiedDives}",
                             style = MaterialTheme.typography.labelSmall,
@@ -414,7 +433,8 @@ private fun LogbookHeaderHero(
                 HeroStatItem(
                     label = strings.totalDives,
                     value = "$totalDives",
-                    icon = Icons.Default.Water
+                    icon = Icons.Rounded.Water,
+                    iconTint = MaterialTheme.colorScheme.primary
                 )
                 HeroStatItem(
                     label = strings.maxDepth,
@@ -423,12 +443,14 @@ private fun LogbookHeaderHero(
                     } else {
                         "${maxDepth}m"
                     },
-                    icon = Icons.Default.Speed
+                    icon = Icons.Rounded.Speed,
+                    iconTint = AquaCyan
                 )
                 HeroStatItem(
                     label = strings.bottomTime,
                     value = "${totalHours}h ${totalMinutes}m",
-                    icon = Icons.Default.Timer
+                    icon = Icons.Rounded.Timer,
+                    iconTint = SeaGreen
                 )
             }
         }
@@ -439,30 +461,42 @@ private fun LogbookHeaderHero(
 private fun HeroStatItem(
     label: String,
     value: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    iconTint: Color = MaterialTheme.colorScheme.primary
 ) {
     Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = Color(0xFF13364C),
-        modifier = Modifier.width(96.dp)
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        modifier = Modifier.width(102.dp)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 10.dp, horizontal = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Icon(icon, contentDescription = null, tint = AquaCyan, modifier = Modifier.size(16.dp))
-            Spacer(modifier = Modifier.height(4.dp))
+            Surface(
+                modifier = Modifier.size(32.dp),
+                shape = CircleShape,
+                color = iconTint.copy(alpha = 0.14f)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
+                }
+            }
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 10.sp,
-                color = Color.LightGray
+                maxLines = 1
             )
         }
     }
@@ -483,7 +517,7 @@ private fun FilterChipsRow(
         "${strings.filterPending} ($pendingCount)"
     )
 
-    androidx.compose.foundation.lazy.LazyRow(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -492,20 +526,33 @@ private fun FilterChipsRow(
         items(filters.size) { index ->
             val label = filters[index]
             val isSelected = selectedIndex == index
+            val animatedBg by animateColorAsState(
+                targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer,
+                animationSpec = tween(200),
+                label = "filter_chip_bg_$index"
+            )
+            val animatedTextColor by animateColorAsState(
+                targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                animationSpec = tween(200),
+                label = "filter_chip_text_$index"
+            )
+            val animatedBorder = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
+
             Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(12.dp),
+                color = animatedBg,
+                border = animatedBorder,
                 modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
                     .clickable { onSelectIndex(index) }
                     .testTag("filter_chip_$index")
             ) {
                 Text(
                     text = label,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontSize = 11.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    color = animatedTextColor
                 )
             }
         }
@@ -530,12 +577,14 @@ fun DiveLogCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
+            .animateContentSize()
             .testTag("dive_card_${dive.diveNumber}"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             // Header: Dive Number pill + Date + Entry Type
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -545,14 +594,14 @@ fun DiveLogCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = OceanPrimary.copy(alpha = 0.15f)
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
                     ) {
                         Text(
                             text = "${strings.diveNumberPrefix}${dive.diveNumber}",
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = OceanPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -564,19 +613,20 @@ fun DiveLogCard(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh
                 ) {
                     Text(
                         text = "${dive.entryType} • ${dive.bodyOfWater}",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 10.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Site Name & Location
             Text(
@@ -585,14 +635,24 @@ fun DiveLogCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            Text(
-                text = "📍 ${dive.location}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
-            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Rounded.Place,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = dive.location,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Telemetry Pills Row
             val maxDepthStr = if (isImperial) {
@@ -615,34 +675,34 @@ fun DiveLogCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                MiniPill(icon = Icons.Default.Water, label = maxDepthStr)
-                MiniPill(icon = Icons.Default.Timer, label = "${dive.durationMinutes}m")
-                MiniPill(icon = Icons.Default.Thermostat, label = waterTempStr)
-                MiniPill(icon = Icons.Default.Air, label = pressureUsedStr)
+                MiniPill(icon = Icons.Rounded.Water, label = maxDepthStr)
+                MiniPill(icon = Icons.Rounded.Timer, label = "${dive.durationMinutes}m")
+                MiniPill(icon = Icons.Rounded.Thermostat, label = waterTempStr)
+                MiniPill(icon = Icons.Rounded.Air, label = pressureUsedStr)
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // VERIFICATION BADGE & ACTION ROW
             when (dive.approvalStatus) {
                 "APPROVED_BY_INSTRUCTOR" -> {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFFE8F5E9),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4CAF50)),
+                        shape = RoundedCornerShape(12.dp),
+                        color = SeaGreen.copy(alpha = 0.12f),
+                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF2E7D32), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "${strings.verifiedByInstructor}: ${dive.instructorName.ifBlank { "Adrian Scheid" }} (${strings.qrVerifiedLabel})",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1B5E20),
+                                color = SeaGreen,
                                 fontSize = 11.sp
                             )
                         }
@@ -651,22 +711,22 @@ fun DiveLogCard(
 
                 "APPROVED_BY_BUDDY_SIGNATURE" -> {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFFE0F7FA),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF00ACC1)),
+                        shape = RoundedCornerShape(12.dp),
+                        color = AquaCyan.copy(alpha = 0.12f),
+                        border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Draw, contentDescription = null, tint = Color(0xFF00838F), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Draw, contentDescription = null, tint = AquaCyan, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "${strings.verifiedByBuddySig} ${dive.approvedBy.ifBlank { dive.buddyName }}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF006064),
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 11.sp
                             )
                         }
@@ -675,22 +735,22 @@ fun DiveLogCard(
 
                 "APPROVED_BY_BUDDY_PUSH" -> {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFFE8F5E9),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, SeaGreen),
+                        shape = RoundedCornerShape(12.dp),
+                        color = SeaGreen.copy(alpha = 0.12f),
+                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.NotificationsActive, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.NotificationsActive, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "${strings.verifiedByBuddyPush} ${dive.approvedBy.ifBlank { dive.buddyName }}",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1B5E20),
+                                color = SeaGreen,
                                 fontSize = 11.sp
                             )
                         }
@@ -700,48 +760,48 @@ fun DiveLogCard(
                 else -> {
                     // PENDING: Show Two Quick Approval Action Buttons
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFFFFF8E1),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFFB300)),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.25f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
+                        Column(modifier = Modifier.padding(10.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Security, contentDescription = null, tint = Color(0xFFE65100), modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(Icons.Rounded.Security, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = strings.pendingVerification,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFE65100)
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             }
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    color = OceanPrimary,
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
                                         .weight(1f)
                                         .clickable { onApproveQrClick() }
                                         .testTag("card_action_qr_${dive.diveNumber}")
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(vertical = 5.dp),
+                                        modifier = Modifier.padding(vertical = 7.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = Color.White, modifier = Modifier.size(12.dp))
-                                        Spacer(modifier = Modifier.width(3.dp))
-                                        Text(text = strings.scanQr, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                        Icon(Icons.Rounded.QrCodeScanner, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(text = strings.scanQr, color = MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
 
                                 Surface(
-                                    shape = RoundedCornerShape(6.dp),
+                                    shape = RoundedCornerShape(10.dp),
                                     color = SeaGreen,
                                     modifier = Modifier
                                         .weight(1f)
@@ -749,13 +809,13 @@ fun DiveLogCard(
                                         .testTag("card_action_buddy_${dive.diveNumber}")
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(vertical = 5.dp),
+                                        modifier = Modifier.padding(vertical = 7.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(Icons.Default.Draw, contentDescription = null, tint = Color(0xFF00382E), modifier = Modifier.size(12.dp))
-                                        Spacer(modifier = Modifier.width(3.dp))
-                                        Text(text = strings.buddySign, color = Color(0xFF00382E), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                        Icon(Icons.Rounded.Draw, contentDescription = null, tint = Color(0xFF00382E), modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(text = strings.buddySign, color = Color(0xFF00382E), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
@@ -773,16 +833,23 @@ private fun MiniPill(
     label: String
 ) {
     Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(12.dp), tint = OceanPrimary)
-            Spacer(modifier = Modifier.width(3.dp))
-            Text(text = label, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+            Icon(icon, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

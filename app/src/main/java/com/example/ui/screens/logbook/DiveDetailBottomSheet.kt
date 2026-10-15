@@ -1,5 +1,6 @@
 package com.example.ui.screens.logbook
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,21 +19,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Draw
-import androidx.compose.material.icons.filled.FitnessCenter
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Thermostat
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.Water
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Draw
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Thermostat
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -96,10 +97,12 @@ fun DiveDetailDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("dive_detail_dialog"),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -116,14 +119,14 @@ fun DiveDetailDialog(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.primary
                             ) {
                                 Text(
                                     text = "${strings.diveNumberPrefix}${dive.diveNumber}",
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                             Spacer(modifier = Modifier.width(8.dp))
@@ -140,18 +143,27 @@ fun DiveDetailDialog(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        Text(
-                            text = "📍 ${dive.location}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Rounded.Place,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = dive.location,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
 
                     IconButton(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_dive_details_button")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 }
 
@@ -161,9 +173,9 @@ fun DiveDetailDialog(
                 when (dive.approvalStatus) {
                     "APPROVED_BY_INSTRUCTOR" -> {
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = Color(0xFFE8F5E9),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF2E7D32)),
+                            shape = RoundedCornerShape(16.dp),
+                            color = SeaGreen.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("approved_instructor_banner")
@@ -176,13 +188,13 @@ fun DiveDetailDialog(
                                     modifier = Modifier
                                         .size(44.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFF2E7D32)),
+                                        .background(SeaGreen.copy(alpha = 0.2f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Verified,
+                                        imageVector = Icons.Rounded.Verified,
                                         contentDescription = null,
-                                        tint = Color.White,
+                                        tint = SeaGreen,
                                         modifier = Modifier.size(26.dp)
                                     )
                                 }
@@ -192,20 +204,20 @@ fun DiveDetailDialog(
                                         text = strings.officialCenterStampBadge,
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF1B5E20)
+                                        color = SeaGreen
                                     )
                                     Text(
                                         text = "${strings.verifiedByLabel}: ${dive.approvedBy.ifBlank { "Adrian Scheid" }}",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF2E7D32)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     if (dive.instructorLicense.isNotBlank()) {
                                         Text(
                                             text = "${strings.licenseLabel}: ${dive.instructorLicense}",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 10.sp,
-                                            color = Color(0xFF388E3C)
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                     if (dive.qrStampCode.isNotBlank()) {
@@ -213,7 +225,7 @@ fun DiveDetailDialog(
                                             text = "${strings.qrHashLabel}: ${dive.qrStampCode.take(24)}...",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 9.sp,
-                                            color = Color.Gray
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                         )
                                     }
                                 }
@@ -223,43 +235,59 @@ fun DiveDetailDialog(
 
                     "APPROVED_BY_BUDDY_SIGNATURE" -> {
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = Color(0xFFE0F7FA),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF00838F)),
+                            shape = RoundedCornerShape(16.dp),
+                            color = AquaCyan.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.35f)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("approved_buddy_sig_banner")
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Draw,
-                                        contentDescription = null,
-                                        tint = Color(0xFF00838F),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = strings.verifiedByBuddySignatureTitle,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF006064)
-                                    )
-                                    Spacer(modifier = Modifier.weight(1f))
-                                    Text(
-                                        text = "${strings.signedByLabel} ${dive.approvedBy}",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color(0xFF00838F),
-                                        fontWeight = FontWeight.SemiBold
-                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(AquaCyan.copy(alpha = 0.2f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Draw,
+                                            contentDescription = null,
+                                            tint = AquaCyan,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = strings.verifiedByBuddySignatureTitle,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = AquaCyan
+                                        )
+                                        Text(
+                                            text = "${strings.signedByLabel} ${dive.approvedBy}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
                                 }
 
                                 if (dive.buddySignaturePathJson.isNotBlank()) {
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    SignaturePreview(
-                                        signatureJson = dive.buddySignaturePathJson,
-                                        height = 55.dp
-                                    )
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = MaterialTheme.colorScheme.surfaceContainer,
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        SignaturePreview(
+                                            signatureJson = dive.buddySignaturePathJson,
+                                            height = 55.dp
+                                        )
+                                    }
                                 }
 
                                 if (dive.buddyApprovalNote.isNotBlank()) {
@@ -268,7 +296,7 @@ fun DiveDetailDialog(
                                         text = "\"${dive.buddyApprovalNote}\"",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                                        color = Color(0xFF006064)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -277,9 +305,9 @@ fun DiveDetailDialog(
 
                     "APPROVED_BY_BUDDY_PUSH" -> {
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = Color(0xFFE8F5E9),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, SeaGreen),
+                            shape = RoundedCornerShape(16.dp),
+                            color = SeaGreen.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("approved_buddy_push_banner")
@@ -296,7 +324,7 @@ fun DiveDetailDialog(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.NotificationsActive,
+                                        imageVector = Icons.Rounded.NotificationsActive,
                                         contentDescription = null,
                                         tint = SeaGreen,
                                         modifier = Modifier.size(22.dp)
@@ -331,9 +359,9 @@ fun DiveDetailDialog(
                     else -> {
                         // PENDING APPROVAL - SHOW ACTION OPTIONS
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = Color(0xFFFFF8E1),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFFFA000)),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.25f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.35f)),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("pending_approval_banner")
@@ -341,9 +369,9 @@ fun DiveDetailDialog(
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = Icons.Default.Security,
+                                        imageVector = Icons.Rounded.Security,
                                         contentDescription = null,
-                                        tint = Color(0xFFF57C00),
+                                        tint = MaterialTheme.colorScheme.tertiary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -351,14 +379,14 @@ fun DiveDetailDialog(
                                         text = strings.diveLogPendingApprovalTitle,
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFE65100)
+                                        color = MaterialTheme.colorScheme.tertiary
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = strings.chooseApprovalMethodPrompt,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF5D4037)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
                                 Spacer(modifier = Modifier.height(10.dp))
@@ -370,13 +398,13 @@ fun DiveDetailDialog(
                                     // 1. Scan Instructor / Center QR Code
                                     Button(
                                         onClick = onApproveWithQrClick,
-                                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                        shape = RoundedCornerShape(12.dp),
                                         modifier = Modifier
                                             .weight(1f)
                                             .testTag("action_approve_qr")
                                     ) {
-                                        Icon(Icons.Default.QrCodeScanner, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Rounded.QrCodeScanner, contentDescription = null, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(strings.scanCenterQrButton, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
@@ -385,12 +413,12 @@ fun DiveDetailDialog(
                                     Button(
                                         onClick = onApproveWithBuddyClick,
                                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                        shape = RoundedCornerShape(10.dp),
+                                        shape = RoundedCornerShape(12.dp),
                                         modifier = Modifier
                                             .weight(1f)
                                             .testTag("action_approve_buddy")
                                     ) {
-                                        Icon(Icons.Default.People, contentDescription = null, tint = Color(0xFF00382E), modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Rounded.People, contentDescription = null, tint = Color(0xFF00382E), modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(strings.buddyApproveButton, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF00382E))
                                     }
@@ -402,7 +430,7 @@ fun DiveDetailDialog(
                                 Text(
                                     text = strings.demoTriggerPushPrompt,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = OceanPrimary,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
@@ -421,7 +449,8 @@ fun DiveDetailDialog(
                 Text(
                     text = strings.diveTelemetryProfileTitle,
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -430,19 +459,19 @@ fun DiveDetailDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     DetailCard(
-                        icon = Icons.Default.Water,
+                        icon = Icons.Rounded.Water,
                         label = strings.maxDepth,
                         value = maxDepthStr,
                         modifier = Modifier.weight(1f)
                     )
                     DetailCard(
-                        icon = Icons.Default.Water,
+                        icon = Icons.Rounded.Water,
                         label = strings.avgDepth,
                         value = avgDepthStr,
                         modifier = Modifier.weight(1f)
                     )
                     DetailCard(
-                        icon = Icons.Default.Timer,
+                        icon = Icons.Rounded.Timer,
                         label = strings.bottomTime,
                         value = "${dive.durationMinutes} min",
                         modifier = Modifier.weight(1f)
@@ -456,19 +485,19 @@ fun DiveDetailDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     DetailCard(
-                        icon = Icons.Default.Thermostat,
+                        icon = Icons.Rounded.Thermostat,
                         label = strings.waterTemp,
                         value = waterTempStr,
                         modifier = Modifier.weight(1f)
                     )
                     DetailCard(
-                        icon = Icons.Default.Thermostat,
+                        icon = Icons.Rounded.Thermostat,
                         label = strings.airTemp,
                         value = airTempStr,
                         modifier = Modifier.weight(1f)
                     )
                     DetailCard(
-                        icon = Icons.Default.Visibility,
+                        icon = Icons.Rounded.Visibility,
                         label = strings.visibility,
                         value = visibilityStr,
                         modifier = Modifier.weight(1f)
@@ -479,39 +508,41 @@ fun DiveDetailDialog(
 
                 // GAS CONSUMPTION & CYLINDER
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier.padding(14.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Air, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = strings.breathingGasTankPressureTitle, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                            Icon(Icons.Rounded.Air, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = strings.breathingGasTankPressureTitle, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "${strings.gasMixLabel}: ${dive.gasType}", style = MaterialTheme.typography.bodySmall)
-                            Text(text = "${strings.cylinderLabel}: ${dive.tankType}", style = MaterialTheme.typography.bodySmall)
+                            Text(text = "${strings.gasMixLabel}: ${dive.gasType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(text = "${strings.cylinderLabel}: ${dive.tankType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "${strings.pressureInLabel}: $pressureInStr", style = MaterialTheme.typography.bodySmall)
-                            Text(text = "${strings.pressureOutLabel}: $pressureOutStr", style = MaterialTheme.typography.bodySmall)
+                            Text(text = "${strings.pressureInLabel}: $pressureInStr", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(text = "${strings.pressureOutLabel}: $pressureOutStr", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
                                 text = "${strings.usedPressureLabel}: $pressureUsedStr",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -525,18 +556,19 @@ fun DiveDetailDialog(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (dive.safetyStopCompleted) SeaGreen.copy(alpha = 0.15f) else Color.LightGray.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(14.dp),
+                        color = if (dive.safetyStopCompleted) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (dive.safetyStopCompleted) SeaGreen.copy(alpha = 0.35f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                         modifier = Modifier.weight(1f)
                     ) {
                         Row(
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Default.Verified,
+                                Icons.Rounded.Verified,
                                 contentDescription = null,
-                                tint = if (dive.safetyStopCompleted) SeaGreen else Color.Gray,
+                                tint = if (dive.safetyStopCompleted) SeaGreen else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -544,25 +576,27 @@ fun DiveDetailDialog(
                                 text = if (dive.safetyStopCompleted) strings.safetyStopDone else strings.safetyStopNotLogged,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (dive.safetyStopCompleted) SeaGreen else Color.DarkGray
+                                color = if (dive.safetyStopCompleted) SeaGreen else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                         modifier = Modifier.weight(1f)
                     ) {
                         Row(
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.FitnessCenter, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.FitnessCenter, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "${strings.weights}: $weightStr (${dive.suitType})",
-                                style = MaterialTheme.typography.labelSmall
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -570,29 +604,31 @@ fun DiveDetailDialog(
 
                 if (dive.sightings.isNotBlank()) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = strings.marineLifeSightings, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                    Text(text = strings.marineLifeSightings, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "🐠 ${dive.sightings}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = OceanPrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
                 if (dive.notes.isNotBlank()) {
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = strings.diverComments, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                    Text(text = strings.diverComments, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(4.dp))
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = "\"${dive.notes}\"",
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             style = MaterialTheme.typography.bodySmall,
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -609,12 +645,13 @@ fun DiveDetailDialog(
                             onDeleteClick(dive.id)
                             onDismiss()
                         },
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFB00020)),
-                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.testTag("delete_dive_log_button")
                     ) {
-                        Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(strings.deleteDiveLog, fontSize = 12.sp)
                     }
                 }
@@ -631,18 +668,19 @@ private fun DetailCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Icon(icon, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(text = label, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = Color.Gray)
-            Text(text = value, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+            Text(text = label, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = value, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }
