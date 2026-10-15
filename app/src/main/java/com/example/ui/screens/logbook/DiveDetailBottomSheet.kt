@@ -58,6 +58,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiveLogEntity
 import com.example.ui.components.SignaturePreview
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
 
