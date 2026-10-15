@@ -82,6 +82,7 @@ import com.example.data.model.QuizEntity
 import com.example.ui.components.DocumentExpirationAlertBanner
 import com.example.ui.components.ExamReadinessGauge
 import com.example.ui.i18n.AppLanguage
+import com.example.ui.i18n.AppLocalizer
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
@@ -160,12 +161,12 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                            Icon(Icons.Default.CheckCircle, contentDescription = "Success", tint = SeaGreen, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(text = msg, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = SeaGreen)
                         }
                         IconButton(onClick = { enrollmentSuccessMessage = null }, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.Default.Close, contentDescription = "Close", tint = SeaGreen, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Close, contentDescription = strings.close, tint = SeaGreen, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -405,7 +406,7 @@ fun HomeScreen(
                     Box(modifier = Modifier.weight(1f)) {
                         QuickActionTile(
                             title = strings.tileHandSignalsTitle,
-                            subtitle = "20+ Signals in Course",
+                            subtitle = if (currentLanguage == AppLanguage.DE) "20+ Signale im Kurs" else "20+ Signals in Course",
                             icon = Icons.Default.Signpost,
                             color = OceanSecondary,
                             onClick = { showHandSignalsTrainerDialog = true },
@@ -457,7 +458,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "${selectedCourse?.title ?: "Open Water Diver"} Curriculum",
+                                text = "${AppLocalizer.localizeCourseTitle(selectedCourse?.title ?: "Open Water Diver", currentLanguage == AppLanguage.DE)} ${if (currentLanguage == AppLanguage.DE) "Lehrplan" else "Curriculum"}",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
@@ -497,6 +498,7 @@ fun HomeScreen(
                 item {
                     val nitroxPres = presentations.find { it.id == "pres_nitrox" }
                     val nitroxQuiz = quizzes.find { it.id == "quiz_nitrox" }
+                    val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("nitrox_curriculum_module"),
                         shape = RoundedCornerShape(16.dp),
@@ -505,19 +507,19 @@ fun HomeScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                text = "Specialty Unit: Oxygen Analysis & Gas Mixing",
+                                text = if (isGerman) "Spezialkurs: Sauerstoffanalyse & Gasmischung" else "Specialty Unit: Oxygen Analysis & Gas Mixing",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
                             )
                             Text(
-                                text = "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
+                                text = if (isGerman) "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             ModuleItemRow(
-                                title = "Nitrox Gas Analysis & Max Depth (MOD) calculations",
-                                type = "Slide Deck (2 Slides)",
+                                title = if (isGerman) "Nitrox-Gasanalyse & Maximaltiefen-Berechnung (MOD)" else "Nitrox Gas Analysis & Max Depth (MOD) calculations",
+                                type = if (isGerman) "Präsentation (2 Folien)" else "Slide Deck (2 Slides)",
                                 icon = Icons.Default.Slideshow,
                                 isDone = nitroxPres?.isCompleted == true,
                                 onClick = {
@@ -527,8 +529,8 @@ fun HomeScreen(
                                 }
                             )
                             ModuleItemRow(
-                                title = "Enriched Air Safety & Oxygen Toxicity Exams",
-                                type = "Practice Quiz (1 Question)",
+                                title = if (isGerman) "Enriched Air Sicherheit & Sauerstofftoxizität" else "Enriched Air Safety & Oxygen Toxicity Exams",
+                                type = if (isGerman) "Übungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
                                 icon = Icons.Default.Quiz,
                                 isDone = nitroxQuiz?.isPassed == true,
                                 onClick = {
@@ -544,6 +546,7 @@ fun HomeScreen(
                 item {
                     val deepPres = presentations.find { it.id == "pres_deep" }
                     val deepQuiz = quizzes.find { it.id == "quiz_deep" }
+                    val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("deep_curriculum_module"),
                         shape = RoundedCornerShape(16.dp),
@@ -552,19 +555,19 @@ fun HomeScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                text = "Specialty Unit: Deep Diving Limits & Narcosis Safety",
+                                text = if (isGerman) "Spezialkurs: Tieftauchgrenzen & Tiefenrausch" else "Specialty Unit: Deep Diving Limits & Narcosis Safety",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
                             )
                             Text(
-                                text = "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving to 40m/130ft.",
+                                text = if (isGerman) "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management bis 40m Tiefe." else "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving to 40m/130ft.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             ModuleItemRow(
-                                title = "Decompression Safety & Redundant Gas Systems",
-                                type = "Slide Deck (1 Slide)",
+                                title = if (isGerman) "Dekompressionssicherheit & redundante Gassysteme" else "Decompression Safety & Redundant Gas Systems",
+                                type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
                                 icon = Icons.Default.Slideshow,
                                 isDone = deepPres?.isCompleted == true,
                                 onClick = {
@@ -574,8 +577,8 @@ fun HomeScreen(
                                 }
                             )
                             ModuleItemRow(
-                                title = "Narcosis Symptoms & Safety Protocol Quiz",
-                                type = "Practice Quiz (1 Question)",
+                                title = if (isGerman) "Tiefenrausch-Symptome & Sicherheitsprotokoll" else "Narcosis Symptoms & Safety Protocol Quiz",
+                                type = if (isGerman) "Übungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
                                 icon = Icons.Default.Quiz,
                                 isDone = deepQuiz?.isPassed == true,
                                 onClick = {
@@ -590,6 +593,7 @@ fun HomeScreen(
             } else if (selectedCourseId == "course_wreck") {
                 item {
                     val wreckPres = presentations.find { it.id == "pres_wreck" }
+                    val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("wreck_curriculum_module"),
                         shape = RoundedCornerShape(16.dp),
@@ -598,19 +602,19 @@ fun HomeScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                text = "Specialty Unit: Wreck Surveying & Line Laying",
+                                text = if (isGerman) "Spezialkurs: Wrackvermessung & Führungsleinen" else "Specialty Unit: Wreck Surveying & Line Laying",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
                             )
                             Text(
-                                text = "Procedures and protocols for mapping artificial reefs, deploying penetration guidelines, and avoiding silt-outs.",
+                                text = if (isGerman) "Verfahren zur Kartierung von Wracks, Verlegen von Penetrationsleinen und Vermeidung von Sedimentaufwirbelung." else "Procedures and protocols for mapping artificial reefs, deploying penetration guidelines, and avoiding silt-outs.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             ModuleItemRow(
-                                title = "Wreck Hazards, Navigation & Penetration Lines",
-                                type = "Slide Deck (1 Slide)",
+                                title = if (isGerman) "Wrackgefahren, Navigation & Penetrationsleinen" else "Wreck Hazards, Navigation & Penetration Lines",
+                                type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
                                 icon = Icons.Default.Slideshow,
                                 isDone = wreckPres?.isCompleted == true,
                                 onClick = {
@@ -625,6 +629,7 @@ fun HomeScreen(
             } else if (selectedCourseId == "course_night") {
                 item {
                     val nightPres = presentations.find { it.id == "pres_night" }
+                    val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("night_curriculum_module"),
                         shape = RoundedCornerShape(16.dp),
@@ -633,19 +638,19 @@ fun HomeScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                text = "Specialty Unit: Dark Navigation & Light Communication",
+                                text = if (isGerman) "Spezialkurs: Nachtnavigation & Lampenkommunikation" else "Specialty Unit: Dark Navigation & Light Communication",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
                             )
                             Text(
-                                text = "Master night dive navigation, specialized buddy communication signals, and explore nocturnal reef environments safely.",
+                                text = if (isGerman) "Nachttauchnavigation, Buddy-Signale mit der Lampe und sicheres Erkunden nachtaktiver Rifflebewesen." else "Master night dive navigation, specialized buddy communication signals, and explore nocturnal reef environments safely.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             ModuleItemRow(
-                                title = "Nocturnal Wildlife & Dive Torch Management",
-                                type = "Slide Deck (1 Slide)",
+                                title = if (isGerman) "Nachtaktive Meeresbewohner & Lampen-Management" else "Nocturnal Wildlife & Dive Torch Management",
+                                type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
                                 icon = Icons.Default.Slideshow,
                                 isDone = nightPres?.isCompleted == true,
                                 onClick = {
@@ -1437,6 +1442,8 @@ fun ModuleCard(
     onOpenQuiz: (QuizEntity) -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     val totalItems = presentations.size + videos.size + quizzes.size
     val completedItems = presentations.count { it.isCompleted } +
             videos.count { it.isCompleted } +
@@ -1463,13 +1470,13 @@ fun ModuleCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "${strings.tabCurriculum.take(6)} ${module.orderIndex}: ${module.title}",
+                        text = "${strings.tabCurriculum.take(6)} ${module.orderIndex}: ${AppLocalizer.localizeModuleTitle(module.title, isGerman)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = module.subtitle,
+                        text = AppLocalizer.localizeModuleSubtitle(module.subtitle, isGerman),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1570,7 +1577,7 @@ fun ModuleCard(
             }
 
             Text(
-                text = module.description,
+                text = AppLocalizer.localizeModuleDescription(module.description, isGerman),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1623,7 +1630,7 @@ fun ModuleCard(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 presentations.forEach { pres ->
                     ModuleItemRow(
-                        title = pres.title,
+                        title = AppLocalizer.localizePresentationTitle(pres.title, isGerman),
                         type = "${strings.slideDeckType} (${pres.totalSlides} ${strings.slidesCountLabel})",
                         icon = Icons.Default.Slideshow,
                         isDone = pres.isCompleted,
@@ -1634,7 +1641,7 @@ fun ModuleCard(
 
                 videos.forEach { vid ->
                     ModuleItemRow(
-                        title = vid.title,
+                        title = AppLocalizer.localizeVideoTitle(vid.title, isGerman),
                         type = "${strings.videoType} (${vid.durationSeconds / 60} ${strings.durationMinutesSuffix})",
                         icon = Icons.Default.Movie,
                         isDone = vid.isCompleted,
@@ -1645,7 +1652,7 @@ fun ModuleCard(
 
                 quizzes.forEach { quiz ->
                     ModuleItemRow(
-                        title = quiz.title,
+                        title = AppLocalizer.localizeQuizTitle(quiz.title, isGerman),
                         type = if (quiz.isMockExam) strings.mockExamType else "${strings.practiceQuizType} (${quiz.parseQuestions().size}Q)",
                         icon = Icons.Default.Quiz,
                         isDone = quiz.isPassed,

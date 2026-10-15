@@ -342,6 +342,8 @@ private fun UpcomingEventsTab(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        val isGerman = com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE
+
         // Filter Chips Row
         Row(
             modifier = Modifier
@@ -352,22 +354,22 @@ private fun UpcomingEventsTab(
             FilterChip(
                 selected = filterType == "ALL",
                 onClick = { onFilterChange("ALL") },
-                label = { Text("Alle", fontSize = 11.sp) }
+                label = { Text(if (isGerman) "Alle" else "All", fontSize = 11.sp) }
             )
             FilterChip(
                 selected = filterType == "BOAT_TRIP",
                 onClick = { onFilterChange("BOAT_TRIP") },
-                label = { Text("🚤 Boot", fontSize = 11.sp) }
+                label = { Text(if (isGerman) "🚤 Boot" else "🚤 Boat", fontSize = 11.sp) }
             )
             FilterChip(
                 selected = filterType == "SHORE_DIVE",
                 onClick = { onFilterChange("SHORE_DIVE") },
-                label = { Text("🌊 Hausriff", fontSize = 11.sp) }
+                label = { Text(if (isGerman) "🌊 Hausriff" else "🌊 Shore", fontSize = 11.sp) }
             )
             FilterChip(
                 selected = filterType == "CLUB_OUTING",
                 onClick = { onFilterChange("CLUB_OUTING") },
-                label = { Text("🏛️ Club", fontSize = 11.sp) }
+                label = { Text(if (isGerman) "🏛️ Verein" else "🏛️ Club", fontSize = 11.sp) }
             )
         }
 

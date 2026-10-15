@@ -26,10 +26,13 @@ fun QuizExamScreen(
     }
 
     val strings = LocalAppStrings.current
-    val questions = quiz.parseQuestions()
+    val currentLang = com.example.ui.i18n.LocalCurrentLanguage.current
+    val isGerman = currentLang == com.example.ui.i18n.AppLanguage.DE
+    val localizedTitle = com.example.ui.i18n.AppLocalizer.localizeQuizTitle(quiz.title, isGerman)
+    val questions = quiz.parseQuestions().map { com.example.ui.i18n.AppLocalizer.localizeQuizQuestion(it, isGerman) }
 
     ReusableQuizEngine(
-        title = quiz.title,
+        title = localizedTitle,
         subtitle = if (quiz.isMockExam) strings.mockExamSubtitle else strings.moduleQuizSubtitle,
         questions = questions,
         passingScorePercentage = quiz.passScorePercentage,

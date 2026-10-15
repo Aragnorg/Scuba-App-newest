@@ -79,8 +79,12 @@ fun PresentationViewerScreen(
     }
 
     val strings = LocalAppStrings.current
+    val currentLang = com.example.ui.i18n.LocalCurrentLanguage.current
+    val isGerman = currentLang == com.example.ui.i18n.AppLanguage.DE
+    val localizedPresentationTitle = com.example.ui.i18n.AppLocalizer.localizePresentationTitle(presentation.title, isGerman)
     val currentSlideIndex by viewModel.currentSlideIndex.collectAsState()
-    val slides = presentation.parseSlides()
+    val rawSlides = presentation.parseSlides()
+    val slides = rawSlides.map { com.example.ui.i18n.AppLocalizer.localizeSlide(it, isGerman) }
     val total = slides.size.coerceAtLeast(1)
     val safeIndex = currentSlideIndex.coerceIn(0, total - 1)
     val currentSlide = slides.getOrElse(safeIndex) { slides[0] }
@@ -96,7 +100,7 @@ fun PresentationViewerScreen(
                     title = {
                         Column {
                             Text(
-                                text = presentation.title,
+                                text = localizedPresentationTitle,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 maxLines = 1
@@ -278,7 +282,7 @@ fun PresentationViewerScreen(
                             shape = RoundedCornerShape(16.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                         ) {
-                            Text("Öffnen", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                            Text(if (isGerman) "Öffnen" else "Open", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
                         }
                     }
                 }
@@ -364,7 +368,7 @@ fun PresentationViewerScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Lightbulb,
-                            contentDescription = "Key Exam Takeaway",
+                            contentDescription = strings.keyTakeaway,
                             tint = SandGold,
                             modifier = Modifier.size(24.dp)
                         )

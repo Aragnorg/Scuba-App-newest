@@ -912,36 +912,36 @@ class DivingRepository(private val divingDao: DivingDao) {
             val specModules = listOf(
                 CourseModuleEntity(
                     id = "mod_nitrox",
-                    title = "Oxygen Analysis & Gas Mixing",
-                    subtitle = "Enriched Air Nitrox Specialty",
-                    description = "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
+                    title = "Sauerstoffanalyse & Gasmischung",
+                    subtitle = "Enriched Air Nitrox Spezialkurs",
+                    description = "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx).",
                     iconName = "science",
                     orderIndex = 6,
                     estimatedMin = 60
                 ),
                 CourseModuleEntity(
                     id = "mod_deep",
-                    title = "Deep Diving Limits & Narcosis Safety",
-                    subtitle = "Deep Diver Specialty",
-                    description = "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving.",
+                    title = "Tieftauchgrenzen & Tiefenrausch",
+                    subtitle = "Deep Diver Spezialkurs",
+                    description = "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management beim Tieftauchen bis 40m.",
                     iconName = "explore",
                     orderIndex = 7,
                     estimatedMin = 90
                 ),
                 CourseModuleEntity(
                     id = "mod_wreck",
-                    title = "Wreck Surveying & Line Laying",
-                    subtitle = "Wreck Diver Specialty",
-                    description = "Procedures and protocols for mapping artificial reefs, deploying penetration guidelines, and avoiding silt-outs.",
+                    title = "Wrackvermessung & Führungsleinen",
+                    subtitle = "Wreck Diver Spezialkurs",
+                    description = "Verfahren zur Kartierung von Wracks, Verlegen von Penetrationsleinen und Vermeidung von Sedimentaufwirbelung.",
                     iconName = "sailing",
                     orderIndex = 8,
                     estimatedMin = 80
                 ),
                 CourseModuleEntity(
                     id = "mod_night",
-                    title = "Dark Navigation & Light Communication",
-                    subtitle = "Night Diver Specialty",
-                    description = "Master night dive navigation, specialized buddy communication signals, and explore nocturnal reef environments safely.",
+                    title = "Nachtnavigation & Lampenkommunikation",
+                    subtitle = "Night Diver Spezialkurs",
+                    description = "Nachttauchnavigation, Buddy-Signale mit der Lampe und sicheres Erkunden nachtaktiver Rifflebewesen.",
                     iconName = "flashlight_on",
                     orderIndex = 9,
                     estimatedMin = 60
@@ -2462,45 +2462,45 @@ class DivingRepository(private val divingDao: DivingDao) {
         val modules = listOf(
             CourseModuleEntity(
                 id = "mod_physics",
-                title = "Physics & Pressure",
-                subtitle = "Boyle's Law, Depth & Air Consumption",
-                description = "Master how water pressure changes with depth, how air volume compresses, and the golden rules of scuba diving.",
+                title = "Physik & Druck",
+                subtitle = "Boyles Gesetz, Tiefe & Luftverbrauch",
+                description = "Verstehe, wie sich der Wasserdruck mit der Tiefe ändert, wie Luft komprimiert wird und die goldenen Regeln des Tauchens.",
                 iconName = "compress",
                 orderIndex = 1,
                 estimatedMin = 35
             ),
             CourseModuleEntity(
                 id = "mod_equipment",
-                title = "Scuba Equipment Essentials",
-                subtitle = "Regulators, BCD, Cylinders & BWRAF",
-                description = "Understand how life-support equipment functions and execute flawless pre-dive buddy safety checks.",
+                title = "Tauch-Ausrüstungsgrundlagen",
+                subtitle = "Atemregler, Tarierweste, Tauchflaschen & BWRAF",
+                description = "Verstehe die Funktionsweise der lebenserhaltenden Ausrüstung und führe den perfekten Buddy-Check durch.",
                 iconName = "settings",
                 orderIndex = 2,
                 estimatedMin = 40
             ),
             CourseModuleEntity(
                 id = "mod_physiology",
-                title = "Diving Physiology & Safety",
-                subtitle = "Nitrogen, Narcosis, DCS & Ascent Rates",
-                description = "Understand how breathing compressed gas affects the body, how to prevent decompression sickness, and ascent protocols.",
+                title = "Tauch-Physiologie & Sicherheit",
+                subtitle = "Stickstoff, Tiefenrausch, DCS & Aufstiegsgeschwindigkeiten",
+                description = "Erfahre, wie komprimierte Atemgase auf den Körper wirken, wie man Dekompressionskrankheit vermeidet und Aufstiegsregeln einhält.",
                 iconName = "health_and_safety",
                 orderIndex = 3,
                 estimatedMin = 45
             ),
             CourseModuleEntity(
                 id = "mod_emergencies",
-                title = "Underwater Problem Solving",
-                subtitle = "Mask Clearing, Out-of-Air & Cramps",
-                description = "Build self-reliance and buddy teamwork: regulator recovery, mask clearing, out-of-air ascents, and calm problem resolution.",
+                title = "Problemlösung unter Wasser",
+                subtitle = "Maske ausblasen, Luftnot & Krämpfe",
+                description = "Erlange Selbstvertrauen und Buddy-Teamwork: Regler wiedererlangen, Maske ausblasen, Wechselatmung und ruhige Problemlösung.",
                 iconName = "warning",
                 orderIndex = 4,
                 estimatedMin = 30
             ),
             CourseModuleEntity(
                 id = "mod_planning",
-                title = "Dive Planning & Exam Review",
-                subtitle = "Dive Tables, NDL & Final Certification Exam",
-                description = "Learn how to calculate No-Decompression Limits, execute surface intervals, and pass your Open Water certification exam.",
+                title = "Tauchgangsplanung & Prüfungsvorbereitung",
+                subtitle = "Tauchtabelle, Nullzeit & Abschlussprüfung",
+                description = "Lerne Nullzeiten zu berechnen, Oberflächenpausen zu planen und bestehe deine Open-Water-Abschlussprüfung.",
                 iconName = "school",
                 orderIndex = 5,
                 estimatedMin = 50

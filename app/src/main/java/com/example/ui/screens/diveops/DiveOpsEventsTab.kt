@@ -70,7 +70,9 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -95,6 +97,7 @@ fun DiveOpsEventsTab(
     val events by viewModel.currentOrgEvents.collectAsState()
     val members by viewModel.currentOrgMembers.collectAsState()
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     var selectedTypeFilter by remember { mutableStateOf("ALL") }
     var showCreateDialog by remember { mutableStateOf(false) }
@@ -201,7 +204,7 @@ fun DiveOpsEventsTab(
                 FilterChip(
                     selected = selectedTypeFilter == "CLUB_OUTING",
                     onClick = { selectedTypeFilter = "CLUB_OUTING" },
-                    label = { Text("🏛️ Club", fontSize = 11.sp) },
+                    label = { Text(if (isGerman) "🏛️ Verein" else "🏛️ Club", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
                         selectedLabelColor = primaryAccentColor
@@ -467,7 +470,7 @@ fun EventCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Delete",
+                        contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
@@ -713,10 +716,11 @@ fun CreateDiveEventDialog(
     var hazardsAndRules by remember { mutableStateOf("Maximaltiefe und Umkehrdruck strikt einhalten. Bootsverkehr beachten.") }
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("➕ Neue Tauchausfahrt planen", fontWeight = FontWeight.Bold) },
+        title = { Text(if (isGerman) "➕ Neue Tauchausfahrt planen" else "➕ Plan New Dive Excursion", fontWeight = FontWeight.Bold) },
         text = {
             Column(
                 modifier = Modifier
@@ -727,14 +731,14 @@ fun CreateDiveEventDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Titel der Ausfahrt *") },
-                    placeholder = { Text("z.B. Wracktauchen St. Peter") },
+                    label = { Text(if (isGerman) "Titel der Ausfahrt *" else "Trip Title *") },
+                    placeholder = { Text(if (isGerman) "z.B. Wracktauchen St. Peter" else "e.g. Wreck Dive St. Peter") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 // Event Type Selector
-                Text("Art des Events:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(if (isGerman) "Art des Events:" else "Event Type:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -742,22 +746,22 @@ fun CreateDiveEventDialog(
                     FilterChip(
                         selected = eventType == "BOAT_TRIP",
                         onClick = { eventType = "BOAT_TRIP" },
-                        label = { Text("🚤 Boot", fontSize = 10.sp) }
+                        label = { Text(if (isGerman) "🚤 Boot" else "🚤 Boat", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "SHORE_DIVE",
                         onClick = { eventType = "SHORE_DIVE" },
-                        label = { Text("🌊 Hausriff", fontSize = 10.sp) }
+                        label = { Text(if (isGerman) "🌊 Hausriff" else "🌊 Shore", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "COURSE_TRAINING",
                         onClick = { eventType = "COURSE_TRAINING" },
-                        label = { Text("🎓 Kurs", fontSize = 10.sp) }
+                        label = { Text(if (isGerman) "🎓 Kurs" else "🎓 Course", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "CLUB_OUTING",
                         onClick = { eventType = "CLUB_OUTING" },
-                        label = { Text("🏛️ Club", fontSize = 10.sp) }
+                        label = { Text(if (isGerman) "🏛️ Verein" else "🏛️ Club", fontSize = 10.sp) }
                     )
                 }
 
@@ -1025,6 +1029,7 @@ fun CheckInDiverDialog(
     var selectedGas by remember { mutableStateOf("Air 21%") }
     var selectedRentalGear by remember { mutableStateOf(setOf<String>()) }
     var transferNote by remember { mutableStateOf("") }
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     val tankOptions = listOf(
         "10L Stahl (200 bar)",
@@ -1146,7 +1151,7 @@ fun CheckInDiverDialog(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "${m.certLevel} • ${m.totalLoggedDives} Dives • TTU: ${m.ttuExpiryDate.ifBlank { "Keine" }}",
+                                        text = "${m.certLevel} • ${m.totalLoggedDives} ${if (isGerman) "Tauchgänge" else "Dives"} • TTU: ${m.ttuExpiryDate.ifBlank { if (isGerman) "Keine" else "None" }}",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 10.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1202,7 +1207,7 @@ fun CheckInDiverDialog(
                 HorizontalDivider()
 
                 // 4. Rental Gear Checklist
-                Text("4. Benötigtes Leih-Equipment:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(if (isGerman) "4. Benötigte Leih-Ausrüstung:" else "4. Required Rental Gear:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     rentalOptions.forEach { gear ->
                         val checked = selectedRentalGear.contains(gear)

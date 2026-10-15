@@ -490,8 +490,9 @@ fun DocumentVaultCard(
     onDelete: () -> Unit
 ) {
     val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
     val expirationInfo = remember(document, currentLanguage) {
-        DocumentExpirationHelper.computeExpirationInfo(document, currentLanguage == AppLanguage.DE)
+        DocumentExpirationHelper.computeExpirationInfo(document, isGerman)
     }
     val isApproved = document.approvalStatus == "APPROVED"
     val isExpired = expirationInfo.level == ExpirationAlertLevel.EXPIRED
@@ -583,7 +584,7 @@ fun DocumentVaultCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = if (isApproved) "VERIFIED" else "PENDING",
+                                    text = if (isApproved) (if (isGerman) "VERIFIZIERT" else "VERIFIED") else (if (isGerman) "AUSSTEHEND" else "PENDING"),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Bold,
@@ -626,7 +627,7 @@ fun DocumentVaultCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Expiry: ${document.expiryDate}",
+                        text = if (isGerman) "Gültig bis: ${document.expiryDate}" else "Expiry: ${document.expiryDate}",
                         style = MaterialTheme.typography.labelSmall,
                         color = if (isExpired) Color(0xFFE53E3E) else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = if (isExpired) FontWeight.Bold else FontWeight.Normal
@@ -685,8 +686,22 @@ fun DocumentVaultCard(
                                 modifier = Modifier.size(14.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
+                            val reqApproverLabel = if (isGerman) {
+                                when (document.requiredApproverType) {
+                                    "INSTRUCTOR" -> "Tauchlehrer"
+                                    "PHYSICIAN" -> "Arzt / Mediziner"
+                                    "DIVE_CENTER" -> "Tauchbasis"
+                                    else -> document.requiredApproverType.lowercase().replace("_", " ")
+                                }
+                            } else {
+                                document.requiredApproverType.lowercase().replace("_", " ")
+                            }
                             Text(
-                                text = if (isApproved) "Freigegeben von ${document.approverName}" else "Freigabe erforderlich: ${document.requiredApproverType.lowercase().replace("_", " ")}",
+                                text = if (isApproved) {
+                                    if (isGerman) "Freigegeben von ${document.approverName}" else "Approved by ${document.approverName}"
+                                } else {
+                                    if (isGerman) "Freigabe erforderlich: $reqApproverLabel" else "Approval required: $reqApproverLabel"
+                                },
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -697,7 +712,7 @@ fun DocumentVaultCard(
 
                         if (!isApproved) {
                             Text(
-                                text = "Jetzt prüfen",
+                                text = if (isGerman) "Jetzt prüfen" else "Review now",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
@@ -724,7 +739,7 @@ fun DocumentVaultCard(
                     ) {
                         Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Details", fontSize = 12.sp)
+                        Text(if (isGerman) "Details" else "Details", fontSize = 12.sp)
                     }
 
                     if (!isApproved) {
@@ -739,7 +754,7 @@ fun DocumentVaultCard(
                         ) {
                             Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Freigeben", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text(if (isGerman) "Freigeben" else "Approve", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

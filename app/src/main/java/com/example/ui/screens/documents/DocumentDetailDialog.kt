@@ -143,14 +143,14 @@ fun DocumentDetailDialog(
                             onClick = onEditClick,
                             modifier = Modifier.testTag("edit_doc_btn")
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit", tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.Edit, contentDescription = strings.edit, tint = MaterialTheme.colorScheme.primary)
                         }
 
                         IconButton(
                             onClick = onDeleteClick,
                             modifier = Modifier.testTag("delete_doc_btn")
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFE53E3E))
+                            Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = Color(0xFFE53E3E))
                         }
 
                         IconButton(

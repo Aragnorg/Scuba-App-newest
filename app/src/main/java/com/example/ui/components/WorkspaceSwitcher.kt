@@ -59,7 +59,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.OrganizationEntity
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
@@ -79,6 +81,7 @@ fun WorkspaceSwitcherPill(
     val currentOrg by viewModel.currentOrganization.collectAsState()
     val allOrgs by viewModel.allOrganizations.collectAsState()
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
     var showDialog by remember { mutableStateOf(false) }
 
     // Pill Button in TopAppBar
@@ -132,7 +135,11 @@ fun WorkspaceSwitcherPill(
                 )
                 if (currentOrg != null) {
                     Text(
-                        text = if (currentOrg!!.isClub) "Club • ${currentOrg!!.activeMembersCount} Mgl." else "Base • ${currentOrg!!.activeMembersCount} Staff/Gäste",
+                        text = if (currentOrg!!.isClub) {
+                            if (isGerman) "Verein • ${currentOrg!!.activeMembersCount} Mgl." else "Club • ${currentOrg!!.activeMembersCount} Mem."
+                        } else {
+                            if (isGerman) "Basis • ${currentOrg!!.activeMembersCount} Staff/Gäste" else "Base • ${currentOrg!!.activeMembersCount} Staff/Guests"
+                        },
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -167,6 +174,7 @@ fun WorkspaceSelectionDialog(
     onDismiss: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
     var showCreateDialog by remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -333,7 +341,7 @@ fun WorkspaceSelectionDialog(
                                         color = accentColor.copy(alpha = 0.2f)
                                     ) {
                                         Text(
-                                            text = if (isClub) "CLUB" else "BASE",
+                                            text = if (isGerman) (if (isClub) "VEREIN" else "BASIS") else (if (isClub) "CLUB" else "BASE"),
                                             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 9.sp,

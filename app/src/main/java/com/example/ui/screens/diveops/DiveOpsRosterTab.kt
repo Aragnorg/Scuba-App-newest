@@ -902,7 +902,7 @@ fun MemberRosterCard(
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
                     ) {
                         Text(
-                            text = "${member.totalLoggedDives} Dives",
+                            text = if (isGerman) "${member.totalLoggedDives} Tauchgänge" else "${member.totalLoggedDives} Dives",
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 11.sp,
@@ -1032,7 +1032,7 @@ fun MemberRosterCard(
                             Text(text = "🤿", fontSize = 13.sp)
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Leih-Equipment: ${member.rentalPreferences}",
+                                text = if (isGerman) "Leih-Ausrüstung: ${member.rentalPreferences}" else "Rental Gear: ${member.rentalPreferences}",
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 11.sp
                             )
@@ -1041,7 +1041,7 @@ fun MemberRosterCard(
 
                     if (member.notes.isNotBlank()) {
                         Text(
-                            text = "Notizen: ${member.notes}",
+                            text = if (isGerman) "Notizen: ${member.notes}" else "Notes: ${member.notes}",
                             style = MaterialTheme.typography.bodySmall,
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1063,14 +1063,14 @@ fun MemberRosterCard(
                         ) {
                             Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(13.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Rolle ändern", fontSize = 11.sp)
+                            Text(if (isGerman) "Rolle ändern" else "Change Role", fontSize = 11.sp)
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         IconButton(
                             onClick = onDelete,
                             modifier = Modifier.size(30.dp)
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.Delete, contentDescription = if (isGerman) "Löschen" else "Delete", tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                         }
                     }
                 }

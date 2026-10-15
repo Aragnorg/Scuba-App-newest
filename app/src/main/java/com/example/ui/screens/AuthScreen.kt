@@ -219,7 +219,7 @@ fun AuthScreen(
                 ) {
                     Icon(
                         Icons.Default.ErrorOutline,
-                        contentDescription = "Error",
+                        contentDescription = null,
                         tint = CoralAlert,
                         modifier = Modifier.size(20.dp)
                     )
@@ -249,7 +249,7 @@ fun AuthScreen(
                 ) {
                     Icon(
                         Icons.Default.CheckCircle,
-                        contentDescription = "Success",
+                        contentDescription = null,
                         tint = SeaGreen,
                         modifier = Modifier.size(20.dp)
                     )
@@ -475,8 +475,10 @@ fun RegisterForm(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
+            val isGerman = com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE
+
             Text(
-                text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
+                text = if (isGerman)
                     "Erstelle dein persönliches Konto mit deiner E-Mail-Adresse (Sporttaucher oder Tauchlehrer/Leitung)."
                 else
                     "Create your personal account with your email address (Diver or Leadership).",
@@ -488,7 +490,7 @@ fun RegisterForm(
                 value = fullName,
                 onValueChange = { fullName = it },
                 label = { Text(strings.fullName) },
-                placeholder = { Text("e.g. Alex Morgan") },
+                placeholder = { Text(if (isGerman) "z. B. Alex Morgan" else "e.g. Alex Morgan") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = strings.fullName) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -501,7 +503,7 @@ fun RegisterForm(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text(strings.emailAddressLabel) },
-                placeholder = { Text("e.g. alex.diver@gmail.com") },
+                placeholder = { Text(if (isGerman) "z. B. alex.diver@gmail.com" else "e.g. alex.diver@gmail.com") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = strings.email) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
@@ -519,7 +521,7 @@ fun RegisterForm(
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
                             imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = "Toggle Visibility"
+                            contentDescription = null
                         )
                     }
                 },
@@ -649,10 +651,18 @@ fun RegisterForm(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = if (selectedRole == "STUDENT") {
-                        "Open Water Safety Protocol Agreement"
+                    text = if (isGerman) {
+                        if (selectedRole == "STUDENT") {
+                            "Zustimmung zum Open Water Sicherheitsprotokoll"
+                        } else {
+                            "Autorisierung als zertifizierter Tauchlehrer"
+                        }
                     } else {
-                        "Certified Scuba Instructor Authorization"
+                        if (selectedRole == "STUDENT") {
+                            "Open Water Safety Protocol Agreement"
+                        } else {
+                            "Certified Scuba Instructor Authorization"
+                        }
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

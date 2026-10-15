@@ -70,7 +70,9 @@ import com.example.data.model.InventoryItemEntity
 import com.example.data.model.OrganizationEntity
 import com.example.data.model.OrganizationMemberEntity
 import com.example.data.model.RentalTransactionEntity
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -178,7 +180,7 @@ fun DiveOpsAssetsTab(
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "+ Equipment", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(text = if (isGerman) "+ Ausrüstung" else "+ Equipment", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -400,7 +402,7 @@ fun DiveOpsAssetsTab(
                         Text(text = "🔧", fontSize = 28.sp)
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Kein Equipment in dieser Kategorie",
+                            text = if (isGerman) "Keine Ausrüstung in dieser Kategorie" else "No equipment in this category",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold
                         )
@@ -491,7 +493,7 @@ fun DiveOpsAssetsTab(
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("Equipment entfernen") },
+            title = { Text(if (isGerman) "Ausrüstung entfernen" else "Remove Equipment") },
             text = { Text("Möchtest du '${itemToDelete!!.internalCode} - ${itemToDelete!!.brand} ${itemToDelete!!.model}' wirklich aus dem Inventar löschen?") },
             confirmButton = {
                 Button(
@@ -896,6 +898,8 @@ fun AddInventoryItemDialog(
     var serviceNotes by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+
     val typeOptions = listOf(
         "TANK" to "🫧 Flasche",
         "REGULATOR" to "🤿 Regler",
@@ -908,7 +912,7 @@ fun AddInventoryItemDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("+ Neues Equipment anlegen") },
+        title = { Text(if (isGerman) "+ Neue Ausrüstung anlegen" else "+ Add New Equipment") },
         text = {
             Column(
                 modifier = Modifier
@@ -1041,10 +1045,11 @@ fun RentalCheckOutDialog(
     var selectedMember by remember { mutableStateOf(members.first()) }
     var dueDate by remember { mutableStateOf(LocalDate.now().plusWeeks(2).toString()) }
     var notes by remember { mutableStateOf("") }
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("📤 Equipment ausgeben (Verleih)") },
+        title = { Text(if (isGerman) "📤 Ausrüstung ausgeben (Verleih)" else "📤 Rent Equipment") },
         text = {
             Column(
                 modifier = Modifier
@@ -1129,10 +1134,11 @@ fun RentalCheckInDialog(
 ) {
     var condition by remember { mutableStateOf("INTACT") }
     var damageNotes by remember { mutableStateOf("") }
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("📥 Equipment-Rückgabe erfassen") },
+        title = { Text(if (isGerman) "📥 Ausrüstungs-Rückgabe erfassen" else "📥 Return Equipment") },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),

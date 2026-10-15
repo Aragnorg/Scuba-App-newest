@@ -154,7 +154,7 @@ fun EditDiveEventDialog(
                     FilterChip(
                         selected = eventType == "CLUB_OUTING",
                         onClick = { eventType = "CLUB_OUTING" },
-                        label = { Text("🏛️ Club", fontSize = 10.sp) }
+                        label = { Text("🏛️ Verein", fontSize = 10.sp) }
                     )
                 }
 

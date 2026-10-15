@@ -345,11 +345,11 @@ private fun DiveSpotsListTab(
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 placeholder = { Text(strings.searchSpotsPlaceholder, fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = strings.searchSpotsPlaceholder) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { onSearchChange("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(Icons.Default.Clear, contentDescription = if (isGerman) "Löschen" else "Clear")
                         }
                     }
                 },
@@ -553,9 +553,16 @@ private fun DiveSpotSummaryCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SpotMetricPill(title = "Depth", value = depthLabel, modifier = Modifier.weight(1f))
-                SpotMetricPill(title = "Visibility", value = visibilityLabel, modifier = Modifier.weight(1f))
-                SpotMetricPill(title = "Current", value = spot.currentStrength, modifier = Modifier.weight(1f))
+                SpotMetricPill(title = if (isGerman) "Tiefe" else "Depth", value = depthLabel, modifier = Modifier.weight(1f))
+                SpotMetricPill(title = if (isGerman) "Sicht" else "Visibility", value = visibilityLabel, modifier = Modifier.weight(1f))
+                val currentText = if (isGerman) when (spot.currentStrength.uppercase()) {
+                    "STRONG" -> "Stark"
+                    "MODERATE" -> "Mäßig"
+                    "MILD", "LOW", "LIGHT" -> "Leicht"
+                    "NONE" -> "Keine"
+                    else -> spot.currentStrength
+                } else spot.currentStrength
+                SpotMetricPill(title = if (isGerman) "Strömung" else "Current", value = currentText, modifier = Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(10.dp))

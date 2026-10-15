@@ -279,6 +279,10 @@ fun PresentationsList(
     onDelete: (PresentationDeckEntity) -> Unit,
     onToggleDeployment: (String, Boolean) -> Unit
 ) {
+    val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
+
     if (presentations.isEmpty()) {
         Box(
             modifier = Modifier
@@ -287,7 +291,7 @@ fun PresentationsList(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "No presentations yet. Tap + to upload or build a slide deck!",
+                text = if (isGerman) "Noch keine Präsentationen vorhanden. Tippe auf +, um Folien hochzuladen oder zu erstellen!" else "No presentations yet. Tap + to upload or build a slide deck!",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -355,7 +359,7 @@ fun PresentationsList(
                                     onClick = { onDelete(pres) },
                                     modifier = Modifier.testTag("delete_presentation_${pres.id}")
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = CoralAlert)
+                                    Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = CoralAlert)
                                 }
                             }
                         }
@@ -378,7 +382,7 @@ fun PresentationsList(
                                     color = if (pres.isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
                                 ) {
                                     Text(
-                                        text = if (pres.isInstructorUploaded) "👨‍🏫 Instructor Custom" else "🌐 General App Material",
+                                        text = if (pres.isInstructorUploaded) (if (isGerman) "👨‍🏫 Eigene Inhalte" else "👨‍🏫 Instructor Custom") else (if (isGerman) "🌐 App-Standard" else "🌐 General App Material"),
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 9.sp,
@@ -449,6 +453,10 @@ fun VideosList(
     onDelete: (LearningVideoEntity) -> Unit,
     onToggleDeployment: (String, Boolean) -> Unit
 ) {
+    val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
+
     if (videos.isEmpty()) {
         Box(
             modifier = Modifier
@@ -457,7 +465,7 @@ fun VideosList(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "No learning videos yet. Tap + to upload video lessons for your students!",
+                text = if (isGerman) "Noch keine Lehrvideos vorhanden. Tippe auf +, um Videos für Schüler bereitzustellen!" else "No learning videos yet. Tap + to upload video lessons for your students!",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -527,7 +535,7 @@ fun VideosList(
                                     onClick = { onDelete(vid) },
                                     modifier = Modifier.testTag("delete_video_${vid.id}")
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = CoralAlert)
+                                    Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = CoralAlert)
                                 }
                             }
                         }
@@ -550,7 +558,7 @@ fun VideosList(
                                     color = if (vid.isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
                                 ) {
                                     Text(
-                                        text = if (vid.isInstructorUploaded) "👨‍🏫 Instructor Custom" else "🌐 General App Material",
+                                        text = if (vid.isInstructorUploaded) (if (isGerman) "👨‍🏫 Eigene Inhalte" else "👨‍🏫 Instructor Custom") else (if (isGerman) "🌐 App-Standard" else "🌐 General App Material"),
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 9.sp,
@@ -621,6 +629,10 @@ fun QuizzesList(
     onDelete: (QuizEntity) -> Unit,
     onToggleDeployment: (String, Boolean) -> Unit
 ) {
+    val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
+
     if (quizzes.isEmpty()) {
         Box(
             modifier = Modifier
@@ -629,7 +641,7 @@ fun QuizzesList(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "No quizzes yet. Tap + to create questions and exams!",
+                text = if (isGerman) "Noch keine Quizze vorhanden. Tippe auf +, um Prüfungsfragen und Tests zu erstellen!" else "No quizzes yet. Tap + to create questions and exams!",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -715,7 +727,7 @@ fun QuizzesList(
                                     onClick = { onDelete(qz) },
                                     modifier = Modifier.testTag("delete_quiz_${qz.id}")
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = CoralAlert)
+                                    Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = CoralAlert)
                                 }
                             }
                         }
@@ -738,7 +750,7 @@ fun QuizzesList(
                                     color = if (qz.isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
                                 ) {
                                     Text(
-                                        text = if (qz.isInstructorUploaded) "👨‍🏫 Instructor Custom" else "🌐 General App Material",
+                                        text = if (qz.isInstructorUploaded) (if (isGerman) "👨‍🏫 Eigene Inhalte" else "👨‍🏫 Instructor Custom") else (if (isGerman) "🌐 App-Standard" else "🌐 General App Material"),
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 9.sp,
@@ -752,7 +764,7 @@ fun QuizzesList(
                                     color = if (qz.isDeployed) SeaGreen.copy(alpha = 0.15f) else Color.Gray.copy(alpha = 0.15f)
                                 ) {
                                     Text(
-                                        text = if (qz.isDeployed) "🟢 Deployed" else "⚪ Draft (Hidden)",
+                                        text = if (qz.isDeployed) (if (isGerman) "🟢 Bereitgestellt" else "🟢 Deployed") else (if (isGerman) "⚪ Entwurf (Versteckt)" else "⚪ Draft (Hidden)"),
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 9.sp,

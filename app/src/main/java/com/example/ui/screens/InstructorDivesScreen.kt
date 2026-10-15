@@ -207,7 +207,7 @@ fun InstructorDivesScreen(
                         Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Documents (${pendingDocs.size})",
+                            text = if (currentLanguage == AppLanguage.DE) "Dokumente (${pendingDocs.size})" else "Documents (${pendingDocs.size})",
                             fontWeight = FontWeight.Bold,
                             fontSize = 11.sp
                         )
@@ -357,13 +357,13 @@ fun InstructorDivesScreen(
             ) {
                 item {
                     Text(
-                        text = "Candidate Documents Awaiting Sign-off (${pendingDocs.size})",
+                        text = if (currentLanguage == AppLanguage.DE) "Zu prüfende Schüler-Dokumente (${pendingDocs.size})" else "Candidate Documents Awaiting Sign-off (${pendingDocs.size})",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = OceanPrimary
                     )
                     Text(
-                        text = "Review and sign off on student certifications (C-Cards), medical clearance statements, and liability waivers.",
+                        text = if (currentLanguage == AppLanguage.DE) "Prüfe und unterzeichne Schüler-Brevets (C-Cards), ärztliche TTU-Atteste und Haftungsausschlüsse." else "Review and sign off on student certifications (C-Cards), medical clearance statements, and liability waivers.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -386,12 +386,12 @@ fun InstructorDivesScreen(
                                 Icon(Icons.Default.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(36.dp))
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "All student documents are verified!",
+                                    text = if (currentLanguage == AppLanguage.DE) "Alle Schüler-Dokumente sind verifiziert!" else "All student documents are verified!",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "No pending certification cards or medical statements awaiting approval.",
+                                    text = if (currentLanguage == AppLanguage.DE) "Keine ausstehenden Brevetkarten oder Atteste zur Genehmigung." else "No pending certification cards or medical statements awaiting approval.",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

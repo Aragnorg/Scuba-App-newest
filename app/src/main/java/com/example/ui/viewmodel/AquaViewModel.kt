@@ -2174,6 +2174,14 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun triggerSimulatedPushForDemo(dive: DiveLogEntity) {
+        val isDe = _currentLanguage.value == AppLanguage.DE
+        val requester = dive.diverName.ifBlank { if (isDe) "Dein Tauchpartner" else "Your dive buddy" }
+        val pushMsg = if (isDe) {
+            "🔔 Benachrichtigung von $requester: Bitte prüfe und bestätige Tauchgang #${dive.diveNumber} (${dive.siteName}, ${dive.maxDepthMeters}m)."
+        } else {
+            "🔔 Push from $requester: Please review & approve Dive #${dive.diveNumber} (${dive.siteName}, ${dive.maxDepthMeters}m)."
+        }
+
         _activePushNotification.value = DivePushNotification(
             notificationId = UUID.randomUUID().toString(),
             diveId = dive.id,
@@ -2184,7 +2192,7 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             requesterName = dive.diverName.ifBlank { "Leo Chen" },
             requesterEmail = dive.diverEmail.ifBlank { "leo.chen@diver.com" },
             targetBuddyEmail = dive.buddyEmail.ifBlank { "buddy@diver.com" },
-            messageText = "🔔 Push from ${dive.diverName.ifBlank { "Your dive buddy" }}: Please review & approve Dive #${dive.diveNumber} (${dive.siteName}, ${dive.maxDepthMeters}m)."
+            messageText = pushMsg
         )
     }
 }

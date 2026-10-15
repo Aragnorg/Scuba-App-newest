@@ -170,13 +170,13 @@ fun DocumentApprovalDialog(
         )
     }
 
-    var approverLicense by remember {
+    var approverLicense by remember(isGerman, approverRole) {
         mutableStateOf(
             when (approverRole) {
                 "DOCTOR" -> "EDTC / GTMÜ Diving Medicine Lic. #DE-77492"
                 "INSTRUCTOR" -> "PADI Master Scuba Diver Trainer #391024"
-                "DIVE_CENTER" -> "Dive Center #DC-9842"
-                else -> "Agency Auditor ID #AG-551"
+                "DIVE_CENTER" -> if (isGerman) "Tauchbasis #DC-9842" else "Dive Center #DC-9842"
+                else -> if (isGerman) "Verbands-Prüfer-ID #AG-551" else "Agency Auditor ID #AG-551"
             }
         )
     }

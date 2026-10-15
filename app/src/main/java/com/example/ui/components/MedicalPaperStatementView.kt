@@ -68,7 +68,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.data.model.DiverDocumentEntity
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
@@ -458,6 +460,7 @@ fun PaperVsDigitalCorrelationCard(
     modifier: Modifier = Modifier
 ) {
     val strings = LocalAppStrings.current
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
     var showFullDialog by remember { mutableStateOf(false) }
 
     Card(
@@ -515,7 +518,7 @@ fun PaperVsDigitalCorrelationCard(
                     ) {
                         Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(12.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("100% MATCH", fontSize = 9.sp, fontWeight = FontWeight.Black)
+                        Text(if (isGerman) "100% ÜBEREINSTIMMUNG" else "100% MATCH", fontSize = 9.sp, fontWeight = FontWeight.Black)
                     }
                 }
             }
@@ -541,20 +544,20 @@ fun PaperVsDigitalCorrelationCard(
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     CorrelationCheckItem(
-                        title = "Diver Candidate Identity",
-                        detail = "Paper: ${document.diverName} ↔ Digital: ${document.diverName}"
+                        title = if (isGerman) "Identität des Tauchkandidaten" else "Diver Candidate Identity",
+                        detail = if (isGerman) "Dokument: ${document.diverName} ↔ Profil: ${document.diverName}" else "Paper: ${document.diverName} ↔ Digital: ${document.diverName}"
                     )
                     CorrelationCheckItem(
-                        title = "Physician Examination Date",
-                        detail = "Paper: ${document.issueDate} (Valid until ${document.expiryDate})"
+                        title = if (isGerman) "Ärztliches Untersuchungsdatum" else "Physician Examination Date",
+                        detail = if (isGerman) "Untersucht: ${document.issueDate} (Gültig bis ${document.expiryDate})" else "Paper: ${document.issueDate} (Valid until ${document.expiryDate})"
                     )
                     CorrelationCheckItem(
-                        title = "Physician Credentials & Clinic Seal",
-                        detail = "Paper Stamp: ${document.approverTitleOrLicense.ifBlank { "GTMÜ / EDTC #DE-77492" }} ↔ Issuer: ${document.issuingOrganization}"
+                        title = if (isGerman) "Arztzulassung & Praxisstempel" else "Physician Credentials & Clinic Seal",
+                        detail = if (isGerman) "Stempel: ${document.approverTitleOrLicense.ifBlank { "GTMÜ / EDTC #DE-77492" }} ↔ Aussteller: ${document.issuingOrganization}" else "Paper Stamp: ${document.approverTitleOrLicense.ifBlank { "GTMÜ / EDTC #DE-77492" }} ↔ Issuer: ${document.issuingOrganization}"
                     )
                     CorrelationCheckItem(
-                        title = "Medical Clearance Level",
-                        detail = "Unrestricted Recreational Diving up to 30m depth"
+                        title = if (isGerman) "Medizinische Tauchtauglichkeit" else "Medical Clearance Level",
+                        detail = if (isGerman) "Uneingeschränkt tauchtauglich (Sporttauchen bis 30m)" else "Unrestricted Recreational Diving up to 30m depth"
                     )
                 }
             }

@@ -73,7 +73,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.StudentRosterEntity
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
@@ -106,6 +108,8 @@ fun InstructorRosterScreen(
     val activeStudents by viewModel.activeStudents.collectAsState()
     val pastStudents by viewModel.pastStudents.collectAsState()
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
 
     val filteredList = when (filterMode) {
         StudentFilter.ACTIVE -> activeStudents
@@ -201,7 +205,7 @@ fun InstructorRosterScreen(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 label = { Text(strings.searchStudentsPlaceholder) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = strings.searchStudentsPlaceholder) },
                 trailingIcon = {
                     if (searchQuery.isNotBlank()) {
                         IconButton(onClick = { searchQuery = "" }) {
@@ -383,7 +387,11 @@ fun StudentRosterItemCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = if (isActive) "Enrolled: ${student.enrolledDate}" else "Certified: ${student.certifiedDate ?: student.enrolledDate}",
+                        text = if (isGerman) {
+                            if (isActive) "Eingeschrieben: ${student.enrolledDate}" else "Zertifiziert: ${student.certifiedDate ?: student.enrolledDate}"
+                        } else {
+                            if (isActive) "Enrolled: ${student.enrolledDate}" else "Certified: ${student.certifiedDate ?: student.enrolledDate}"
+                        },
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -397,7 +405,11 @@ fun StudentRosterItemCard(
                     border = BorderStroke(1.dp, if (isActive) SeaGreen else SandGold)
                 ) {
                     Text(
-                        text = if (isActive) "ACTIVE STUDENT" else "PAST (CERTIFIED)",
+                        text = if (isGerman) {
+                            if (isActive) "AKTIVER SCHÜLER" else "ZERTIFIZIERT"
+                        } else {
+                            if (isActive) "ACTIVE STUDENT" else "PAST (CERTIFIED)"
+                        },
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -519,7 +531,11 @@ fun StudentRosterItemCard(
                         Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = SandGold, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (student.finalMockExamScore != null) "Exam: ${student.finalMockExamScore}%" else "Exam: Pending",
+                            text = if (isGerman) {
+                                if (student.finalMockExamScore != null) "Prüfung: ${student.finalMockExamScore}%" else "Prüfung: Ausstehend"
+                            } else {
+                                if (student.finalMockExamScore != null) "Exam: ${student.finalMockExamScore}%" else "Exam: Pending"
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             fontSize = 10.sp
@@ -531,7 +547,7 @@ fun StudentRosterItemCard(
             if (student.instructorNotes.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Notes: \"${student.instructorNotes}\"",
+                    text = if (isGerman) "Notizen: \"${student.instructorNotes}\"" else "Notes: \"${student.instructorNotes}\"",
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -656,11 +672,31 @@ fun StudentDetailDialog(
                 Text(strings.courseProgressionBreakdown, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    ModuleProgressLine("Module 1: Physics & Pressure", if (student.presentationsCompleted >= 1) "Completed ✓" else "Not Started", student.presentationsCompleted >= 1)
-                    ModuleProgressLine("Module 2: Equipment Essentials", if (student.presentationsCompleted >= 2) "Completed ✓" else "In Progress", student.presentationsCompleted >= 2)
-                    ModuleProgressLine("Module 3: Diving Physiology", if (student.videosWatched >= 2) "Completed ✓" else "In Progress", student.videosWatched >= 2)
-                    ModuleProgressLine("Module 4: Problem Solving", if (student.videosWatched >= 3) "Completed ✓" else "Pending", student.videosWatched >= 3)
-                    ModuleProgressLine("Module 5: Dive Planning & Mock Exam", if (student.finalMockExamScore != null) "${student.finalMockExamScore}% Passed ✓" else "Pending Review", student.finalMockExamScore != null)
+                    ModuleProgressLine(
+                        if (isGerman) "Modul 1: Physik & Druck" else "Module 1: Physics & Pressure",
+                        if (student.presentationsCompleted >= 1) (if (isGerman) "Abgeschlossen ✓" else "Completed ✓") else (if (isGerman) "Nicht begonnen" else "Not Started"),
+                        student.presentationsCompleted >= 1
+                    )
+                    ModuleProgressLine(
+                        if (isGerman) "Modul 2: Ausrüstungsgrundlagen" else "Module 2: Equipment Essentials",
+                        if (student.presentationsCompleted >= 2) (if (isGerman) "Abgeschlossen ✓" else "Completed ✓") else (if (isGerman) "In Bearbeitung" else "In Progress"),
+                        student.presentationsCompleted >= 2
+                    )
+                    ModuleProgressLine(
+                        if (isGerman) "Modul 3: Tauchphysiologie" else "Module 3: Diving Physiology",
+                        if (student.videosWatched >= 2) (if (isGerman) "Abgeschlossen ✓" else "Completed ✓") else (if (isGerman) "In Bearbeitung" else "In Progress"),
+                        student.videosWatched >= 2
+                    )
+                    ModuleProgressLine(
+                        if (isGerman) "Modul 4: Problemlösung" else "Module 4: Problem Solving",
+                        if (student.videosWatched >= 3) (if (isGerman) "Abgeschlossen ✓" else "Completed ✓") else (if (isGerman) "Ausstehend" else "Pending"),
+                        student.videosWatched >= 3
+                    )
+                    ModuleProgressLine(
+                        if (isGerman) "Modul 5: Tauchgangsplanung & Probeprüfung" else "Module 5: Dive Planning & Mock Exam",
+                        if (student.finalMockExamScore != null) "${student.finalMockExamScore}% ${if (isGerman) "Bestanden ✓" else "Passed ✓"}" else (if (isGerman) "Ausstehend" else "Pending Review"),
+                        student.finalMockExamScore != null
+                    )
                 }
 
                 // Instructor Notes field
