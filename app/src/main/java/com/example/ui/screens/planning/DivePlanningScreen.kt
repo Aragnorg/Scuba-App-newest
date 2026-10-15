@@ -363,7 +363,7 @@ private fun DiveSpotsListTab(
                     }
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(14.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("spot_search_input")
@@ -732,7 +732,7 @@ private fun DiveSpotDetailDialog(
 
                 // GPS Coordinates & Open in Google Maps Banner
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainer,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                     modifier = Modifier.fillMaxWidth()
@@ -804,7 +804,7 @@ private fun DiveSpotDetailDialog(
                 // Quick Parameters Grid
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -884,7 +884,7 @@ private fun DiveSpotDetailDialog(
                 ) {
                     Button(
                         onClick = onEmergencyClick,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
@@ -901,7 +901,7 @@ private fun DiveSpotDetailDialog(
 
                     OutlinedButton(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                         modifier = Modifier
@@ -1125,7 +1125,7 @@ private fun SpotEmergencyDossierDialog(
                 // Primary Chamber Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f)),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1164,7 +1164,7 @@ private fun SpotEmergencyDossierDialog(
                                 containerColor = MaterialTheme.colorScheme.error,
                                 contentColor = MaterialTheme.colorScheme.onError
                             ),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             modifier = Modifier.testTag("call_chamber_btn")
                         ) {
@@ -1184,7 +1184,7 @@ private fun SpotEmergencyDossierDialog(
                 // Radio & Maritime Contacts Grid
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1256,7 +1256,7 @@ private fun SpotEmergencyDossierDialog(
                 ) {
                     Button(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -1324,7 +1324,7 @@ private fun EmergencyInfoDossierTab(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(22.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1412,7 +1412,7 @@ private fun EmergencyInfoDossierTab(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onSelectSpotEmergency(spot) },
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1524,7 +1524,7 @@ private fun GasAndModCalculatorTab(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1846,7 +1846,7 @@ private fun PreDiveBuddyChecklistTab() {
                         }
                     }
                     .testTag("checklist_item_${item.letter}"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = if (item.isChecked) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerLow
                 ),
@@ -1914,7 +1914,7 @@ private fun PreDiveBuddyChecklistTab() {
                             checklistItems[i] = checklistItems[i].copy(isChecked = false)
                         }
                     },
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
                 ) {

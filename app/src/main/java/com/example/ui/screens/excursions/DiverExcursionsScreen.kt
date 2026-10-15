@@ -229,7 +229,7 @@ fun DiverExcursionsScreen(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             ) {
                 Row(
@@ -380,7 +380,7 @@ fun DiverExcursionsScreen(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
                     ),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
                 ) {
                     Text(if (isGerman) "Platz freigeben" else "Cancel spot", fontWeight = FontWeight.Bold)
@@ -733,7 +733,7 @@ private fun UpcomingEventsTab(
                             ) {
                                 OutlinedButton(
                                     onClick = { onViewDossier(event) },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
                                 ) {
@@ -754,7 +754,7 @@ private fun UpcomingEventsTab(
                                 if (isRegistered) {
                                     OutlinedButton(
                                         onClick = { onViewDossier(event) },
-                                        shape = RoundedCornerShape(14.dp),
+                                        shape = RoundedCornerShape(12.dp),
                                         colors = ButtonDefaults.outlinedButtonColors(contentColor = SeaGreen),
                                         border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f)),
                                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
@@ -770,10 +770,10 @@ private fun UpcomingEventsTab(
                                 } else {
                                     Button(
                                         onClick = { onRegister(event) },
-                                        shape = RoundedCornerShape(14.dp),
+                                        shape = RoundedCornerShape(12.dp),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.primary,
-                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                             containerColor = MaterialTheme.colorScheme.primary,
+                                             contentColor = MaterialTheme.colorScheme.onPrimary
                                         ),
                                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 7.dp),
                                         enabled = freeSlots > 0
@@ -1012,7 +1012,7 @@ private fun PartnerOrganizationsTab(
                             if (isConnected) {
                                 OutlinedButton(
                                     onClick = { onToggleConnection(org) },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
                                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
@@ -1024,7 +1024,7 @@ private fun PartnerOrganizationsTab(
                             } else {
                                 Button(
                                     onClick = { onToggleConnection(org) },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -1255,7 +1255,7 @@ private fun MyRegistrationsTab(
                             if (event != null) {
                                 OutlinedButton(
                                     onClick = { onViewDossier(event) },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
                                 ) {
@@ -1278,7 +1278,7 @@ private fun MyRegistrationsTab(
 
                             OutlinedButton(
                                 onClick = { onCancelRegistration(participant) },
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
                                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)

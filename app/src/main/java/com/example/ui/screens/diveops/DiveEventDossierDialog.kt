@@ -376,7 +376,7 @@ fun DiveEventDossierDialog(
                             } else {
                                 Button(
                                     onClick = { onRegisterClick(event) },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -396,7 +396,7 @@ fun DiveEventDossierDialog(
 
                         Button(
                             onClick = onDismiss,
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 9.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -432,7 +432,7 @@ private fun BriefingTabContent(
 
     // 1. Site Location & Target Parameters
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
@@ -504,7 +504,7 @@ private fun BriefingTabContent(
 
     // 2. Dive Site Map & Underwater Topography (Tauchplatzkarte)
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = Modifier.fillMaxWidth()
@@ -665,7 +665,7 @@ private fun EmergencyPlanTabContent(
 
     // 1. Hyperbaric Chamber Highlight Card
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f)),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
     ) {
@@ -730,7 +730,7 @@ private fun EmergencyPlanTabContent(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
                     ),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp)
                 ) {
                     Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -747,7 +747,7 @@ private fun EmergencyPlanTabContent(
 
     // 2. Coast Guard & Radio Channel
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
@@ -785,7 +785,7 @@ private fun EmergencyPlanTabContent(
 
     // 3. First Aid & Oxygen Provider
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
@@ -835,7 +835,7 @@ private fun OrganizationTabContent(
     val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
 
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
@@ -906,7 +906,7 @@ private fun OrganizationTabContent(
     ) {
         Button(
             onClick = onCheckIn,
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = primaryAccentColor,
                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -923,7 +923,7 @@ private fun OrganizationTabContent(
 
         OutlinedButton(
             onClick = onNavigateToBuddyBoard,
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
             modifier = Modifier.weight(1f)
@@ -937,7 +937,7 @@ private fun OrganizationTabContent(
 
         OutlinedButton(
             onClick = onNavigateToManifest,
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
             modifier = Modifier.weight(1f)
@@ -959,7 +959,7 @@ private fun DossierSectionCard(
     content: String
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
     ) {

@@ -169,7 +169,7 @@ fun DiverEventRegistrationDialog(
             ) {
                 // Event Quick Summary Card
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
@@ -428,7 +428,7 @@ fun DiverEventRegistrationDialog(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 22.dp, vertical = 9.dp)
             ) {
                 Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
