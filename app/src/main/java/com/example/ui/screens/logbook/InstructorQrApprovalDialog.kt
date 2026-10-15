@@ -318,7 +318,7 @@ fun InstructorQrApprovalDialog(
                             Button(
                                 onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                                 colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                shape = RoundedCornerShape(10.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
                                     .height(32.dp)
                                     .testTag("enable_camera_scan_button")
@@ -521,7 +521,7 @@ fun InstructorQrApprovalDialog(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                         modifier = Modifier.testTag("apply_instructor_stamp_button")
                     ) {

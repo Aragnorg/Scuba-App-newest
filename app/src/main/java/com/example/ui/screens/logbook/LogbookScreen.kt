@@ -126,7 +126,7 @@ fun LogbookScreen(
                 onClick = { showAddDiveDialog = true },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(16.dp),
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
                 modifier = Modifier.testTag("fab_log_new_dive")
             ) {
@@ -782,15 +782,16 @@ fun DiveLogCard(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Surface(
-                                    shape = RoundedCornerShape(10.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
                                         .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
                                         .clickable { onApproveQrClick() }
                                         .testTag("card_action_qr_${dive.diveNumber}")
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(vertical = 7.dp),
+                                        modifier = Modifier.padding(vertical = 8.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -801,15 +802,16 @@ fun DiveLogCard(
                                 }
 
                                 Surface(
-                                    shape = RoundedCornerShape(10.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     color = SeaGreen,
                                     modifier = Modifier
                                         .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
                                         .clickable { onApproveBuddyClick() }
                                         .testTag("card_action_buddy_${dive.diveNumber}")
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(vertical = 7.dp),
+                                        modifier = Modifier.padding(vertical = 8.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {

@@ -243,7 +243,7 @@ fun BuddyApprovalDialog(
 
                         OutlinedButton(
                             onClick = { signaturePoints.clear() },
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .height(32.dp)
                                 .testTag("clear_signature_button")
@@ -264,7 +264,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("buddy_signature_name_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -277,7 +277,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("buddy_signature_note_input"),
                         maxLines = 2,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -296,7 +296,7 @@ fun BuddyApprovalDialog(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 28.dp, vertical = 12.dp),
                             modifier = Modifier.testTag("save_buddy_signature_button")
                         ) {
@@ -333,7 +333,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("push_buddy_name_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -346,7 +346,7 @@ fun BuddyApprovalDialog(
                             .fillMaxWidth()
                             .testTag("push_buddy_email_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -365,7 +365,7 @@ fun BuddyApprovalDialog(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 28.dp, vertical = 12.dp),
                             modifier = Modifier.testTag("send_buddy_push_request_button")
                         ) {

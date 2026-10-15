@@ -225,7 +225,7 @@ fun AddEditDiveDialog(
                         .fillMaxWidth()
                         .testTag("dive_site_name_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -238,7 +238,7 @@ fun AddEditDiveDialog(
                         .fillMaxWidth()
                         .testTag("dive_location_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -274,7 +274,7 @@ fun AddEditDiveDialog(
                             .testTag("max_depth_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     OutlinedTextField(
                         value = avgDepthMeters.toString(),
@@ -285,7 +285,7 @@ fun AddEditDiveDialog(
                             .testTag("avg_depth_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                 }
 
@@ -304,7 +304,7 @@ fun AddEditDiveDialog(
                             .testTag("duration_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     OutlinedTextField(
                         value = date,
@@ -314,7 +314,7 @@ fun AddEditDiveDialog(
                             .weight(1f)
                             .testTag("dive_date_input"),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                 }
 
@@ -330,7 +330,7 @@ fun AddEditDiveDialog(
                         label = { Text(strings.timeInLabel) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     OutlinedTextField(
                         value = timeOut,
@@ -338,7 +338,7 @@ fun AddEditDiveDialog(
                         label = { Text(strings.timeOutLabel) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                 }
 
@@ -361,7 +361,7 @@ fun AddEditDiveDialog(
                             .testTag("water_temp_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     OutlinedTextField(
                         value = airTempCelsius.toString(),
@@ -372,7 +372,7 @@ fun AddEditDiveDialog(
                             .testTag("air_temp_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     OutlinedTextField(
                         value = visibilityMeters.toString(),
@@ -381,7 +381,7 @@ fun AddEditDiveDialog(
                         modifier = Modifier.weight(1f),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                 }
 
@@ -410,7 +410,7 @@ fun AddEditDiveDialog(
                             .testTag("pressure_in_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     OutlinedTextField(
                         value = pressureOutBar.toString(),
@@ -421,10 +421,10 @@ fun AddEditDiveDialog(
                             .testTag("pressure_out_input"),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
                         color = OceanPrimary.copy(alpha = 0.1f),
                         modifier = Modifier
                             .weight(1f)
@@ -449,7 +449,7 @@ fun AddEditDiveDialog(
 
                 // Safety Stop Checkbox
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = if (safetyStopCompleted) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -541,7 +541,7 @@ fun AddEditDiveDialog(
                         .fillMaxWidth()
                         .testTag("add_dive_buddy_name"),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -554,7 +554,7 @@ fun AddEditDiveDialog(
                         .fillMaxWidth()
                         .testTag("add_dive_buddy_email"),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -565,7 +565,7 @@ fun AddEditDiveDialog(
                     label = { Text(strings.diveCenterNameLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -578,7 +578,7 @@ fun AddEditDiveDialog(
                         .fillMaxWidth()
                         .testTag("add_dive_notes_input"),
                     maxLines = 3,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -626,7 +626,7 @@ fun AddEditDiveDialog(
                         .fillMaxWidth()
                         .height(52.dp)
                         .testTag("submit_save_dive_button"),
-                    shape = RoundedCornerShape(14.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
