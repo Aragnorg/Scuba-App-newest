@@ -3,18 +3,16 @@ package com.example.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.ui.platform.LocalContext
-import com.example.util.GoogleDriveHelper
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,18 +21,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.RecordVoiceOver
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.RecordVoiceOver
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -52,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,6 +66,7 @@ import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
 import com.example.ui.viewmodel.AquaViewModel
+import com.example.util.GoogleDriveHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,6 +104,7 @@ fun PresentationViewerScreen(
                                 text = localizedPresentationTitle,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1
                             )
                             Text(
@@ -117,22 +119,22 @@ fun PresentationViewerScreen(
                             onClick = { viewModel.closePresentation() },
                             modifier = Modifier.testTag("close_presentation_button")
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = strings.close)
+                            Icon(Icons.Rounded.Close, contentDescription = strings.close)
                         }
                     },
                     actions = {
                         if (presentation.isCompleted) {
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = SeaGreen.copy(alpha = 0.2f),
+                                color = SeaGreen.copy(alpha = 0.15f),
                                 modifier = Modifier.padding(end = 12.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
-                                        Icons.Default.CheckCircle,
+                                        imageVector = Icons.Rounded.CheckCircle,
                                         contentDescription = strings.completedBadge,
                                         tint = SeaGreen,
                                         modifier = Modifier.size(16.dp)
@@ -149,14 +151,14 @@ fun PresentationViewerScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                     )
                 )
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier.fillMaxWidth(),
-                    color = AquaCyan,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
             }
         },
@@ -165,71 +167,92 @@ fun PresentationViewerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding(),
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 8.dp
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 0.dp
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedButton(
-                        onClick = { viewModel.prevSlide() },
-                        enabled = safeIndex > 0,
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                        modifier = Modifier.testTag("prev_slide_button")
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.previousButton)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(strings.previousButton)
-                    }
-
-                    // Slide indicator dots
+                Column {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        for (i in 0 until total.coerceAtMost(8)) {
-                            Box(
-                                modifier = Modifier
-                                    .size(if (i == safeIndex) 10.dp else 6.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (i == safeIndex) AquaCyan else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
-                                    )
+                        OutlinedButton(
+                            onClick = { viewModel.prevSlide() },
+                            enabled = safeIndex > 0,
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.testTag("prev_slide_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = strings.previousButton,
+                                modifier = Modifier.size(18.dp)
                             )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(strings.previousButton)
                         }
-                    }
 
-                    if (isLastSlide) {
-                        Button(
-                            onClick = {
-                                viewModel.markPresentationComplete()
-                                viewModel.closePresentation()
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                            modifier = Modifier.testTag("finish_presentation_button")
+                        // Slide indicator dots
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Check, contentDescription = strings.completeDeck)
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(strings.completeDeck)
+                            for (i in 0 until total.coerceAtMost(8)) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(if (i == safeIndex) 10.dp else 6.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (i == safeIndex)
+                                                MaterialTheme.colorScheme.primary
+                                            else
+                                                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+                                        )
+                                )
+                            }
                         }
-                    } else {
-                        Button(
-                            onClick = { viewModel.nextSlide() },
-                            shape = RoundedCornerShape(20.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                            modifier = Modifier.testTag("next_slide_button")
-                        ) {
-                            Text(strings.nextButton)
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = strings.nextButton)
+
+                        if (isLastSlide) {
+                            Button(
+                                onClick = {
+                                    viewModel.markPresentationComplete()
+                                    viewModel.closePresentation()
+                                },
+                                shape = RoundedCornerShape(14.dp),
+                                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.testTag("finish_presentation_button")
+                            ) {
+                                Icon(Icons.Rounded.Check, contentDescription = strings.completeDeck, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(strings.completeDeck, fontWeight = FontWeight.Bold)
+                            }
+                        } else {
+                            Button(
+                                onClick = { viewModel.nextSlide() },
+                                shape = RoundedCornerShape(14.dp),
+                                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.testTag("next_slide_button")
+                            ) {
+                                Text(strings.nextButton, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                    contentDescription = strings.nextButton,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -251,16 +274,16 @@ fun PresentationViewerScreen(
             if (!docUri.isNullOrBlank()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    color = if (isDriveDoc) AquaCyan.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.1f),
-                    border = BorderStroke(1.dp, if (isDriveDoc) AquaCyan.copy(alpha = 0.5f) else OceanPrimary.copy(alpha = 0.3f))
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(if (isDriveDoc) "☁️" else "📄", fontSize = 24.sp)
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = if (isDriveDoc) "Google Drive / Slides Vorlage" else "Angehängtes Dokument / Skript",
@@ -270,7 +293,7 @@ fun PresentationViewerScreen(
                             )
                             Text(
                                 text = if (isDriveDoc) "Original-Präsentation aus Vereins-Drive öffnen" else "Dokument auf Smartphone öffnen",
-                                style = MaterialTheme.typography.labelSmall,
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -278,8 +301,11 @@ fun PresentationViewerScreen(
                             onClick = {
                                 GoogleDriveHelper.openInGoogleDriveOrBrowser(context, docUri)
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                         ) {
                             Text(if (isGerman) "Öffnen" else "Open", fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
@@ -295,9 +321,10 @@ fun PresentationViewerScreen(
                     .testTag("slide_card"),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -332,7 +359,7 @@ fun PresentationViewerScreen(
                                         .padding(top = 6.dp)
                                         .size(8.dp),
                                     shape = CircleShape,
-                                    color = AquaCyan
+                                    color = MaterialTheme.colorScheme.primary
                                 ) {}
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
@@ -358,18 +385,18 @@ fun PresentationViewerScreen(
             if (currentSlide.keyTakeaway.isNotBlank()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    color = SandGold.copy(alpha = 0.15f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, SandGold.copy(alpha = 0.4f))
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.Top
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Lightbulb,
+                            imageVector = Icons.Rounded.Lightbulb,
                             contentDescription = strings.keyTakeaway,
-                            tint = SandGold,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
@@ -378,13 +405,13 @@ fun PresentationViewerScreen(
                                 text = strings.keyTakeaway,
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = currentSlide.keyTakeaway,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                     }
@@ -395,17 +422,19 @@ fun PresentationViewerScreen(
             if (currentSlide.instructorNotes.isNotBlank()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-                    )
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.Top
                     ) {
                         Icon(
-                            imageVector = Icons.Default.RecordVoiceOver,
+                            imageVector = Icons.Rounded.RecordVoiceOver,
                             contentDescription = strings.instructorTeachingNote,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(22.dp)

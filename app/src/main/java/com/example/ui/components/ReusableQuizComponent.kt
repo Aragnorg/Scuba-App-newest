@@ -29,16 +29,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.HelpOutline
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.HelpOutline
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,6 +46,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -78,9 +80,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.QuizQuestion
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.theme.AquaCyan
-import com.example.ui.theme.CoralAlert
 import com.example.ui.theme.OceanPrimary
-import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
 
 enum class QuizFeedbackMode {
@@ -147,13 +147,31 @@ fun ReusableQuizEngine(
         val unanswered = totalQuestions - answeredCount
         AlertDialog(
             onDismissRequest = { showConfirmSubmitDialog = false },
-            title = { Text(strings.confirmSubmitTitle) },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            icon = {
+                Icon(
+                    imageVector = Icons.Rounded.HelpOutline,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = strings.confirmSubmitTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
             text = {
                 Text(
-                    if (unanswered > 0)
+                    text = if (unanswered > 0)
                         strings.confirmSubmitDesc + " ($unanswered)"
                     else
-                        strings.confirmSubmitDesc
+                        strings.confirmSubmitDesc,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             confirmButton = {
@@ -163,14 +181,21 @@ fun ReusableQuizEngine(
                         isSubmitted = true
                         onQuizCompleted(scorePercentage, isPassed, userAnswers.toMap())
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
                     modifier = Modifier.testTag("confirm_submit_quiz_button")
                 ) {
-                    Text(strings.submitAll)
+                    Text(strings.submitAll, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showConfirmSubmitDialog = false }) {
+                TextButton(
+                    onClick = { showConfirmSubmitDialog = false },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text(strings.keepReviewing)
                 }
             }
@@ -188,6 +213,7 @@ fun ReusableQuizEngine(
                                 text = title,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1
                             )
                             Text(
@@ -202,7 +228,7 @@ fun ReusableQuizEngine(
                             onClick = onExit,
                             modifier = Modifier.testTag("quiz_back_button")
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = strings.exitQuizButton)
+                            Icon(Icons.Rounded.Close, contentDescription = strings.exitQuizButton)
                         }
                     },
                     actions = {
@@ -214,13 +240,13 @@ fun ReusableQuizEngine(
                                 Text(
                                     text = "${strings.submitQuiz} ($answeredCount/$totalQuestions)",
                                     fontWeight = FontWeight.Bold,
-                                    color = OceanPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                     )
                 )
 
@@ -228,8 +254,8 @@ fun ReusableQuizEngine(
                     LinearProgressIndicator(
                         progress = { progressFraction },
                         modifier = Modifier.fillMaxWidth(),
-                        color = AquaCyan,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
                     )
                 }
             }
@@ -240,45 +266,69 @@ fun ReusableQuizEngine(
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding(),
-                    color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 8.dp
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    tonalElevation = 0.dp
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedButton(
-                            onClick = { if (currentIndex > 0) currentIndex-- },
-                            enabled = currentIndex > 0,
-                            modifier = Modifier.testTag("quiz_prev_button")
+                    Column {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.previousQuestion)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(strings.previousQuestion)
-                        }
-
-                        if (safeIndex == totalQuestions - 1) {
-                            Button(
-                                onClick = { showConfirmSubmitDialog = true },
-                                colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                modifier = Modifier.testTag("quiz_final_submit_button")
+                            OutlinedButton(
+                                onClick = { if (currentIndex > 0) currentIndex-- },
+                                enabled = currentIndex > 0,
+                                shape = RoundedCornerShape(14.dp),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                modifier = Modifier.testTag("quiz_prev_button")
                             ) {
-                                Icon(Icons.Default.Check, contentDescription = strings.submitFinalExam)
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                    contentDescription = strings.previousQuestion,
+                                    modifier = Modifier.size(18.dp)
+                                )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(strings.submitFinalExam)
+                                Text(strings.previousQuestion)
                             }
-                        } else {
-                            Button(
-                                onClick = { if (currentIndex < totalQuestions - 1) currentIndex++ },
-                                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                                modifier = Modifier.testTag("quiz_next_button")
-                            ) {
-                                Text(strings.nextQuestion)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = strings.nextQuestion)
+
+                            if (safeIndex == totalQuestions - 1) {
+                                Button(
+                                    onClick = { showConfirmSubmitDialog = true },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+                                    modifier = Modifier.testTag("quiz_final_submit_button")
+                                ) {
+                                    Icon(Icons.Rounded.Check, contentDescription = strings.submitFinalExam, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(strings.submitFinalExam, fontWeight = FontWeight.Bold)
+                                }
+                            } else {
+                                Button(
+                                    onClick = { if (currentIndex < totalQuestions - 1) currentIndex++ },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+                                    modifier = Modifier.testTag("quiz_next_button")
+                                ) {
+                                    Text(strings.nextQuestion, fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                        contentDescription = strings.nextQuestion,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -346,11 +396,12 @@ fun ReusableQuizEngine(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("reusable_question_card"),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(18.dp)) {
                         Text(
                             text = "${strings.questionPrefix} ${safeIndex + 1} ${strings.questionOf} $totalQuestions",
                             style = MaterialTheme.typography.labelMedium,
@@ -371,6 +422,7 @@ fun ReusableQuizEngine(
                 Text(
                     text = strings.selectOneAnswer,
                     style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
@@ -378,22 +430,23 @@ fun ReusableQuizEngine(
                     currentQuestion.options.forEachIndexed { optIndex, optionText ->
                         val isSelected = userAnswers[safeIndex] == optIndex
                         val cardBg by animateColorAsState(
-                            targetValue = if (isSelected) AquaCyan.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceContainerLow,
                             label = "option_bg"
                         )
-                        val borderColor = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                        val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
 
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(14.dp))
                                 .clickable {
                                     userAnswers[safeIndex] = optIndex
                                 }
                                 .testTag("quiz_option_${safeIndex}_$optIndex"),
                             colors = CardDefaults.cardColors(containerColor = cardBg),
                             border = BorderStroke(if (isSelected) 2.dp else 1.dp, borderColor),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(14.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -405,13 +458,14 @@ fun ReusableQuizEngine(
                                     selected = isSelected,
                                     onClick = { userAnswers[safeIndex] = optIndex },
                                     colors = RadioButtonDefaults.colors(
-                                        selectedColor = OceanPrimary
+                                        selectedColor = MaterialTheme.colorScheme.primary
                                     )
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = optionText,
                                     style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -442,25 +496,25 @@ fun QuestionQuickJumpStrip(
             val isAnswered = userAnswers.containsKey(index)
 
             val bgColor = when {
-                isCurrent -> OceanPrimary
-                isAnswered -> AquaCyan.copy(alpha = 0.3f)
-                else -> MaterialTheme.colorScheme.surfaceVariant
+                isCurrent -> MaterialTheme.colorScheme.primary
+                isAnswered -> MaterialTheme.colorScheme.primaryContainer
+                else -> MaterialTheme.colorScheme.surfaceContainerHigh
             }
 
             val textColor = when {
-                isCurrent -> Color.White
-                isAnswered -> OceanPrimary
+                isCurrent -> MaterialTheme.colorScheme.onPrimary
+                isAnswered -> MaterialTheme.colorScheme.onPrimaryContainer
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             }
 
             Box(
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(bgColor)
                     .border(
                         width = if (isCurrent) 2.dp else 1.dp,
-                        color = if (isCurrent) AquaCyan else Color.Transparent,
+                        color = if (isCurrent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
                         shape = CircleShape
                     )
                     .clickable { onSelectQuestion(index) }
@@ -520,9 +574,10 @@ fun PostSubmissionFeedbackView(
                     .testTag("quiz_feedback_hero_card"),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isPassed) SeaGreen.copy(alpha = 0.12f) else CoralAlert.copy(alpha = 0.12f)
+                    containerColor = if (isPassed) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f)
                 ),
-                border = BorderStroke(2.dp, if (isPassed) SeaGreen else CoralAlert)
+                border = BorderStroke(2.dp, if (isPassed) SeaGreen else MaterialTheme.colorScheme.error),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -532,11 +587,11 @@ fun PostSubmissionFeedbackView(
                     Surface(
                         modifier = Modifier.size(72.dp),
                         shape = CircleShape,
-                        color = if (isPassed) SeaGreen else CoralAlert
+                        color = if (isPassed) SeaGreen else MaterialTheme.colorScheme.error
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                imageVector = if (isPassed) Icons.Default.EmojiEvents else Icons.Default.Cancel,
+                                imageVector = if (isPassed) Icons.Rounded.EmojiEvents else Icons.Rounded.Cancel,
                                 contentDescription = if (isPassed) strings.examPassedTitle else strings.needsFurtherReviewTitle,
                                 tint = Color.White,
                                 modifier = Modifier.size(40.dp)
@@ -548,7 +603,7 @@ fun PostSubmissionFeedbackView(
                         text = if (isPassed) strings.examPassedTitle else strings.needsFurtherReviewTitle,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Black,
-                        color = if (isPassed) SeaGreen else CoralAlert
+                        color = if (isPassed) SeaGreen else MaterialTheme.colorScheme.error
                     )
 
                     Text(
@@ -571,23 +626,29 @@ fun PostSubmissionFeedbackView(
                     ) {
                         OutlinedButton(
                             onClick = onRetake,
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("feedback_retake_button")
                         ) {
-                            Icon(Icons.Default.Refresh, contentDescription = strings.retakeQuizButton)
+                            Icon(Icons.Rounded.Refresh, contentDescription = strings.retakeQuizButton, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(strings.retakeQuizButton)
                         }
 
                         Button(
                             onClick = onExit,
-                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("feedback_done_button")
                         ) {
-                            Text(strings.continueButton)
+                            Text(strings.continueButton, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -608,17 +669,32 @@ fun PostSubmissionFeedbackView(
                     FilterChip(
                         selected = reviewFilter == ReviewFilter.ALL,
                         onClick = { onFilterChanged(ReviewFilter.ALL) },
-                        label = { Text("${strings.filterAllQuestions} ($total)") }
+                        shape = RoundedCornerShape(10.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        label = { Text("${strings.filterAllQuestions} ($total)", fontSize = 11.sp, fontWeight = FontWeight.SemiBold) }
                     )
                     FilterChip(
                         selected = reviewFilter == ReviewFilter.INCORRECT_ONLY,
                         onClick = { onFilterChanged(ReviewFilter.INCORRECT_ONLY) },
-                        label = { Text("${strings.filterIncorrectOnly} ($incorrectCount)") }
+                        shape = RoundedCornerShape(10.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        label = { Text("${strings.filterIncorrectOnly} ($incorrectCount)", fontSize = 11.sp, fontWeight = FontWeight.SemiBold) }
                     )
                     FilterChip(
                         selected = reviewFilter == ReviewFilter.CORRECT_ONLY,
                         onClick = { onFilterChanged(ReviewFilter.CORRECT_ONLY) },
-                        label = { Text("${strings.filterCorrectOnly} ($correctCount)") }
+                        shape = RoundedCornerShape(10.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        label = { Text("${strings.filterCorrectOnly} ($correctCount)", fontSize = 11.sp, fontWeight = FontWeight.SemiBold) }
                     )
                 }
             }
@@ -633,8 +709,12 @@ fun PostSubmissionFeedbackView(
                     .fillMaxWidth()
                     .testTag("review_card_$qIndex"),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.5.dp, if (isCorrect) SeaGreen.copy(alpha = 0.6f) else CoralAlert.copy(alpha = 0.6f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                border = BorderStroke(
+                    1.dp,
+                    if (isCorrect) SeaGreen.copy(alpha = 0.5f) else MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -653,24 +733,24 @@ fun PostSubmissionFeedbackView(
                         )
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = if (isCorrect) SeaGreen.copy(alpha = 0.15f) else CoralAlert.copy(alpha = 0.15f)
+                            color = if (isCorrect) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Icon(
-                                    imageVector = if (isCorrect) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                                    imageVector = if (isCorrect) Icons.Rounded.CheckCircle else Icons.Rounded.Cancel,
                                     contentDescription = null,
-                                    tint = if (isCorrect) SeaGreen else CoralAlert,
+                                    tint = if (isCorrect) SeaGreen else MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(16.dp)
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = if (isCorrect) strings.correctLabel else strings.incorrectLabel,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isCorrect) SeaGreen else CoralAlert
+                                    color = if (isCorrect) SeaGreen else MaterialTheme.colorScheme.error
                                 )
                             }
                         }
@@ -679,7 +759,8 @@ fun PostSubmissionFeedbackView(
                     Text(
                         text = question.question,
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     // Options breakdown with candidate's choice highlighted
@@ -690,33 +771,35 @@ fun PostSubmissionFeedbackView(
 
                             val optBg = when {
                                 isTheRightAnswer -> SeaGreen.copy(alpha = 0.15f)
-                                isPickedByUser && !isTheRightAnswer -> CoralAlert.copy(alpha = 0.15f)
-                                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                                isPickedByUser && !isTheRightAnswer -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                                else -> MaterialTheme.colorScheme.surfaceContainerHigh
                             }
 
                             val optBorder = when {
                                 isTheRightAnswer -> SeaGreen
-                                isPickedByUser && !isTheRightAnswer -> CoralAlert
+                                isPickedByUser && !isTheRightAnswer -> MaterialTheme.colorScheme.error
                                 else -> Color.Transparent
                             }
 
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(10.dp))
                                     .background(optBg)
-                                    .border(1.dp, optBorder, RoundedCornerShape(8.dp))
-                                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                                    .border(1.dp, optBorder, RoundedCornerShape(10.dp))
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
                                     text = "${('A' + optIdx)}. ",
                                     fontWeight = FontWeight.Bold,
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = optText,
                                     style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.weight(1f)
                                 )
                                 if (isTheRightAnswer) {
@@ -729,7 +812,7 @@ fun PostSubmissionFeedbackView(
                                 } else if (isPickedByUser) {
                                     Text(
                                         text = strings.yourAnswerLabel,
-                                        color = CoralAlert,
+                                        color = MaterialTheme.colorScheme.error,
                                         fontWeight = FontWeight.Bold,
                                         style = MaterialTheme.typography.labelSmall
                                     )
@@ -740,18 +823,18 @@ fun PostSubmissionFeedbackView(
 
                     // In-depth Explanation
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
+                        Column(modifier = Modifier.padding(12.dp)) {
                             Text(
                                 text = strings.explanationRationaleLabel,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = question.explanation,
                                 style = MaterialTheme.typography.bodySmall,
@@ -766,21 +849,22 @@ fun PostSubmissionFeedbackView(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(OceanPrimary.copy(alpha = 0.08f))
-                                .padding(8.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .padding(10.dp)
                         ) {
                             Icon(
-                                Icons.Default.Security,
+                                imageVector = Icons.Rounded.Security,
                                 contentDescription = strings.safetyRule,
-                                tint = OceanPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "${strings.safetyRule}: ${question.safetyRule}",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = OceanPrimary,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }

@@ -7,20 +7,20 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,27 +28,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.FastRewind
-import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Subtitles
-import androidx.compose.ui.platform.LocalContext
-import com.example.util.GoogleDriveHelper
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.FastForward
+import androidx.compose.material.icons.rounded.FastRewind
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -70,6 +66,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -82,6 +79,7 @@ import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
 import com.example.ui.viewmodel.AquaViewModel
+import com.example.util.GoogleDriveHelper
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,6 +141,7 @@ fun VideoPlayerScreen(
                             text = video.title,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1
                         )
                         Text(
@@ -157,11 +156,11 @@ fun VideoPlayerScreen(
                         onClick = { viewModel.closeVideo() },
                         modifier = Modifier.testTag("close_video_button")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
             )
         }
@@ -207,7 +206,7 @@ fun VideoPlayerScreen(
                         modifier = Modifier.size(68.dp),
                         shape = CircleShape,
                         color = AquaCyan.copy(alpha = 0.25f),
-                        border = androidx.compose.foundation.BorderStroke(2.dp, AquaCyan)
+                        border = BorderStroke(2.dp, AquaCyan)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -231,7 +230,7 @@ fun VideoPlayerScreen(
                     if (GoogleDriveHelper.isGoogleDriveUrl(video.videoUrlOrUri)) {
                         Spacer(modifier = Modifier.height(6.dp))
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
+                            shape = RoundedCornerShape(8.dp),
                             color = SeaGreen.copy(alpha = 0.85f)
                         ) {
                             Text(
@@ -239,7 +238,7 @@ fun VideoPlayerScreen(
                                 color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                             )
                         }
                     }
@@ -256,18 +255,19 @@ fun VideoPlayerScreen(
             // Player Controls Bar
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shadowElevation = 4.dp
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 0.dp
             ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
                     // Scrubber Slider
                     Slider(
                         value = currentSeconds.toFloat(),
                         onValueChange = { viewModel.seekVideo(it.toInt()) },
                         valueRange = 0f..video.durationSeconds.toFloat().coerceAtLeast(1f),
                         colors = SliderDefaults.colors(
-                            thumbColor = AquaCyan,
-                            activeTrackColor = OceanPrimary
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.surfaceContainerHigh
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -289,7 +289,8 @@ fun VideoPlayerScreen(
                         // Playback speed button
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.surface,
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                             modifier = Modifier
                                 .clickable { viewModel.cyclePlaybackSpeed() }
                                 .testTag("speed_button")
@@ -299,16 +300,17 @@ fun VideoPlayerScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    Icons.Default.Speed,
+                                    imageVector = Icons.Rounded.Speed,
                                     contentDescription = "Playback Speed",
                                     modifier = Modifier.size(16.dp),
-                                    tint = OceanPrimary
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "${playbackSpeed}x",
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -318,7 +320,7 @@ fun VideoPlayerScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp),
+                            .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -326,7 +328,11 @@ fun VideoPlayerScreen(
                             onClick = { viewModel.skipVideo(-10) },
                             modifier = Modifier.testTag("rewind_button")
                         ) {
-                            Icon(Icons.Default.FastRewind, contentDescription = "Rewind 10s")
+                            Icon(
+                                imageVector = Icons.Rounded.FastRewind,
+                                contentDescription = "Rewind 10s",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -334,15 +340,17 @@ fun VideoPlayerScreen(
                         FilledIconButton(
                             onClick = { viewModel.toggleVideoPlay() },
                             modifier = Modifier
-                                .size(52.dp)
+                                .size(54.dp)
                                 .testTag("play_pause_button"),
-                            colors = IconButtonDefaults.filledIconButtonColors(containerColor = OceanPrimary)
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Icon(
-                                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                                 contentDescription = if (isPlaying) "Pause" else "Play",
-                                modifier = Modifier.size(28.dp),
-                                tint = Color.White
+                                modifier = Modifier.size(30.dp)
                             )
                         }
 
@@ -352,7 +360,11 @@ fun VideoPlayerScreen(
                             onClick = { viewModel.skipVideo(10) },
                             modifier = Modifier.testTag("fast_forward_button")
                         ) {
-                            Icon(Icons.Default.FastForward, contentDescription = "Forward 10s")
+                            Icon(
+                                imageVector = Icons.Rounded.FastForward,
+                                contentDescription = "Forward 10s",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 }
@@ -373,19 +385,19 @@ fun VideoPlayerScreen(
                 if (isDriveUrl || isWebUrl) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isDriveUrl) SeaGreen.copy(alpha = 0.12f) else OceanPrimary.copy(alpha = 0.12f)
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                         ),
-                        border = BorderStroke(1.dp, if (isDriveUrl) SeaGreen.copy(alpha = 0.4f) else OceanPrimary.copy(alpha = 0.4f))
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Column(
-                            modifier = Modifier.padding(14.dp),
+                            modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(if (isDriveUrl) "☁️" else "🌐", fontSize = 26.sp)
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = if (isDriveUrl) "Google Drive Lehrvideo" else "Web Training Video",
@@ -410,12 +422,13 @@ fun VideoPlayerScreen(
                                         GoogleDriveHelper.openInGoogleDriveOrBrowser(context, video.videoUrlOrUri)
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isDriveUrl) SeaGreen else OceanPrimary
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
                                     ),
-                                    shape = RoundedCornerShape(20.dp),
-                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                                    shape = RoundedCornerShape(14.dp),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp)
                                 ) {
-                                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = if (isDriveUrl) "In Google Drive / Player abspielen" else "Video öffnen",
@@ -430,7 +443,10 @@ fun VideoPlayerScreen(
                 // Description Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -439,7 +455,7 @@ fun VideoPlayerScreen(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = video.description,
                             style = MaterialTheme.typography.bodyMedium,
@@ -452,7 +468,10 @@ fun VideoPlayerScreen(
                 if (chapters.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -460,9 +479,9 @@ fun VideoPlayerScreen(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    Icons.Default.Bookmark,
+                                    imageVector = Icons.Rounded.Bookmark,
                                     contentDescription = "Chapters",
-                                    tint = OceanPrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -470,7 +489,7 @@ fun VideoPlayerScreen(
                                     text = strings.videoChapters,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
 
@@ -481,10 +500,10 @@ fun VideoPlayerScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .clip(RoundedCornerShape(10.dp))
                                         .background(
-                                            if (isCurrentChapter) AquaCyan.copy(alpha = 0.15f)
-                                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                            if (isCurrentChapter) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                                            else MaterialTheme.colorScheme.surfaceContainerHigh
                                         )
                                         .clickable {
                                             viewModel.seekVideo(ch.timeSec)
@@ -494,12 +513,12 @@ fun VideoPlayerScreen(
                                 ) {
                                     Surface(
                                         shape = RoundedCornerShape(6.dp),
-                                        color = if (isCurrentChapter) OceanPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                        color = if (isCurrentChapter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer
                                     ) {
                                         Text(
                                             text = formatTime(ch.timeSec),
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = if (isCurrentChapter) Color.White else MaterialTheme.colorScheme.onSurface,
+                                            color = if (isCurrentChapter) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                             fontWeight = FontWeight.Bold
                                         )
@@ -509,7 +528,8 @@ fun VideoPlayerScreen(
                                         Text(
                                             text = ch.title,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = if (isCurrentChapter) FontWeight.Bold else FontWeight.Normal
+                                            fontWeight = if (isCurrentChapter) FontWeight.Bold else FontWeight.Normal,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                         if (ch.summary.isNotBlank()) {
                                             Text(
@@ -529,7 +549,10 @@ fun VideoPlayerScreen(
                 if (takeaways.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = SandGold.copy(alpha = 0.12f))
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
@@ -539,24 +562,24 @@ fun VideoPlayerScreen(
                                 text = strings.examTakeawaysLesson,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                             takeaways.forEach { takeaway ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.Top
+                                    verticalAlignment = Alignment.Top,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Icon(
-                                        Icons.Default.CheckCircle,
+                                        imageVector = Icons.Rounded.CheckCircle,
                                         contentDescription = "Check",
                                         tint = SeaGreen,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = takeaway,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
                                 }
                             }
@@ -577,11 +600,14 @@ fun VideoPlayerScreen(
                             viewModel.closeVideo()
                         },
                         modifier = Modifier.testTag("mark_video_completed_button"),
-                        shape = RoundedCornerShape(24.dp),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = "Complete", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Rounded.Check, contentDescription = "Complete", modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(strings.markVideoCompleted, fontWeight = FontWeight.SemiBold)
                     }
