@@ -18,20 +18,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.DocumentScanner
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.HourglassTop
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.QrCode
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -107,10 +107,12 @@ fun DocumentDetailDialog(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 16.dp)
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("document_detail_dialog"),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -143,21 +145,21 @@ fun DocumentDetailDialog(
                             onClick = onEditClick,
                             modifier = Modifier.testTag("edit_doc_btn")
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = strings.edit, tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Rounded.Edit, contentDescription = strings.edit, tint = MaterialTheme.colorScheme.primary)
                         }
 
                         IconButton(
                             onClick = onDeleteClick,
                             modifier = Modifier.testTag("delete_doc_btn")
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = Color(0xFFE53E3E))
+                            Icon(Icons.Rounded.Delete, contentDescription = strings.delete, tint = MaterialTheme.colorScheme.error)
                         }
 
                         IconButton(
                             onClick = onDismiss,
                             modifier = Modifier.testTag("close_doc_detail_btn")
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = strings.close)
+                            Icon(Icons.Rounded.Close, contentDescription = strings.close)
                         }
                     }
                 }
@@ -173,7 +175,8 @@ fun DocumentDetailDialog(
                     colors = CardDefaults.cardColors(
                         containerColor = DepthNavy
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -221,7 +224,7 @@ fun DocumentDetailDialog(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = if (isApproved) Icons.Default.Verified else Icons.Default.HourglassTop,
+                                            imageVector = if (isApproved) Icons.Rounded.Verified else Icons.Rounded.HourglassTop,
                                             contentDescription = null,
                                             tint = if (isApproved) Color(0xFF68D391) else SandGold,
                                             modifier = Modifier.size(14.dp)
@@ -294,14 +297,14 @@ fun DocumentDetailDialog(
                     DetailMetricItem(
                         title = strings.issueDateLabel,
                         value = document.issueDate,
-                        icon = Icons.Default.CalendarMonth,
+                        icon = Icons.Rounded.CalendarMonth,
                         modifier = Modifier.weight(1f)
                     )
 
                     DetailMetricItem(
                         title = strings.expiryDateLabel,
                         value = document.expiryDate,
-                        icon = Icons.Default.Shield,
+                        icon = Icons.Rounded.Shield,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -330,10 +333,11 @@ fun DocumentDetailDialog(
                     Spacer(modifier = Modifier.height(14.dp))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                        )
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
@@ -359,9 +363,9 @@ fun DocumentDetailDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isApproved) SeaGreen.copy(alpha = 0.08f) else SandGold.copy(alpha = 0.08f)
+                        containerColor = if (isApproved) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainer
                     ),
-                    border = BorderStroke(1.dp, if (isApproved) SeaGreen.copy(alpha = 0.4f) else SandGold.copy(alpha = 0.4f))
+                    border = BorderStroke(1.dp, if (isApproved) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
@@ -371,9 +375,9 @@ fun DocumentDetailDialog(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    imageVector = if (isApproved) Icons.Default.Verified else Icons.Default.HourglassTop,
+                                    imageVector = if (isApproved) Icons.Rounded.Verified else Icons.Rounded.HourglassTop,
                                     contentDescription = null,
-                                    tint = if (isApproved) SeaGreen else SandGold,
+                                    tint = if (isApproved) MaterialTheme.colorScheme.primary else SandGold,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -381,7 +385,7 @@ fun DocumentDetailDialog(
                                     text = if (isApproved) strings.statusApproved else strings.statusPending,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isApproved) SeaGreen else SandGold
+                                    color = if (isApproved) MaterialTheme.colorScheme.primary else SandGold
                                 )
                             }
                         }
@@ -417,8 +421,8 @@ fun DocumentDetailDialog(
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Surface(
                                     shape = RoundedCornerShape(10.dp),
-                                    color = MaterialTheme.colorScheme.surface,
-                                    border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.2f))
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                                 ) {
                                     Text(
                                         text = "${if (isGerman) "Prüfbericht" else "Assessment"}: ${document.approverNotes}",
@@ -440,9 +444,9 @@ fun DocumentDetailDialog(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                                    border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                                 ) {
                                     SignaturePreview(
                                         signatureJson = document.approverSignatureJson,
@@ -450,7 +454,7 @@ fun DocumentDetailDialog(
                                             .fillMaxWidth()
                                             .padding(6.dp),
                                         height = 50.dp,
-                                        strokeColor = Color(0xFF005B60)
+                                        strokeColor = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             }
@@ -461,7 +465,7 @@ fun DocumentDetailDialog(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(12.dp))
                                     .padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -470,7 +474,7 @@ fun DocumentDetailDialog(
                                         text = "Official Digital Seal",
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = SeaGreen
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
                                         text = document.approvalStampCode,
@@ -514,10 +518,13 @@ fun DocumentDetailDialog(
                                     onClick = onApproveClick,
                                     modifier = Modifier.testTag("open_sign_approve_btn"),
                                     shape = RoundedCornerShape(14.dp),
-                                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
                                 ) {
-                                    Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                                    Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(strings.approveDocumentTitle, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                                 }
@@ -535,8 +542,8 @@ fun DocumentDetailDialog(
                     OutlinedButton(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_dialog_btn"),
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 8.dp)
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp)
                     ) {
                         Text(strings.close, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                     }
@@ -562,22 +569,28 @@ private fun DetailMetricItem(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(34.dp),
+                modifier = Modifier.size(36.dp),
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                    Icon(
+                        icon, 
+                        contentDescription = null, 
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer, 
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
             Spacer(modifier = Modifier.width(10.dp))

@@ -1,5 +1,6 @@
 package com.example.ui.screens.documents
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,20 +22,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.Business
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.HourglassTop
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.QrCode
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,6 +47,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -132,16 +134,16 @@ fun DocumentsVaultScreen(
                     documentToEdit = null
                     showAddDialog = true
                 },
-                containerColor = OceanPrimary,
-                contentColor = Color.White,
-                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.testTag("add_document_fab")
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = strings.addDocumentButton)
+                    Icon(Icons.Rounded.Add, contentDescription = strings.addDocumentButton)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(strings.addDocumentButton, fontWeight = FontWeight.Bold)
                 }
@@ -161,24 +163,25 @@ fun DocumentsVaultScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("vault_header_card"),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(18.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Surface(
                                 modifier = Modifier.size(48.dp),
                                 shape = CircleShape,
-                                color = OceanPrimary.copy(alpha = 0.15f)
+                                color = MaterialTheme.colorScheme.primaryContainer
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        Icons.Default.Shield,
+                                        Icons.Rounded.Shield,
                                         contentDescription = null,
-                                        tint = OceanPrimary,
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                         modifier = Modifier.size(26.dp)
                                     )
                                 }
@@ -209,7 +212,7 @@ fun DocumentsVaultScreen(
                             StatCounterCard(
                                 title = strings.totalDocumentsCount,
                                 count = documents.size.toString(),
-                                color = OceanPrimary,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.weight(1f)
                             )
                             StatCounterCard(
@@ -244,12 +247,23 @@ fun DocumentsVaultScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { viewModel.setDocumentSearchQuery(it) },
-                    placeholder = { Text("Zertifikate, TTU, Brevets durchsuchen...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Suchen") },
+                    placeholder = { 
+                        Text(
+                            if (currentLanguage == AppLanguage.DE) "Zertifikate, TTU, Brevets durchsuchen..." 
+                            else "Search certificates, medicals, brevets..."
+                        ) 
+                    },
+                    leadingIcon = { 
+                        Icon(
+                            Icons.Rounded.Search, 
+                            contentDescription = "Suchen",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        ) 
+                    },
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
                             IconButton(onClick = { viewModel.setDocumentSearchQuery("") }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                Icon(Icons.Rounded.Clear, contentDescription = "Clear")
                             }
                         }
                     },
@@ -257,7 +271,11 @@ fun DocumentsVaultScreen(
                         .fillMaxWidth()
                         .testTag("doc_search_bar"),
                     singleLine = true,
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    )
                 )
             }
 
@@ -328,10 +346,11 @@ fun DocumentsVaultScreen(
                             .fillMaxWidth()
                             .padding(vertical = 24.dp)
                             .testTag("empty_docs_card"),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(22.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                        )
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Column(
                             modifier = Modifier
@@ -454,27 +473,42 @@ fun DocumentsVaultScreen(
     documentToDelete?.let { doc ->
         AlertDialog(
             onDismissRequest = { documentToDelete = null },
-            title = { Text("Dokument löschen") },
-            text = { Text("Möchtest du das Dokument '${doc.title}' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.") },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            title = { 
+                Text(
+                    text = if (currentLanguage == AppLanguage.DE) "Dokument löschen" else "Delete Document",
+                    fontWeight = FontWeight.Bold
+                ) 
+            },
+            text = { 
+                Text(
+                    if (currentLanguage == AppLanguage.DE) "Möchtest du das Dokument '${doc.title}' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+                    else "Do you really want to delete '${doc.title}'? This action cannot be undone."
+                ) 
+            },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
                     },
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
                 ) {
-                    Text("Löschen")
+                    Text(if (currentLanguage == AppLanguage.DE) "Löschen" else "Delete")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { documentToDelete = null },
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Abbrechen")
+                    Text(if (currentLanguage == AppLanguage.DE) "Abbrechen" else "Cancel")
                 }
             }
         )
@@ -513,14 +547,14 @@ fun DocumentVaultCard(
             .fillMaxWidth()
             .clickable { onOpenDetails() }
             .testTag("doc_card_${document.id}"),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(
             if (isExpired) 1.5.dp else 1.dp,
-            if (isExpired) Color(0xFFE53E3E) else if (isExpiringSoon) SandGold else baseColor.copy(alpha = 0.25f)
+            if (isExpired) Color(0xFFE53E3E) else if (isExpiringSoon) SandGold else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         )
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -546,11 +580,11 @@ fun DocumentVaultCard(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = when (document.category) {
-                                "CERTIFICATION" -> Icons.Default.School
-                                "MEDICAL_FORM" -> Icons.Default.LocalHospital
-                                "INSURANCE" -> Icons.Default.Shield
-                                "LIABILITY_WAIVER" -> Icons.Default.Description
-                                else -> Icons.Default.Badge
+                                "CERTIFICATION" -> Icons.Rounded.School
+                                "MEDICAL_FORM" -> Icons.Rounded.LocalHospital
+                                "INSURANCE" -> Icons.Rounded.Shield
+                                "LIABILITY_WAIVER" -> Icons.Rounded.Description
+                                else -> Icons.Rounded.Badge
                             },
                             contentDescription = null,
                             tint = Color.White,
@@ -577,7 +611,7 @@ fun DocumentVaultCard(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = if (isApproved) Icons.Default.Verified else Icons.Default.HourglassTop,
+                                    imageVector = if (isApproved) Icons.Rounded.Verified else Icons.Rounded.HourglassTop,
                                     contentDescription = null,
                                     tint = if (isApproved) Color(0xFF68D391) else SandGold,
                                     modifier = Modifier.size(12.dp)
@@ -637,7 +671,7 @@ fun DocumentVaultCard(
                 if (isExpired || isExpiringSoon) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         color = if (isExpired) Color(0xFFE53E3E).copy(alpha = 0.1f) else SandGold.copy(alpha = 0.12f),
                         border = BorderStroke(1.dp, if (isExpired) Color(0xFFE53E3E).copy(alpha = 0.3f) else SandGold.copy(alpha = 0.3f)),
                         modifier = Modifier.fillMaxWidth()
@@ -666,7 +700,7 @@ fun DocumentVaultCard(
 
                 // Approval Status Chip & Details
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = if (isApproved) SeaGreen.copy(alpha = 0.1f) else SandGold.copy(alpha = 0.1f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -680,7 +714,7 @@ fun DocumentVaultCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = if (isApproved) Icons.Default.CheckCircle else Icons.Default.HourglassTop,
+                                imageVector = if (isApproved) Icons.Rounded.CheckCircle else Icons.Rounded.HourglassTop,
                                 contentDescription = null,
                                 tint = if (isApproved) SeaGreen else SandGold,
                                 modifier = Modifier.size(14.dp)
@@ -734,10 +768,10 @@ fun DocumentVaultCard(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("doc_details_btn_${document.id}"),
-                        shape = RoundedCornerShape(10.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
                     ) {
-                        Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(if (isGerman) "Details" else "Details", fontSize = 12.sp)
                     }
@@ -748,11 +782,14 @@ fun DocumentVaultCard(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("doc_approve_btn_${document.id}"),
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(if (isGerman) "Freigeben" else "Approve", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
@@ -772,9 +809,9 @@ private fun StatCounterCard(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        color = color.copy(alpha = 0.12f),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.3f))
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
@@ -805,21 +842,30 @@ private fun FilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val containerColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerLow,
+        label = "chip_container"
+    )
+    val contentColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+        label = "chip_content"
+    )
+
     Surface(
         modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .testTag("filter_${title.filter { it.isLetterOrDigit() }.lowercase()}"),
-        shape = RoundedCornerShape(20.dp),
-        color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+        shape = RoundedCornerShape(12.dp),
+        color = containerColor,
+        border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Text(
             text = title,
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+            color = contentColor
         )
     }
 }

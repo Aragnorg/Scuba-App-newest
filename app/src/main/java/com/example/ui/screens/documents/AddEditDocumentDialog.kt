@@ -24,20 +24,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.Business
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.DocumentScanner
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.PhotoLibrary
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -59,7 +60,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Checkbox
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
@@ -214,10 +214,12 @@ fun AddEditDocumentDialog(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 16.dp)
+                .clip(RoundedCornerShape(24.dp))
                 .testTag("add_edit_doc_dialog"),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -235,13 +237,13 @@ fun AddEditDocumentDialog(
                         Surface(
                             modifier = Modifier.size(44.dp),
                             shape = CircleShape,
-                            color = OceanPrimary.copy(alpha = 0.15f)
+                            color = MaterialTheme.colorScheme.primaryContainer
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Default.Description,
+                                    imageVector = Icons.Rounded.Description,
                                     contentDescription = null,
-                                    tint = OceanPrimary,
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -259,7 +261,7 @@ fun AddEditDocumentDialog(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_add_doc_btn")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close)
                     }
                 }
 
@@ -426,7 +428,7 @@ fun AddEditDocumentDialog(
                             label = { Text(strings.issueDateLabel) },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.CalendarMonth,
+                                    imageVector = Icons.Rounded.CalendarMonth,
                                     contentDescription = "Datum auswählen",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
@@ -457,7 +459,7 @@ fun AddEditDocumentDialog(
                             label = { Text(strings.expiryDateLabel) },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.CalendarMonth,
+                                    imageVector = Icons.Rounded.CalendarMonth,
                                     contentDescription = "Ablaufdatum auswählen",
                                     tint = if (isLifetime) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
@@ -524,15 +526,15 @@ fun AddEditDocumentDialog(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Surface(
                                 shape = CircleShape,
-                                color = if (category == "MEDICAL_FORM") SeaGreen else OceanPrimary,
-                                modifier = Modifier.size(30.dp)
+                                color = if (category == "MEDICAL_FORM") SeaGreen else MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(32.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.DocumentScanner,
+                                        imageVector = Icons.Rounded.DocumentScanner,
                                         contentDescription = null,
                                         tint = Color.White,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(18.dp)
                                     )
                                 }
                             }
@@ -542,7 +544,7 @@ fun AddEditDocumentDialog(
                                     text = strings.uploadPaperScanTitle,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (category == "MEDICAL_FORM") SeaGreen else OceanPrimary
+                                    color = if (category == "MEDICAL_FORM") SeaGreen else MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = strings.uploadPaperScanDesc,
@@ -562,7 +564,7 @@ fun AddEditDocumentDialog(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -576,11 +578,12 @@ fun AddEditDocumentDialog(
                                 shape = RoundedCornerShape(12.dp),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
-                                )
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp), tint = OceanPrimary)
+                                    Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
                                     Spacer(modifier = Modifier.height(3.dp))
                                     Text(
                                         text = if (currentLanguage == AppLanguage.DE) "Kamera" else "Camera",
@@ -604,11 +607,12 @@ fun AddEditDocumentDialog(
                                 shape = RoundedCornerShape(12.dp),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
-                                )
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp), tint = OceanSecondary)
+                                    Icon(Icons.Rounded.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.secondary)
                                     Spacer(modifier = Modifier.height(3.dp))
                                     Text(
                                         text = if (currentLanguage == AppLanguage.DE) "Galerie" else "Gallery",
@@ -632,11 +636,12 @@ fun AddEditDocumentDialog(
                                 shape = RoundedCornerShape(12.dp),
                                 contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
-                                )
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(18.dp), tint = SeaGreen)
+                                    Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(18.dp), tint = SeaGreen)
                                     Spacer(modifier = Modifier.height(3.dp))
                                     Text(
                                         text = if (currentLanguage == AppLanguage.DE) "PDF / Datei" else "PDF / File",
@@ -658,7 +663,7 @@ fun AddEditDocumentDialog(
                                 .fillMaxWidth()
                                 .testTag("doc_use_sample_scan_btn")
                         ) {
-                            Icon(Icons.Default.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp), tint = SeaGreen)
+                            Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp), tint = SeaGreen)
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(strings.useSampleMedicalScan, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = SeaGreen)
                         }
@@ -668,8 +673,8 @@ fun AddEditDocumentDialog(
                             Spacer(modifier = Modifier.height(10.dp))
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.surface,
-                                border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
+                                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(modifier = Modifier.padding(10.dp)) {
@@ -679,7 +684,7 @@ fun AddEditDocumentDialog(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
+                                            Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = strings.paperScanAttached,
@@ -693,7 +698,7 @@ fun AddEditDocumentDialog(
                                             onClick = { documentUri = null },
                                             modifier = Modifier.size(24.dp).testTag("remove_scan_btn")
                                         ) {
-                                            Icon(Icons.Default.Delete, contentDescription = strings.removeScan, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                                            Icon(Icons.Rounded.Delete, contentDescription = strings.removeScan, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
                                         }
                                     }
 
@@ -813,10 +818,13 @@ fun AddEditDocumentDialog(
                             .weight(1.5f)
                             .testTag("save_doc_btn"),
                         shape = RoundedCornerShape(14.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
-                        Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Rounded.Save, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(strings.save, fontWeight = FontWeight.Bold)
                     }
@@ -835,22 +843,22 @@ private fun RoleSelectButton(
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .testTag("role_select_${title.lowercase()}"),
-        shape = RoundedCornerShape(10.dp),
-        color = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.5.dp, OceanPrimary) else null
+        shape = RoundedCornerShape(12.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+        border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Box(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 10.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

@@ -33,17 +33,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Draw
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.Business
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Draw
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -226,8 +226,9 @@ fun DocumentApprovalDialog(
                 .padding(vertical = 20.dp)
                 .testTag("document_approval_dialog"),
             shape = RoundedCornerShape(24.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp
         ) {
             Column(
                 modifier = Modifier
@@ -245,13 +246,13 @@ fun DocumentApprovalDialog(
                         Surface(
                             modifier = Modifier.size(44.dp),
                             shape = CircleShape,
-                            color = SeaGreen.copy(alpha = 0.15f)
+                            color = MaterialTheme.colorScheme.primaryContainer
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    Icons.Default.Verified,
+                                    Icons.Rounded.Verified,
                                     contentDescription = null,
-                                    tint = SeaGreen,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -278,7 +279,7 @@ fun DocumentApprovalDialog(
                         modifier = Modifier.testTag("close_doc_approval_btn")
                     ) {
                         Icon(
-                            Icons.Default.Close,
+                            Icons.Rounded.Close,
                             contentDescription = strings.close,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -292,8 +293,10 @@ fun DocumentApprovalDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    )
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
                         Row(
@@ -328,7 +331,7 @@ fun DocumentApprovalDialog(
                         text = "Physical Paper Statement / Scan:",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        color = SeaGreen
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     RealisticMedicalStatementPaper(
@@ -344,53 +347,54 @@ fun DocumentApprovalDialog(
                 // High-visibility QR Verification Toggle Button
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isScanningQr) OceanPrimary.copy(alpha = 0.08f) else SeaGreen.copy(alpha = 0.08f)
+                        containerColor = if (isScanningQr) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainerLow
                     ),
-                    border = BorderStroke(1.2.dp, if (isScanningQr) OceanPrimary else SeaGreen.copy(alpha = 0.5f))
+                    border = BorderStroke(1.dp, if (isScanningQr) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
+                            .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = if (isScanningQr) "QR-Code Scanner aktiv" else "Sofortige QR-Code Prüfung",
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isScanningQr) OceanPrimary else SeaGreen
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (isScanningQr) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isScanningQr) "Kamera sucht nach verifizierten Siegeln / Stempeln" else "Offiziellen Stempel-QR-Code scannen zum sofortigen Signieren",
                                 style = MaterialTheme.typography.bodySmall,
-                                fontSize = 10.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                        Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = { isScanningQr = !isScanningQr },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isScanningQr) MaterialTheme.colorScheme.surfaceVariant else OceanPrimary,
-                                contentColor = if (isScanningQr) MaterialTheme.colorScheme.onSurfaceVariant else Color.White
+                                containerColor = if (isScanningQr) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
+                                contentColor = if (isScanningQr) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
                             ),
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             modifier = Modifier.testTag("doc_toggle_qr_scan_btn")
                         ) {
                             Icon(
-                                imageVector = Icons.Default.QrCodeScanner,
+                                imageVector = Icons.Rounded.QrCodeScanner,
                                 contentDescription = "QR scannen",
                                 modifier = Modifier.size(16.dp)
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = if (isScanningQr) "Abbrechen" else "Kamera öffnen",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     }
@@ -406,9 +410,9 @@ fun DocumentApprovalDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(180.dp)
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(20.dp))
                             .background(Color(0xFF0F1E29))
-                            .border(2.dp, SeaGreen.copy(alpha = 0.6f), RoundedCornerShape(16.dp)),
+                            .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f), RoundedCornerShape(20.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         // Scanner Target Reticle
@@ -446,7 +450,7 @@ fun DocumentApprovalDialog(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.QrCodeScanner,
+                                imageVector = Icons.Rounded.QrCodeScanner,
                                 contentDescription = null,
                                 tint = SeaGreen,
                                 modifier = Modifier.size(38.dp)
@@ -470,12 +474,12 @@ fun DocumentApprovalDialog(
                                 Button(
                                     onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                                     colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                    shape = RoundedCornerShape(8.dp),
+                                    shape = RoundedCornerShape(10.dp),
                                     modifier = Modifier
                                         .height(32.dp)
                                         .testTag("doc_enable_camera_btn")
                                 ) {
-                                    Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
+                                    Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text("Kamerazugriff erlauben", fontSize = 11.sp, color = Color(0xFF00382E), fontWeight = FontWeight.Bold)
                                 }
@@ -501,7 +505,8 @@ fun DocumentApprovalDialog(
                     Text(
                         text = "Scanned Stamp Detection:",
                         style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -514,10 +519,14 @@ fun DocumentApprovalDialog(
                                 .padding(vertical = 4.dp)
                                 .testTag("doc_stamp_option_${stamp.approverName.replace(" ", "_")}"),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainerLow
                             ),
-                            border = if (isSelected) BorderStroke(1.5.dp, SeaGreen) else null,
-                            shape = RoundedCornerShape(12.dp)
+                            border = BorderStroke(
+                                1.dp,
+                                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -529,13 +538,13 @@ fun DocumentApprovalDialog(
                                     modifier = Modifier
                                         .size(36.dp)
                                         .clip(CircleShape)
-                                        .background(if (isSelected) SeaGreen else Color.LightGray.copy(alpha = 0.5f)),
+                                        .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = if (isSelected) Icons.Default.Verified else Icons.Default.Badge,
+                                        imageVector = if (isSelected) Icons.Rounded.Verified else Icons.Rounded.Badge,
                                         contentDescription = null,
-                                        tint = if (isSelected) Color(0xFF00382E) else Color.DarkGray,
+                                        tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -544,7 +553,8 @@ fun DocumentApprovalDialog(
                                     Text(
                                         text = stamp.approverName,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = "${stamp.approverLicense} • ${stamp.approverOrg}",
@@ -554,15 +564,15 @@ fun DocumentApprovalDialog(
                                 }
                                 if (isSelected) {
                                     Surface(
-                                        shape = RoundedCornerShape(6.dp),
-                                        color = SeaGreen.copy(alpha = 0.2f)
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                                     ) {
                                         Text(
                                             text = "DETECTED ✓",
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF00695C)
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
                                 }
@@ -575,25 +585,26 @@ fun DocumentApprovalDialog(
                     // QR Verified Summary Box
                     scannedStamp?.let { stamp ->
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFFE8F5E9),
-                            border = BorderStroke(1.dp, Color(0xFF81C784)),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
+                            tonalElevation = 0.dp,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
+                            Column(modifier = Modifier.padding(14.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        Icons.Default.Verified,
+                                        Icons.Rounded.Verified,
                                         contentDescription = null,
-                                        tint = Color(0xFF2E7D32),
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = "Official Stamp QR Authenticated",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF1B5E20)
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -601,13 +612,14 @@ fun DocumentApprovalDialog(
                                     text = "Stamp code: ${stamp.stampCode}",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
-                                    color = Color(0xFF388E3C)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = "Assessment: ${stamp.assessmentNotes}",
                                     style = MaterialTheme.typography.bodySmall,
                                     fontSize = 11.sp,
-                                    color = Color(0xFF2E7D32),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     lineHeight = 15.sp
                                 )
                             }
@@ -626,7 +638,8 @@ fun DocumentApprovalDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("cancel_doc_approval_btn"),
-                            shape = RoundedCornerShape(14.dp)
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                         ) {
                             Text(strings.cancel)
                         }
@@ -654,10 +667,13 @@ fun DocumentApprovalDialog(
                                 .weight(1.5f)
                                 .testTag("confirm_doc_approval_btn"),
                             shape = RoundedCornerShape(14.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Per QR-Code verifizieren", fontWeight = FontWeight.Bold)
                         }
@@ -681,7 +697,7 @@ fun DocumentApprovalDialog(
                 ) {
                     ApproverRoleChip(
                         title = "Arzt",
-                        icon = Icons.Default.LocalHospital,
+                        icon = Icons.Rounded.LocalHospital,
                         isSelected = approverRole == "DOCTOR",
                         color = Color(0xFF00875A),
                         onClick = {
@@ -696,7 +712,7 @@ fun DocumentApprovalDialog(
 
                     ApproverRoleChip(
                         title = "Tauchlehrer",
-                        icon = Icons.Default.School,
+                        icon = Icons.Rounded.School,
                         isSelected = approverRole == "INSTRUCTOR",
                         color = OceanPrimary,
                         onClick = {
@@ -711,7 +727,7 @@ fun DocumentApprovalDialog(
 
                     ApproverRoleChip(
                         title = "Tauchbasis",
-                        icon = Icons.Default.Business,
+                        icon = Icons.Rounded.Business,
                         isSelected = approverRole == "DIVE_CENTER",
                         color = Color(0xFFD97706),
                         onClick = {
@@ -736,7 +752,7 @@ fun DocumentApprovalDialog(
                         .fillMaxWidth()
                         .testTag("doc_approver_name_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -750,7 +766,7 @@ fun DocumentApprovalDialog(
                         .fillMaxWidth()
                         .testTag("doc_approver_license_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -764,7 +780,7 @@ fun DocumentApprovalDialog(
                         .fillMaxWidth()
                         .testTag("doc_approver_org_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -779,7 +795,7 @@ fun DocumentApprovalDialog(
                         .testTag("doc_approver_notes_input"),
                     minLines = 2,
                     maxLines = 4,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -792,7 +808,7 @@ fun DocumentApprovalDialog(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                Icons.Default.Draw,
+                                Icons.Rounded.Draw,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
@@ -811,7 +827,7 @@ fun DocumentApprovalDialog(
                                 onClick = { signaturePoints.clear() },
                                 modifier = Modifier.testTag("clear_signature_btn")
                             ) {
-                                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text("Clear", fontSize = 12.sp)
                             }
@@ -824,8 +840,10 @@ fun DocumentApprovalDialog(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
-                        )
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         InteractiveSignaturePad(
                             points = signaturePoints,
@@ -854,7 +872,8 @@ fun DocumentApprovalDialog(
                                 .weight(1f)
                                 .testTag("cancel_doc_approval_btn"),
                             shape = RoundedCornerShape(14.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
                         ) {
                             Text(strings.cancel)
                         }
@@ -879,12 +898,13 @@ fun DocumentApprovalDialog(
                                 .weight(1.5f)
                                 .testTag("confirm_doc_approval_btn"),
                             shape = RoundedCornerShape(14.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = SeaGreen
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(strings.confirmApprovalButton, fontWeight = FontWeight.Bold)
                         }
@@ -913,12 +933,12 @@ private fun ApproverRoleChip(
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable { onClick() }
             .testTag("approver_role_${title.lowercase()}"),
-        shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) color.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-        border = if (isSelected) androidx.compose.foundation.BorderStroke(1.5.dp, color) else null
+        shape = RoundedCornerShape(14.dp),
+        color = if (isSelected) color.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(1.dp, if (isSelected) color else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier.padding(vertical = 10.dp, horizontal = 6.dp),
