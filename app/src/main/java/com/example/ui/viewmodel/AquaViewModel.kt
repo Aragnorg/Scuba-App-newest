@@ -54,6 +54,24 @@ sealed interface AuthState {
 
 class AquaViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val prefs = application.getSharedPreferences("aqua_settings", Context.MODE_PRIVATE)
+
+    // --- Authentication State & Management ---
+    private val _currentUser = MutableStateFlow<UserAccountEntity?>(null)
+    val currentUser: StateFlow<UserAccountEntity?> = _currentUser.asStateFlow()
+
+    private val _authState = MutableStateFlow<AuthState>(AuthState.LoggedOut)
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+
+    private val _authError = MutableStateFlow<String?>(null)
+    val authError: StateFlow<String?> = _authError.asStateFlow()
+
+    private val _authSuccess = MutableStateFlow<String?>(null)
+    val authSuccess: StateFlow<String?> = _authSuccess.asStateFlow()
+
+    private val _latestVerificationEmail = MutableStateFlow<VerificationEmailMessage?>(null)
+    val latestVerificationEmail: StateFlow<VerificationEmailMessage?> = _latestVerificationEmail.asStateFlow()
+
     private val repository: DivingRepository
 
     init {
@@ -79,24 +97,7 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // --- Authentication State & Management ---
-    private val _currentUser = MutableStateFlow<UserAccountEntity?>(null)
-    val currentUser: StateFlow<UserAccountEntity?> = _currentUser.asStateFlow()
-
-    private val _authState = MutableStateFlow<AuthState>(AuthState.LoggedOut)
-    val authState: StateFlow<AuthState> = _authState.asStateFlow()
-
-    private val _authError = MutableStateFlow<String?>(null)
-    val authError: StateFlow<String?> = _authError.asStateFlow()
-
-    private val _authSuccess = MutableStateFlow<String?>(null)
-    val authSuccess: StateFlow<String?> = _authSuccess.asStateFlow()
-
-    private val _latestVerificationEmail = MutableStateFlow<VerificationEmailMessage?>(null)
-    val latestVerificationEmail: StateFlow<VerificationEmailMessage?> = _latestVerificationEmail.asStateFlow()
-
     // --- Language Preference & Management ---
-    private val prefs = application.getSharedPreferences("aqua_settings", Context.MODE_PRIVATE)
     private val _currentLanguage = MutableStateFlow(
         AppLanguage.fromCode(prefs.getString("app_language", "en"))
     )

@@ -74,7 +74,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiverDocumentEntity
 import com.example.ui.components.RealisticMedicalStatementPaper
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
@@ -105,6 +107,7 @@ fun AddEditDocumentDialog(
     onDismiss: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
     val todayDate = remember {
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     }
@@ -580,7 +583,7 @@ fun AddEditDocumentDialog(
                                     Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp), tint = OceanPrimary)
                                     Spacer(modifier = Modifier.height(3.dp))
                                     Text(
-                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "Kamera" else "Camera",
+                                        text = if (currentLanguage == AppLanguage.DE) "Kamera" else "Camera",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1
@@ -608,7 +611,7 @@ fun AddEditDocumentDialog(
                                     Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp), tint = OceanSecondary)
                                     Spacer(modifier = Modifier.height(3.dp))
                                     Text(
-                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "Galerie" else "Gallery",
+                                        text = if (currentLanguage == AppLanguage.DE) "Galerie" else "Gallery",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1
@@ -636,7 +639,7 @@ fun AddEditDocumentDialog(
                                     Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(18.dp), tint = SeaGreen)
                                     Spacer(modifier = Modifier.height(3.dp))
                                     Text(
-                                        text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE) "PDF / Datei" else "PDF / File",
+                                        text = if (currentLanguage == AppLanguage.DE) "PDF / Datei" else "PDF / File",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         maxLines = 1
