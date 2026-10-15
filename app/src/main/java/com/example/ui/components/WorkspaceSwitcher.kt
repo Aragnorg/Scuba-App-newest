@@ -19,15 +19,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.CorporateFare
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Business
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CorporateFare
+import androidx.compose.material.icons.rounded.Group
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -90,14 +90,14 @@ fun WorkspaceSwitcherPill(
         color = if (currentOrg != null) {
             if (currentOrg!!.isClub) SeaGreen.copy(alpha = 0.18f) else OceanPrimary.copy(alpha = 0.18f)
         } else {
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f)
+            MaterialTheme.colorScheme.surfaceContainer
         },
         border = BorderStroke(
             1.dp,
             if (currentOrg != null) {
-                if (currentOrg!!.isClub) SeaGreen else OceanPrimary
+                if (currentOrg!!.isClub) SeaGreen.copy(alpha = 0.6f) else OceanPrimary.copy(alpha = 0.6f)
             } else {
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
             }
         ),
         modifier = modifier
@@ -148,7 +148,7 @@ fun WorkspaceSwitcherPill(
             }
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
+                imageVector = Icons.Rounded.KeyboardArrowDown,
                 contentDescription = strings.switchOrganization,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
@@ -179,10 +179,12 @@ fun WorkspaceSelectionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.CorporateFare,
+                    imageVector = Icons.Rounded.CorporateFare,
                     contentDescription = null,
                     tint = OceanPrimary,
                     modifier = Modifier.size(24.dp)
@@ -210,17 +212,18 @@ fun WorkspaceSelectionDialog(
 
                 // 1. Personal Diver Mode
                 Card(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = if (currentOrg == null) {
                             OceanPrimary.copy(alpha = 0.12f)
                         } else {
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            MaterialTheme.colorScheme.surfaceContainer
                         }
                     ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     border = BorderStroke(
-                        width = if (currentOrg == null) 2.dp else 1.dp,
-                        color = if (currentOrg == null) OceanPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                        width = if (currentOrg == null) 1.5.dp else 1.dp,
+                        color = if (currentOrg == null) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -261,7 +264,7 @@ fun WorkspaceSelectionDialog(
                         }
                         if (currentOrg == null) {
                             Icon(
-                                imageVector = Icons.Default.CheckCircle,
+                                imageVector = Icons.Rounded.CheckCircle,
                                 contentDescription = "Active",
                                 tint = OceanPrimary,
                                 modifier = Modifier.size(20.dp)
@@ -270,7 +273,7 @@ fun WorkspaceSelectionDialog(
                     }
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
                 Text(
                     text = "Tauchorganisationen & Basen (${allOrgs.size})",
@@ -286,17 +289,18 @@ fun WorkspaceSelectionDialog(
                     val accentColor = if (isClub) SeaGreen else OceanPrimary
 
                     Card(
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = if (isSelected) {
                                 accentColor.copy(alpha = 0.12f)
                             } else {
-                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                                MaterialTheme.colorScheme.surfaceContainer
                             }
                         ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         border = BorderStroke(
-                            width = if (isSelected) 2.dp else 1.dp,
-                            color = if (isSelected) accentColor else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                            width = if (isSelected) 1.5.dp else 1.dp,
+                            color = if (isSelected) accentColor else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -337,12 +341,12 @@ fun WorkspaceSelectionDialog(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Surface(
-                                        shape = RoundedCornerShape(4.dp),
+                                        shape = RoundedCornerShape(6.dp),
                                         color = accentColor.copy(alpha = 0.2f)
                                     ) {
                                         Text(
                                             text = if (isGerman) (if (isClub) "VEREIN" else "BASIS") else (if (isClub) "CLUB" else "BASE"),
-                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.ExtraBold,
@@ -371,7 +375,7 @@ fun WorkspaceSelectionDialog(
                             }
                             if (isSelected) {
                                 Icon(
-                                    imageVector = Icons.Default.CheckCircle,
+                                    imageVector = Icons.Rounded.CheckCircle,
                                     contentDescription = "Active",
                                     tint = accentColor,
                                     modifier = Modifier.size(20.dp)
@@ -390,13 +394,13 @@ fun WorkspaceSelectionDialog(
                 ) {
                     OutlinedButton(
                         onClick = { showCreateDialog = true },
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = OceanPrimary
                         )
                     ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(imageVector = Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(strings.createNewOrg)
                     }
@@ -404,7 +408,10 @@ fun WorkspaceSelectionDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.close)
             }
         }
@@ -439,6 +446,8 @@ fun CreateOrganizationDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
                 text = strings.createNewOrg,
@@ -476,7 +485,7 @@ fun CreateOrganizationDialog(
                             chamberLocation = "Druckkammerzentrum Überlingen (Tel: 07551 8370)"
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
                     ) {
                         Text("⚡ Test-Verein", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SeaGreen)
@@ -494,7 +503,7 @@ fun CreateOrganizationDialog(
                             chamberLocation = "Hyperbaric Medical Center Sharm (Tel: +20 69 366 0922)"
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
                     ) {
                         Text("⚡ Test-Basis", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = OceanPrimary)
@@ -513,9 +522,9 @@ fun CreateOrganizationDialog(
                 ) {
                     // Club
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (orgType == "CLUB") SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        border = BorderStroke(1.dp, if (orgType == "CLUB") SeaGreen else Color.Transparent),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (orgType == "CLUB") SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (orgType == "CLUB") SeaGreen else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier
                             .weight(1f)
                             .clickable { orgType = "CLUB" }
@@ -531,9 +540,9 @@ fun CreateOrganizationDialog(
 
                     // Dive Center
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (orgType == "DIVE_CENTER") OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        border = BorderStroke(1.dp, if (orgType == "DIVE_CENTER") OceanPrimary else Color.Transparent),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (orgType == "DIVE_CENTER") OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (orgType == "DIVE_CENTER") OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier
                             .weight(1f)
                             .clickable { orgType = "DIVE_CENTER" }
@@ -549,9 +558,9 @@ fun CreateOrganizationDialog(
 
                     // Dive School
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (orgType == "DIVE_SCHOOL") AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        border = BorderStroke(1.dp, if (orgType == "DIVE_SCHOOL") AquaCyan else Color.Transparent),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (orgType == "DIVE_SCHOOL") AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (orgType == "DIVE_SCHOOL") AquaCyan else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier
                             .weight(1f)
                             .clickable { orgType = "DIVE_SCHOOL" }
@@ -572,6 +581,7 @@ fun CreateOrganizationDialog(
                     label = { Text(strings.orgNameLabel + " *") },
                     placeholder = { Text(if (orgType == "CLUB") "z.B. Tauchclub Seelöwe e.V." else "z.B. Deep Blue Dive Center") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -581,6 +591,7 @@ fun CreateOrganizationDialog(
                     label = { Text(strings.affiliationsLabel) },
                     placeholder = { Text("z.B. VDST, CMAS, PADI, SSI") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -590,6 +601,7 @@ fun CreateOrganizationDialog(
                     label = { Text(strings.locationCityLabel) },
                     placeholder = { Text("z.B. Konstanz am Bodensee, DE") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -599,6 +611,7 @@ fun CreateOrganizationDialog(
                     label = { Text(strings.waterBodyLabel) },
                     placeholder = { Text("z.B. Bodensee / Überlinger See") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -608,6 +621,7 @@ fun CreateOrganizationDialog(
                     label = { Text("Kontakt E-Mail") },
                     placeholder = { Text("info@org-diving.com") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -617,6 +631,7 @@ fun CreateOrganizationDialog(
                     label = { Text(strings.nearestChamber) },
                     placeholder = { Text("z.B. Druckkammer Überlingen Tel 07551 8370") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -655,13 +670,17 @@ fun CreateOrganizationDialog(
                     )
                     onDismiss()
                 },
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
             ) {
                 Text(strings.save)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.cancel)
             }
         }
@@ -700,6 +719,8 @@ fun EditOrganizationDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
                 text = "Organisation bearbeiten",
@@ -733,7 +754,7 @@ fun EditOrganizationDialog(
                             emergencyPhone = "+49 112 (DLRG / Wasserwacht)"
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
                     ) {
                         Text("⚡ Test-Verein", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SeaGreen)
@@ -753,7 +774,7 @@ fun EditOrganizationDialog(
                             emergencyPhone = "+20 122 218 4800 (Red Sea SAR)"
                         },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
                     ) {
                         Text("⚡ Test-Basis", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = OceanPrimary)
@@ -763,9 +784,9 @@ fun EditOrganizationDialog(
                 // Org Type Selector
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (orgType == "CLUB") SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        border = BorderStroke(1.dp, if (orgType == "CLUB") SeaGreen else Color.Transparent),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (orgType == "CLUB") SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (orgType == "CLUB") SeaGreen else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier.weight(1f).clickable { orgType = "CLUB" }
                     ) {
                         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -774,9 +795,9 @@ fun EditOrganizationDialog(
                         }
                     }
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (orgType == "DIVE_CENTER") OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        border = BorderStroke(1.dp, if (orgType == "DIVE_CENTER") OceanPrimary else Color.Transparent),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (orgType == "DIVE_CENTER") OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (orgType == "DIVE_CENTER") OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier.weight(1f).clickable { orgType = "DIVE_CENTER" }
                     ) {
                         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -785,9 +806,9 @@ fun EditOrganizationDialog(
                         }
                     }
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (orgType == "DIVE_SCHOOL") AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                        border = BorderStroke(1.dp, if (orgType == "DIVE_SCHOOL") AquaCyan else Color.Transparent),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (orgType == "DIVE_SCHOOL") AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, if (orgType == "DIVE_SCHOOL") AquaCyan else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier.weight(1f).clickable { orgType = "DIVE_SCHOOL" }
                     ) {
                         Column(modifier = Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -802,6 +823,7 @@ fun EditOrganizationDialog(
                     onValueChange = { name = it },
                     label = { Text("Organisationsname *") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -811,6 +833,7 @@ fun EditOrganizationDialog(
                     label = { Text("Verbände / Zugehörigkeiten") },
                     placeholder = { Text("z.B. VDST, CMAS, PADI, SSI") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -819,6 +842,7 @@ fun EditOrganizationDialog(
                     onValueChange = { location = it },
                     label = { Text("Standort / Ort") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -827,6 +851,7 @@ fun EditOrganizationDialog(
                     onValueChange = { waterBody = it },
                     label = { Text("Hausgewässer / Region") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -835,6 +860,7 @@ fun EditOrganizationDialog(
                     onValueChange = { contactEmail = it },
                     label = { Text("Kontakt E-Mail") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -843,6 +869,7 @@ fun EditOrganizationDialog(
                     onValueChange = { contactPhone = it },
                     label = { Text("Telefonnummer") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -851,6 +878,7 @@ fun EditOrganizationDialog(
                     onValueChange = { chamberLocation = it },
                     label = { Text("Nächste Druckkammer") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -859,6 +887,7 @@ fun EditOrganizationDialog(
                     onValueChange = { emergencyPhone = it },
                     label = { Text("Notruf / Hotline") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
             }
@@ -887,13 +916,17 @@ fun EditOrganizationDialog(
                     onSave(updated)
                     onDismiss()
                 },
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
             ) {
                 Text("Speichern")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Abbrechen")
             }
         }

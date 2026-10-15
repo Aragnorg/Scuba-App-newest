@@ -96,7 +96,6 @@ import com.example.ui.components.LanguageSwitchButton
 import com.example.ui.components.UserAvatarView
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.CorporateFare
 import androidx.compose.runtime.mutableIntStateOf
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings

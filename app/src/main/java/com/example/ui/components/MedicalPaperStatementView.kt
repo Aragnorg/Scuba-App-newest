@@ -25,15 +25,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.DocumentScanner
+import androidx.compose.material.icons.rounded.Fullscreen
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -141,7 +141,7 @@ fun RealisticMedicalStatementPaper(
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Rounded.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Enlarge", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
@@ -212,7 +212,7 @@ fun RealisticMedicalStatementPaper(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                                Icon(Icons.Rounded.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text("Enlarge", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                             }
@@ -241,7 +241,7 @@ fun RealisticMedicalStatementPaper(
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.LocalHospital, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
+                                    Icon(Icons.Rounded.LocalHospital, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
                                 }
                             }
                             Spacer(modifier = Modifier.width(6.dp))
@@ -350,7 +350,7 @@ fun RealisticMedicalStatementPaper(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "DIAGNOSIS: FIT FOR UNRESTRICTED RECREATIONAL SCUBA DIVING",
@@ -441,7 +441,7 @@ private fun MedicalFindingRow(title: String, finding: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
+            Icon(Icons.Rounded.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
             Spacer(modifier = Modifier.width(4.dp))
             Text(text = title, fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF334155))
         }
@@ -467,11 +467,12 @@ fun PaperVsDigitalCorrelationCard(
         modifier = modifier
             .fillMaxWidth()
             .testTag("dive_center_correlation_card"),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = DepthNavy.copy(alpha = 0.04f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        border = BorderStroke(1.5.dp, SeaGreen.copy(alpha = 0.5f))
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header
@@ -487,7 +488,7 @@ fun PaperVsDigitalCorrelationCard(
                         color = SeaGreen.copy(alpha = 0.15f)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.DocumentScanner, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Rounded.DocumentScanner, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(20.dp))
                         }
                     }
                     Spacer(modifier = Modifier.width(10.dp))
@@ -516,7 +517,7 @@ fun PaperVsDigitalCorrelationCard(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(12.dp))
+                        Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(12.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(if (isGerman) "100% ÜBEREINSTIMMUNG" else "100% MATCH", fontSize = 9.sp, fontWeight = FontWeight.Black)
                     }
@@ -537,9 +538,9 @@ fun PaperVsDigitalCorrelationCard(
 
             // Correlation Checklist Items
             Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.surface,
-                border = BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                shape = RoundedCornerShape(14.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -570,12 +571,12 @@ fun PaperVsDigitalCorrelationCard(
             ) {
                 Button(
                     onClick = { showFullDialog = true },
-                    shape = RoundedCornerShape(20.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 9.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                     modifier = Modifier.testTag("inspect_paper_scan_btn")
                 ) {
-                    Icon(Icons.Default.Fullscreen, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Rounded.Fullscreen, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(strings.viewEnlargedPaperScan, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
@@ -603,7 +604,7 @@ private fun CorrelationCheckItem(title: String, detail: String) {
             modifier = Modifier.size(18.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
+                Icon(Icons.Rounded.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
             }
         }
         Spacer(modifier = Modifier.width(8.dp))
@@ -653,7 +654,7 @@ fun PaperStatementInspectDialog(
                             modifier = Modifier.size(32.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.HealthAndSafety, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
                             }
                         }
                         Spacer(modifier = Modifier.width(10.dp))
@@ -676,7 +677,7 @@ fun PaperStatementInspectDialog(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_paper_inspect_btn")
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = strings.close, tint = Color.White)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close, tint = Color.White)
                     }
                 }
 
@@ -687,7 +688,7 @@ fun PaperStatementInspectDialog(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .background(Color(0xFF1E293B))
                         .padding(12.dp)
                         .verticalScroll(rememberScrollState())
@@ -708,7 +709,7 @@ fun PaperStatementInspectDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = strings.crossCheckPassed,
@@ -720,7 +721,7 @@ fun PaperStatementInspectDialog(
 
                     Button(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
                     ) {
                         Text(strings.close, fontWeight = FontWeight.Bold)

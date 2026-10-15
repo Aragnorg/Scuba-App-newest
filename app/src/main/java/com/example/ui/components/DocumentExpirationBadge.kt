@@ -23,13 +23,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material.icons.rounded.HourglassTop
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -75,25 +75,25 @@ fun DocumentExpirationBadge(
             Color(0xFFE53E3E).copy(alpha = 0.15f),
             Color(0xFFE53E3E),
             Color(0xFFE53E3E),
-            Icons.Default.Error
+            Icons.Rounded.Error
         )
         ExpirationAlertLevel.EXPIRING_SOON -> Tuple4(
             SandGold.copy(alpha = 0.18f),
             SandGold,
             Color(0xFFB7791F),
-            Icons.Default.Warning
+            Icons.Rounded.Warning
         )
         ExpirationAlertLevel.VALID -> Tuple4(
             SeaGreen.copy(alpha = 0.12f),
             SeaGreen.copy(alpha = 0.5f),
             SeaGreen,
-            Icons.Default.CheckCircle
+            Icons.Rounded.CheckCircle
         )
         ExpirationAlertLevel.LIFETIME -> Tuple4(
             AquaCyan.copy(alpha = 0.12f),
             AquaCyan.copy(alpha = 0.4f),
             AquaCyan,
-            Icons.Default.Verified
+            Icons.Rounded.Verified
         )
     }
 
@@ -194,7 +194,7 @@ fun DocumentExpirationAlertBanner(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = if (hasExpired) Icons.Default.Error else Icons.Default.Warning,
+                                    imageVector = if (hasExpired) Icons.Rounded.Error else Icons.Rounded.Warning,
                                     contentDescription = null,
                                     tint = Color.White,
                                     modifier = Modifier.size(18.dp)
@@ -300,7 +300,7 @@ fun DocumentExpirationAlertBanner(
                                     Spacer(modifier = Modifier.width(4.dp))
 
                                     Icon(
-                                        imageVector = Icons.Default.ArrowForward,
+                                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                                         contentDescription = "Inspect",
                                         tint = Color.White.copy(alpha = 0.8f),
                                         modifier = Modifier.size(16.dp)
@@ -370,10 +370,10 @@ fun DocumentExpirationDetailCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = when (expirationInfo.level) {
-                            ExpirationAlertLevel.EXPIRED -> Icons.Default.Error
-                            ExpirationAlertLevel.EXPIRING_SOON -> Icons.Default.HourglassTop
-                            ExpirationAlertLevel.VALID -> Icons.Default.CheckCircle
-                            ExpirationAlertLevel.LIFETIME -> Icons.Default.Verified
+                            ExpirationAlertLevel.EXPIRED -> Icons.Rounded.Error
+                            ExpirationAlertLevel.EXPIRING_SOON -> Icons.Rounded.HourglassTop
+                            ExpirationAlertLevel.VALID -> Icons.Rounded.CheckCircle
+                            ExpirationAlertLevel.LIFETIME -> Icons.Rounded.Verified
                         },
                         contentDescription = null,
                         tint = titleColor,
@@ -414,7 +414,7 @@ fun DocumentExpirationDetailCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Warning,
+                            imageVector = Icons.Rounded.Warning,
                             contentDescription = null,
                             tint = titleColor,
                             modifier = Modifier.size(14.dp)
@@ -438,14 +438,14 @@ fun DocumentExpirationDetailCard(
                 ) {
                     Button(
                         onClick = onRenewClick,
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (expirationInfo.level == ExpirationAlertLevel.EXPIRED) Color(0xFFE53E3E) else SandGold
                         ),
                         modifier = Modifier.testTag("renew_document_button")
                     ) {
-                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = strings.renewNowAction,

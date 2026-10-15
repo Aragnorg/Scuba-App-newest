@@ -17,12 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -67,11 +68,12 @@ fun BuddyPushNotificationBanner(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .shadow(12.dp, RoundedCornerShape(16.dp))
+                    .shadow(12.dp, RoundedCornerShape(20.dp))
                     .testTag("buddy_push_banner"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = Color(0xFF0F1E29),
                 contentColor = Color.White,
+                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
                 tonalElevation = 6.dp
             ) {
                 Column(
@@ -88,7 +90,7 @@ fun BuddyPushNotificationBanner(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.NotificationsActive,
+                                imageVector = Icons.Rounded.NotificationsActive,
                                 contentDescription = strings.pushBannerTitle,
                                 tint = SeaGreen,
                                 modifier = Modifier.size(20.dp)
@@ -127,7 +129,7 @@ fun BuddyPushNotificationBanner(
                                 .testTag("dismiss_push_notification_button")
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Close,
+                                imageVector = Icons.Rounded.Close,
                                 contentDescription = strings.dismiss,
                                 tint = Color.LightGray,
                                 modifier = Modifier.size(18.dp)
@@ -156,7 +158,7 @@ fun BuddyPushNotificationBanner(
                             style = MaterialTheme.typography.labelMedium,
                             color = Color.LightGray,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(10.dp))
                                 .clickable { onDismiss() }
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         )
@@ -169,11 +171,11 @@ fun BuddyPushNotificationBanner(
                                 containerColor = SeaGreen,
                                 contentColor = Color(0xFF00382E)
                             ),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.testTag("review_approve_push_button")
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Verified,
+                                imageVector = Icons.Rounded.Verified,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp)
                             )

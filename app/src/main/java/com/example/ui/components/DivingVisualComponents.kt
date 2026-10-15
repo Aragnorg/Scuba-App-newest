@@ -3,6 +3,7 @@ package com.example.ui.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,10 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -79,9 +78,11 @@ fun BoylesLawCalculator(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .testTag("boyles_law_calculator"),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        shape = RoundedCornerShape(16.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -202,14 +203,14 @@ fun BoylesLawCalculator(modifier: Modifier = Modifier) {
 
             Surface(
                 color = CoralAlert.copy(alpha = 0.12f),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Row(
                     modifier = Modifier.padding(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Warning,
+                        imageVector = Icons.Rounded.Warning,
                         contentDescription = "Warning",
                         tint = CoralAlert,
                         modifier = Modifier.size(20.dp)
@@ -245,9 +246,11 @@ fun BwrafChecklistCard(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .testTag("bwraf_checklist_card"),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        shape = RoundedCornerShape(16.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -287,7 +290,7 @@ fun BwrafChecklistCard(modifier: Modifier = Modifier) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(bgCol)
                         .clickable { checkedStates[index] = !checkedStates[index] }
                         .padding(10.dp),
@@ -322,7 +325,7 @@ fun BwrafChecklistCard(modifier: Modifier = Modifier) {
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                        imageVector = Icons.Rounded.CheckCircle,
                         contentDescription = "Check",
                         tint = if (isChecked) SeaGreen else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                         modifier = Modifier.size(24.dp)
@@ -341,9 +344,11 @@ fun AscentProfileVisual(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .testTag("ascent_profile_visual"),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        shape = RoundedCornerShape(16.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        shape = RoundedCornerShape(20.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
