@@ -20,12 +20,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DirectionsBoat
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.DirectionsBoat
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,8 +56,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.DiveEventEntity
 import com.example.data.model.UserAccountEntity
-import com.example.ui.theme.AquaCyan
-import com.example.ui.theme.OceanPrimary
+import com.example.ui.i18n.AppLanguage
+import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.SeaGreen
 
 /**
@@ -77,45 +78,81 @@ fun DiverEventRegistrationDialog(
         carpoolNotes: String
     ) -> Unit
 ) {
-    var selectedTank by remember { mutableStateOf("12L Aluminium") }
-    var selectedGas by remember { mutableStateOf("Pressluft (21% O2)") }
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+    val strings = LocalAppStrings.current
+
+    var selectedTank by remember { mutableStateOf(if (isGerman) "12L Aluminium" else "12L Aluminum") }
+    var selectedGas by remember { mutableStateOf(if (isGerman) "Pressluft (21% O2)" else "Air (21% O2)") }
     val selectedRentalItems = remember { mutableStateListOf<String>() }
     var carpoolNotes by remember { mutableStateOf("") }
     var safetyConfirmed by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val tankOptions = listOf("12L Aluminium", "12L Stahl", "15L Stahl", "Doppel-12L Stahl")
-    val gasOptions = listOf("Pressluft (21% O2)", "Nitrox 32% (EAN32)", "Nitrox 36% (EAN36)")
-    val rentalGearOptions = listOf(
-        "Tarierweste (BCD)",
-        "Kaltwasser-Reglerset (DIN)",
-        "7mm Tauchanzug",
-        "Flossen & Füßlinge",
-        "Tauchcomputer",
-        "Blei & Bleigurt"
-    )
+    val tankOptions = if (isGerman) {
+        listOf("12L Aluminium", "12L Stahl", "15L Stahl", "Doppel-12L Stahl")
+    } else {
+        listOf("12L Aluminum", "12L Steel", "15L Steel", "Twin-12L Steel")
+    }
+
+    val gasOptions = if (isGerman) {
+        listOf("Pressluft (21% O2)", "Nitrox 32% (EAN32)", "Nitrox 36% (EAN36)")
+    } else {
+        listOf("Air (21% O2)", "Nitrox 32% (EAN32)", "Nitrox 36% (EAN36)")
+    }
+
+    val rentalGearOptions = if (isGerman) {
+        listOf(
+            "Tarierweste (BCD)",
+            "Kaltwasser-Reglerset (DIN)",
+            "7mm Tauchanzug",
+            "Flossen & Füßlinge",
+            "Tauchcomputer",
+            "Blei & Bleigurt"
+        )
+    } else {
+        listOf(
+            "BCD / Wing",
+            "Cold Water Regulator (DIN)",
+            "7mm Wetsuit",
+            "Fins & Booties",
+            "Dive Computer",
+            "Weights & Belt"
+        )
+    }
 
     val remainingSpots = (event.maxCapacity - event.registeredCount).coerceAtLeast(0)
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.DirectionsBoat,
-                    contentDescription = null,
-                    tint = OceanPrimary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        Icon(
+                            imageVector = Icons.Rounded.DirectionsBoat,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
                 Column {
                     Text(
-                        text = "Zur Ausfahrt anmelden",
+                        text = if (isGerman) "Zur Ausfahrt anmelden" else "Register for Excursion",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${event.title} • $remainingSpots freie Plätze",
+                        text = if (isGerman) "${event.title} • $remainingSpots freie Plätze" else "${event.title} • $remainingSpots spots left",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -127,45 +164,53 @@ fun DiverEventRegistrationDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // Event Quick Summary Card
                 Card(
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
                     Column(
-                        modifier = Modifier.padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.LocationOn, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Rounded.LocationOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "${event.siteName} (${event.location})",
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "📅 ${event.eventDate} • ⏰ ${event.meetingTime} Uhr",
+                                text = "📅 ${event.eventDate} • ⏰ ${event.meetingTime}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
-                                color = OceanPrimary.copy(alpha = 0.15f)
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer
                             ) {
                                 Text(
                                     text = "Max. ${event.maxDepthMeters.toInt()}m",
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                    fontSize = 11.sp,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = OceanPrimary
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                         }
@@ -174,22 +219,28 @@ fun DiverEventRegistrationDialog(
 
                 // Diver Information Preview
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp),
+                            .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
-                            Text("Angemeldeter Taucher", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
-                                text = currentUser?.fullName ?: "Aktiver Taucher",
+                                text = if (isGerman) "Angemeldeter Taucher" else "Registered Diver",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = currentUser?.fullName ?: (if (isGerman) "Aktiver Taucher" else "Active Diver"),
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Text(
@@ -200,29 +251,36 @@ fun DiverEventRegistrationDialog(
                     }
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
                 // 1. Tank Configuration
                 Text(
-                    text = "1. Flaschen-Konfiguration",
+                    text = if (isGerman) "1. Flaschen-Konfiguration" else "1. Tank Configuration",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = OceanPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     tankOptions.forEach { tank ->
                         FilterChip(
                             selected = selectedTank == tank,
                             onClick = { selectedTank = tank },
-                            label = { Text(tank, fontSize = 11.sp) },
+                            shape = RoundedCornerShape(10.dp),
+                            label = { Text(tank, fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = OceanPrimary.copy(alpha = 0.15f),
-                                selectedLabelColor = OceanPrimary
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = selectedTank == tank,
+                                borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                selectedBorderColor = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
@@ -230,44 +288,51 @@ fun DiverEventRegistrationDialog(
 
                 // 2. Gas Selection
                 Text(
-                    text = "2. Atemgas",
+                    text = if (isGerman) "2. Atemgas" else "2. Breathing Gas",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = OceanPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     gasOptions.forEach { gas ->
                         FilterChip(
                             selected = selectedGas == gas,
                             onClick = { selectedGas = gas },
-                            label = { Text(gas, fontSize = 11.sp) },
+                            shape = RoundedCornerShape(10.dp),
+                            label = { Text(gas, fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = if (gas.contains("Nitrox")) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.15f),
-                                selectedLabelColor = if (gas.contains("Nitrox")) Color(0xFF007799) else OceanPrimary
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = selectedGas == gas,
+                                borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                selectedBorderColor = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
                 // 3. Rental Gear (Optional)
                 Text(
-                    text = "3. Leih-Ausrüstung der Basis",
+                    text = if (isGerman) "3. Leih-Ausrüstung der Basis" else "3. Rental Equipment",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = OceanPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     rentalGearOptions.forEach { gear ->
                         val isSelected = selectedRentalItems.contains(gear)
@@ -277,10 +342,21 @@ fun DiverEventRegistrationDialog(
                                 if (isSelected) selectedRentalItems.remove(gear)
                                 else selectedRentalItems.add(gear)
                             },
-                            label = { Text(gear, fontSize = 11.sp) },
+                            shape = RoundedCornerShape(10.dp),
+                            label = { Text(gear, fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
                             leadingIcon = if (isSelected) {
-                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp)) }
-                            } else null
+                                { Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(14.dp)) }
+                            } else null,
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isSelected,
+                                borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                                selectedBorderColor = MaterialTheme.colorScheme.primary
+                            )
                         )
                     }
                 }
@@ -289,9 +365,10 @@ fun DiverEventRegistrationDialog(
                 OutlinedTextField(
                     value = carpoolNotes,
                     onValueChange = { carpoolNotes = it },
-                    label = { Text("Mitfahrgelegenheit & Anmerkungen") },
-                    placeholder = { Text("z. B. Fahre ab Konstanz oder brauche Abholung") },
+                    label = { Text(if (isGerman) "Mitfahrgelegenheit & Anmerkungen" else "Carpool & Notes") },
+                    placeholder = { Text(if (isGerman) "z. B. Fahre ab Konstanz oder brauche Abholung" else "e.g. Driving from town or need a ride") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     maxLines = 2
                 )
 
@@ -299,26 +376,30 @@ fun DiverEventRegistrationDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { safetyConfirmed = !safetyConfirmed },
+                        .clickable { safetyConfirmed = !safetyConfirmed }
+                        .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
                         checked = safetyConfirmed,
                         onCheckedChange = { safetyConfirmed = it },
-                        colors = CheckboxDefaults.colors(checkedColor = SeaGreen)
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Ich bestätige eine gültige TTU & entsprechende Taucherfahrung für diesen Spot.",
+                        text = if (isGerman)
+                            "Ich bestätige eine gültige TTU & entsprechende Taucherfahrung für diesen Spot."
+                        else
+                            "I confirm valid medical clearance (TTU) & required dive experience for this site.",
                         style = MaterialTheme.typography.bodySmall,
-                        fontSize = 11.sp
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 if (errorMessage != null) {
                     Text(
                         text = errorMessage!!,
-                        color = Color(0xFFE53E3E),
+                        color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -329,7 +410,10 @@ fun DiverEventRegistrationDialog(
             Button(
                 onClick = {
                     if (!safetyConfirmed) {
-                        errorMessage = "Bitte die Sicherheits- und Tauchtauglichkeitsbestätigung anhaken."
+                        errorMessage = if (isGerman)
+                            "Bitte die Sicherheits- und Tauchtauglichkeitsbestätigung anhaken."
+                        else
+                            "Please accept the medical clearance confirmation."
                         return@Button
                     }
                     onConfirmRegistration(
@@ -339,13 +423,20 @@ fun DiverEventRegistrationDialog(
                         carpoolNotes.trim()
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(horizontal = 22.dp, vertical = 8.dp)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                shape = RoundedCornerShape(14.dp),
+                contentPadding = PaddingValues(horizontal = 22.dp, vertical = 9.dp)
             ) {
-                Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Verbindlich anmelden", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Text(
+                    text = if (isGerman) "Verbindlich anmelden" else "Confirm Booking",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
+                )
             }
         },
         dismissButton = {
@@ -353,7 +444,7 @@ fun DiverEventRegistrationDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Abbrechen")
+                Text(strings.cancel)
             }
         }
     )

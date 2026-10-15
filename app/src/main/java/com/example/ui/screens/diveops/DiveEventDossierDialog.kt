@@ -5,6 +5,9 @@ package com.example.ui.screens.diveops
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,34 +27,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.Radio
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Water
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.PhotoLibrary
+import androidx.compose.material.icons.rounded.Radio
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,6 +57,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,14 +70,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import com.example.data.model.DiveEventEntity
+import com.example.ui.i18n.AppLanguage
+import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -101,6 +104,8 @@ fun DiveEventDossierDialog(
     onRegisterClick: ((DiveEventEntity) -> Unit)? = null,
     isAlreadyRegistered: Boolean = false
 ) {
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+    val strings = LocalAppStrings.current
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
     var showFullscreenMap by remember { mutableStateOf(false) }
@@ -139,7 +144,7 @@ fun DiveEventDossierDialog(
                             .padding(16.dp)
                             .background(Color.Black.copy(alpha = 0.6f), CircleShape)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Schließen", tint = Color.White)
+                        Icon(Icons.Rounded.Close, contentDescription = strings.close, tint = Color.White)
                     }
                 }
             }
@@ -154,8 +159,8 @@ fun DiveEventDossierDialog(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 16.dp),
-            shape = RoundedCornerShape(20.dp),
-            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 6.dp
         ) {
             Column(
@@ -170,35 +175,36 @@ fun DiveEventDossierDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
-                                color = primaryAccentColor.copy(alpha = 0.15f)
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer
                             ) {
                                 Text(
                                     text = when (event.eventType) {
-                                        "BOAT_TRIP" -> "🚤 Bootsausfahrt"
-                                        "SHORE_DIVE" -> "🌊 Hausriff / See"
-                                        "COURSE_TRAINING" -> "🎓 Ausbildung / Kurs"
-                                        else -> "🏛️ Vereinsausfahrt"
+                                        "BOAT_TRIP" -> if (isGerman) "🚤 Bootsausfahrt" else "🚤 Boat Trip"
+                                        "SHORE_DIVE" -> if (isGerman) "🌊 Hausriff / See" else "🌊 Shore Dive"
+                                        "COURSE_TRAINING" -> if (isGerman) "🎓 Ausbildung / Kurs" else "🎓 Training"
+                                        else -> if (isGerman) "🏛️ Vereinsausfahrt" else "🏛️ Club Outing"
                                     },
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = primaryAccentColor
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
+
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 color = SeaGreen.copy(alpha = 0.15f)
                             ) {
                                 Text(
                                     text = "Status: ${event.status}",
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = SeaGreen
                                 )
@@ -214,7 +220,7 @@ fun DiveEventDossierDialog(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "📅 ${event.eventDate} • ⏰ Treffen: ${event.meetingTime} | Start: ${event.departureTime}",
+                            text = "📅 ${event.eventDate} • ⏰ ${if (isGerman) "Treffen:" else "Meeting:"} ${event.meetingTime} | ${if (isGerman) "Start:" else "Departure:"} ${event.departureTime}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -227,9 +233,9 @@ fun DiveEventDossierDialog(
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Bearbeiten",
-                                tint = primaryAccentColor,
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = if (isGerman) "Bearbeiten" else "Edit",
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -240,8 +246,8 @@ fun DiveEventDossierDialog(
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Schließen",
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = strings.close,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -254,24 +260,48 @@ fun DiveEventDossierDialog(
                 // Navigation Tabs
                 TabRow(
                     selectedTabIndex = selectedTab,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    contentColor = primaryAccentColor,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    indicator = {
+                        TabRowDefaults.SecondaryIndicator(
+                            Modifier.tabIndicatorOffset(selectedTab),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
                     modifier = Modifier.clip(RoundedCornerShape(12.dp))
                 ) {
                     Tab(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
-                        text = { Text("📋 Briefing", fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
+                        text = {
+                            Text(
+                                text = if (isGerman) "📋 Briefing" else "📋 Briefing",
+                                fontSize = 12.sp,
+                                fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
                     )
                     Tab(
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
-                        text = { Text("🏥 Notfallplan (EAP)", fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
+                        text = {
+                            Text(
+                                text = if (isGerman) "🏥 Notfallplan (EAP)" else "🏥 EAP / Safety",
+                                fontSize = 12.sp,
+                                fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
                     )
                     Tab(
                         selected = selectedTab == 2,
                         onClick = { selectedTab = 2 },
-                        text = { Text("👥 Organisation", fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
+                        text = {
+                            Text(
+                                text = if (isGerman) "👥 Organisation" else "👥 Organization",
+                                fontSize = 12.sp,
+                                fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
                     )
                 }
 
@@ -287,7 +317,7 @@ fun DiveEventDossierDialog(
                     when (selectedTab) {
                         0 -> BriefingTabContent(
                             event = event,
-                            primaryAccentColor = primaryAccentColor,
+                            primaryAccentColor = MaterialTheme.colorScheme.primary,
                             onOpenMapPicker = {
                                 mapPickerLauncher.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -299,7 +329,7 @@ fun DiveEventDossierDialog(
                         1 -> EmergencyPlanTabContent(event = event, context = context)
                         2 -> OrganizationTabContent(
                             event = event,
-                            primaryAccentColor = primaryAccentColor,
+                            primaryAccentColor = MaterialTheme.colorScheme.primary,
                             onCheckIn = { onCheckIn(event) },
                             onNavigateToBuddyBoard = { onNavigateToBuddyBoard(event) },
                             onNavigateToManifest = { onNavigateToManifest(event) }
@@ -321,39 +351,64 @@ fun DiveEventDossierDialog(
                         if (onRegisterClick != null) {
                             if (isAlreadyRegistered) {
                                 Surface(
-                                    shape = RoundedCornerShape(20.dp),
+                                    shape = RoundedCornerShape(16.dp),
                                     color = SeaGreen.copy(alpha = 0.15f)
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
-                                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Angemeldet", fontWeight = FontWeight.Bold, color = SeaGreen, fontSize = 12.sp)
+                                        Icon(
+                                            imageVector = Icons.Rounded.CheckCircle,
+                                            contentDescription = null,
+                                            tint = SeaGreen,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = if (isGerman) "Angemeldet" else "Booked",
+                                            fontWeight = FontWeight.Bold,
+                                            color = SeaGreen,
+                                            fontSize = 12.sp
+                                        )
                                     }
                                 }
                             } else {
                                 Button(
                                     onClick = { onRegisterClick(event) },
-                                    shape = RoundedCornerShape(20.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp)
                                 ) {
-                                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text("Anmelden", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                    Text(
+                                        text = if (isGerman) "Anmelden" else "Register",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp
+                                    )
                                 }
                             }
                         }
 
                         Button(
                             onClick = onDismiss,
-                            shape = RoundedCornerShape(20.dp),
-                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 9.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                         ) {
-                            Text("Dossier schließen", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            Text(
+                                text = if (isGerman) "Dossier schließen" else "Close Dossier",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
                         }
                     }
                 }
@@ -373,39 +428,75 @@ private fun BriefingTabContent(
     onShowFullscreenMap: () -> Unit,
     canUploadMap: Boolean
 ) {
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+
     // 1. Site Location & Target Parameters
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.LocationOn, contentDescription = null, tint = primaryAccentColor, modifier = Modifier.size(18.dp))
+                Icon(
+                    imageVector = Icons.Rounded.LocationOn,
+                    contentDescription = null,
+                    tint = primaryAccentColor,
+                    modifier = Modifier.size(18.dp)
+                )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = "${event.siteName} • ${event.location}",
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text("Geplante Maximaltiefe", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("${event.maxDepthMeters.toInt()} Meter", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = primaryAccentColor)
+                    Text(
+                        text = if (isGerman) "Geplante Maximaltiefe" else "Planned Max Depth",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${event.maxDepthMeters.toInt()} Meter",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = primaryAccentColor
+                    )
                 }
                 Column {
-                    Text("Mindest-Brevet", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(event.requiredMinCert, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = if (isGerman) "Mindest-Brevet" else "Min. Certification",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = event.requiredMinCert,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 Column {
-                    Text("Umkehrdruck (Turn)", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("${event.turnPressureBar} bar", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = Color(0xFFD69E2E))
+                    Text(
+                        text = if (isGerman) "Umkehrdruck (Turn)" else "Turn Pressure",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${event.turnPressureBar} bar",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
                 }
             }
         }
@@ -413,8 +504,9 @@ private fun BriefingTabContent(
 
     // 2. Dive Site Map & Underwater Topography (Tauchplatzkarte)
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -424,12 +516,18 @@ private fun BriefingTabContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Map, contentDescription = null, tint = primaryAccentColor, modifier = Modifier.size(18.dp))
+                    Icon(
+                        imageVector = Icons.Rounded.Map,
+                        contentDescription = null,
+                        tint = primaryAccentColor,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "🗺️ Tauchplatzkarte & Topografie",
+                        text = if (isGerman) "🗺️ Tauchplatzkarte & Topografie" else "🗺️ Site Map & Topography",
                         style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -439,9 +537,15 @@ private fun BriefingTabContent(
                         shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                     ) {
-                        Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Rounded.PhotoLibrary, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(if (event.siteMapImageUri.isNotBlank()) "Karte ändern" else "Karte hochladen", fontSize = 11.sp)
+                        Text(
+                            text = if (event.siteMapImageUri.isNotBlank())
+                                (if (isGerman) "Karte ändern" else "Change Map")
+                            else
+                                (if (isGerman) "Karte hochladen" else "Upload Map"),
+                            fontSize = 11.sp
+                        )
                     }
                 }
             }
@@ -451,7 +555,7 @@ private fun BriefingTabContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .clickable { onShowFullscreenMap() }
                 ) {
                     AsyncImage(
@@ -468,7 +572,7 @@ private fun BriefingTabContent(
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Text(
-                            text = "🔍 Zum Vergrößern tippen",
+                            text = if (isGerman) "🔍 Zum Vergrößern tippen" else "🔍 Tap to zoom",
                             color = Color.White,
                             fontSize = 10.sp,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -477,16 +581,19 @@ private fun BriefingTabContent(
                 }
             } else {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(12.dp),
+                        modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Keine Tauchplatzkarte hinterlegt. Das Geländeprofil wird vor Ort im Briefing erläutert.",
+                            text = if (isGerman)
+                                "Keine Tauchplatzkarte hinterlegt. Das Geländeprofil wird vor Ort im Briefing erläutert."
+                            else
+                                "No site map uploaded. Underwater topography will be explained during site briefing.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -496,42 +603,51 @@ private fun BriefingTabContent(
         }
     }
 
-    // 2. Entry & Exit Info
+    // 3. Entry & Exit Info
     DossierSectionCard(
-        icon = Icons.Default.Water,
-        iconTint = OceanPrimary,
-        title = "Einstieg, Ausstieg & Tauchgangsverlauf",
+        icon = Icons.Rounded.Water,
+        iconTint = primaryAccentColor,
+        title = if (isGerman) "Einstieg, Ausstieg & Tauchgangsverlauf" else "Entry, Exit & Profile",
         content = event.entryExitInfo.ifBlank {
-            "Einstieg und Ausstieg nach Einweisung vor Ort durch den Tauchgangsleiter. Sicherer Notausstieg in Briefing-Skizze verzeichnet."
+            if (isGerman)
+                "Einstieg und Ausstieg nach Einweisung vor Ort durch den Tauchgangsleiter. Sicherer Notausstieg in Briefing-Skizze verzeichnet."
+            else
+                "Entry and exit according to briefing on site. Emergency exit points marked on briefing slate."
         }
     )
 
-    // 3. Environmental Conditions (Visibility, Temperature, Currents)
+    // 4. Environmental Conditions
     DossierSectionCard(
-        icon = Icons.Default.Air,
+        icon = Icons.Rounded.Air,
         iconTint = AquaCyan,
-        title = "Sichtverhältnisse, Wassertemperatur & Strömung",
+        title = if (isGerman) "Sichtverhältnisse, Wassertemperatur & Strömung" else "Conditions, Temp & Current",
         content = event.waterConditions.ifBlank {
-            "Lokale Bedingungen werden vor dem Einstieg final geprüft. Kaltwasser- und Strömungserfahrung entsprechend empfohlen."
+            if (isGerman)
+                "Lokale Bedingungen werden vor dem Einstieg final geprüft. Kaltwasser- und Strömungserfahrung entsprechend empfohlen."
+            else
+                "Local conditions verified before splash. Cold water & current experience recommended."
         }
     )
 
-    // 4. Equipment Requirements
+    // 5. Equipment Requirements
     DossierSectionCard(
-        icon = Icons.Default.Security,
+        icon = Icons.Rounded.Security,
         iconTint = SeaGreen,
-        title = "Ausrüstungs-Anforderungen",
+        title = if (isGerman) "Ausrüstungs-Anforderungen" else "Equipment Requirements",
         content = event.equipmentRequirements.ifBlank {
-            "Vollständige Kaltwasser-Ausrüstung gemäß Verbandsrichtlinien, Tauchcomputer sowie Signalboje (SMB) pro Buddy-Team erforderlich."
+            if (isGerman)
+                "Vollständige Kaltwasser-Ausrüstung gemäß Verbandsrichtlinien, Tauchcomputer sowie Signalboje (SMB) pro Buddy-Team erforderlich."
+            else
+                "Cold-water gear compliant with guidelines, dive computer and SMB per buddy team required."
         }
     )
 
-    // 5. Hazards & Safety Rules
+    // 6. Hazards & Safety Rules
     if (event.hazardsAndRules.isNotBlank()) {
         DossierSectionCard(
-            icon = Icons.Default.Warning,
-            iconTint = Color(0xFFE53E3E),
-            title = "Besondere Gefahren & Verhaltensregeln",
+            icon = Icons.Rounded.Warning,
+            iconTint = MaterialTheme.colorScheme.error,
+            title = if (isGerman) "Besondere Gefahren & Verhaltensregeln" else "Hazards & Rules",
             content = event.hazardsAndRules
         )
     }
@@ -545,11 +661,13 @@ private fun EmergencyPlanTabContent(
     event: DiveEventEntity,
     context: Context
 ) {
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+
     // 1. Hyperbaric Chamber Highlight Card
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFC53030).copy(alpha = 0.1f)),
-        border = BorderStroke(1.dp, Color(0xFFC53030).copy(alpha = 0.4f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
     ) {
         Column(
             modifier = Modifier
@@ -562,41 +680,43 @@ private fun EmergencyPlanTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Icon(
-                        imageVector = Icons.Default.LocalHospital,
+                        imageVector = Icons.Rounded.LocalHospital,
                         contentDescription = null,
-                        tint = Color(0xFFC53030),
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(22.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Nächste Dekompressionskammer",
+                        text = if (isGerman) "Nächste Dekompressionskammer" else "Nearest Hyperbaric Chamber",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFC53030)
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
 
                 if (event.chamberDistanceTime.isNotBlank()) {
                     Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = Color(0xFFC53030).copy(alpha = 0.18f)
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
                     ) {
                         Text(
                             text = "⏱️ ${event.chamberDistanceTime}",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFC53030)
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
             }
 
             Text(
-                text = event.chamberName.ifBlank { "Keine Druckkammer hinterlegt" },
+                text = event.chamberName.ifBlank { if (isGerman) "Keine Druckkammer hinterlegt" else "No chamber configured" },
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -604,17 +724,19 @@ private fun EmergencyPlanTabContent(
 
             if (event.chamberPhone.isNotBlank()) {
                 Spacer(modifier = Modifier.height(4.dp))
-                // 1-Click Call Button
                 Button(
                     onClick = { dialPhoneNumber(context, event.chamberPhone) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
-                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    ),
+                    shape = RoundedCornerShape(14.dp),
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp)
                 ) {
-                    Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Kammer Notruf anrufen: ${event.chamberPhone}",
+                        text = "${if (isGerman) "Kammer anrufen:" else "Call Chamber:"} ${event.chamberPhone}",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -625,26 +747,36 @@ private fun EmergencyPlanTabContent(
 
     // 2. Coast Guard & Radio Channel
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Radio, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
+                Icon(
+                    imageVector = Icons.Rounded.Radio,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Seefunk & Notfall-Kommunikation",
+                    text = if (isGerman) "Seefunk & Notfall-Kommunikation" else "Maritime VHF & Radio",
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
-                text = "Funkkanal: ${event.coastGuardVHF.ifBlank { "VHF Kanal 16 (Notruf & Sicherheitsverkehr)" }}",
+                text = "${if (isGerman) "Funkkanal:" else "VHF Channel:"} ${event.coastGuardVHF.ifBlank { "VHF 16 (Distress & Safety)" }}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Allgemeiner Rettungsdienst: Notruf 112 (Europa) oder zuständige Seenotleitung",
+                text = if (isGerman)
+                    "Allgemeiner Rettungsdienst: Notruf 112 (Europa) oder zuständige Seenotleitung"
+                else
+                    "Emergency Services: Dial 112 / 911 or local MRCC / Coast Guard",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -653,23 +785,33 @@ private fun EmergencyPlanTabContent(
 
     // 3. First Aid & Oxygen Provider
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.HealthAndSafety, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(18.dp))
+                Icon(
+                    imageVector = Icons.Rounded.HealthAndSafety,
+                    contentDescription = null,
+                    tint = SeaGreen,
+                    modifier = Modifier.size(18.dp)
+                )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Sauerstoff-Versorgung & Erste Hilfe vor Ort",
+                    text = if (isGerman) "Sauerstoff-Versorgung & Erste Hilfe vor Ort" else "Oxygen & First Aid On-Site",
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
                 text = event.emergencyNotes.ifBlank {
                     event.emergencyBriefing.ifBlank {
-                        "Medizinischer Notfallsauerstoff (100% O2) und Erste-Hilfe-Ausrüstung einsatzbereit vor Ort."
+                        if (isGerman)
+                            "Medizinischer Notfallsauerstoff (100% O2) und Erste-Hilfe-Ausrüstung einsatzbereit vor Ort."
+                        else
+                            "Medical oxygen kit (100% O2) and first aid kit ready on-site."
                     }
                 },
                 style = MaterialTheme.typography.bodySmall,
@@ -690,15 +832,28 @@ private fun OrganizationTabContent(
     onNavigateToBuddyBoard: () -> Unit,
     onNavigateToManifest: () -> Unit
 ) {
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.People, contentDescription = null, tint = primaryAccentColor, modifier = Modifier.size(18.dp))
+                Icon(
+                    imageVector = Icons.Rounded.People,
+                    contentDescription = null,
+                    tint = primaryAccentColor,
+                    modifier = Modifier.size(18.dp)
+                )
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Einsatz-Leitung & Belegung", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (isGerman) "Einsatz-Leitung & Belegung" else "Lead Guide & Capacity",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
 
             Row(
@@ -706,12 +861,30 @@ private fun OrganizationTabContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text("Tauchgangsleiter / Guide", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(event.leadGuideName.ifBlank { "Noch nicht zugewiesen" }, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = if (isGerman) "Tauchgangsleiter / Guide" else "Lead Guide",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = event.leadGuideName.ifBlank { if (isGerman) "Noch nicht zugewiesen" else "Unassigned" },
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
                 Column {
-                    Text("Angemeldete Taucher", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("${event.registeredCount} von ${event.maxCapacity} Plätzen", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = if (isGerman) "Angemeldete Taucher" else "Booked Divers",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${event.registeredCount} / ${event.maxCapacity} ${if (isGerman) "Plätze" else "spots"}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }
@@ -719,7 +892,12 @@ private fun OrganizationTabContent(
 
     Spacer(modifier = Modifier.height(4.dp))
 
-    Text("Schnell-Aktionen für diesen Tauchgang:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+    Text(
+        text = if (isGerman) "Schnell-Aktionen für diesen Tauchgang:" else "Quick actions for this excursion:",
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
+    )
 
     // Direct Action Buttons
     Row(
@@ -728,30 +906,47 @@ private fun OrganizationTabContent(
     ) {
         Button(
             onClick = onCheckIn,
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = primaryAccentColor,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            Text("➕ Einchecken", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = if (isGerman) "➕ Einchecken" else "➕ Check In",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         OutlinedButton(
             onClick = onNavigateToBuddyBoard,
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            Text("🤿 Buddy-Board", fontSize = 11.sp)
+            Text(
+                text = "🤿 Buddy-Board",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
 
         OutlinedButton(
             onClick = onNavigateToManifest,
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            Text("📋 Manifest", fontSize = 11.sp)
+            Text(
+                text = "📋 Manifest",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -764,20 +959,26 @@ private fun DossierSectionCard(
     content: String
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f))
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f))
     ) {
-        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text(text = title, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
             Text(
                 text = content,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                lineHeight = 16.sp
+                lineHeight = 18.sp
             )
         }
     }
