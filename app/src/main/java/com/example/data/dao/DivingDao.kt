@@ -381,6 +381,9 @@ interface DivingDao {
     @Query("SELECT * FROM dive_events WHERE orgId = :orgId AND status != 'COMPLETED' AND status != 'CANCELLED' ORDER BY eventDate ASC, departureTime ASC")
     fun getUpcomingEventsForOrganization(orgId: String): Flow<List<DiveEventEntity>>
 
+    @Query("SELECT * FROM dive_events WHERE status != 'COMPLETED' AND status != 'CANCELLED' ORDER BY eventDate ASC, departureTime ASC")
+    fun getAllUpcomingEvents(): Flow<List<DiveEventEntity>>
+
     @Query("SELECT * FROM dive_events WHERE id = :id LIMIT 1")
     fun getEventById(id: String): Flow<DiveEventEntity?>
 
@@ -402,12 +405,18 @@ interface DivingDao {
     @Query("UPDATE dive_events SET registeredCount = :count WHERE id = :id")
     suspend fun updateEventRegisteredCount(id: String, count: Int)
 
+    @Query("UPDATE dive_events SET siteMapImageUri = :uri WHERE id = :id")
+    suspend fun updateEventSiteMapImage(id: String, uri: String)
+
     @Query("DELETE FROM dive_events WHERE id = :id")
     suspend fun deleteEvent(id: String)
 
     // --- DiveOps Check-in, Manifest & Participants ---
     @Query("SELECT * FROM dive_event_participants WHERE eventId = :eventId ORDER BY checkInTimestamp ASC")
     fun getParticipantsForEvent(eventId: String): Flow<List<DiveEventParticipantEntity>>
+
+    @Query("SELECT * FROM dive_event_participants WHERE diverEmail = :email OR memberId = :userId ORDER BY checkInTimestamp DESC")
+    fun getParticipantsForDiver(email: String, userId: String): Flow<List<DiveEventParticipantEntity>>
 
     @Query("SELECT * FROM dive_event_participants WHERE id = :id LIMIT 1")
     fun getParticipantById(id: String): Flow<DiveEventParticipantEntity?>

@@ -502,6 +502,7 @@ data class DiveEventEntity(
     val equipmentRequirements: String = "",
     val hazardsAndRules: String = "",
     val briefingDocumentUri: String = "",
+    val siteMapImageUri: String = "", // Map / topography image URI (content://, file:// or web URL)
     val status: String = "PLANNING", // "PLANNING", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
     val createdAt: Long = System.currentTimeMillis()
 ) {
@@ -510,7 +511,7 @@ data class DiveEventEntity(
     val isCourse: Boolean get() = eventType == "COURSE_TRAINING"
     val isClubOuting: Boolean get() = eventType == "CLUB_OUTING"
     val hasEmergencyPlan: Boolean get() = chamberName.isNotBlank() || emergencyBriefing.isNotBlank() || coastGuardVHF.isNotBlank()
-    val hasBriefing: Boolean get() = entryExitInfo.isNotBlank() || waterConditions.isNotBlank() || hazardsAndRules.isNotBlank() || equipmentRequirements.isNotBlank()
+    val hasBriefing: Boolean get() = entryExitInfo.isNotBlank() || waterConditions.isNotBlank() || hazardsAndRules.isNotBlank() || equipmentRequirements.isNotBlank() || siteMapImageUri.isNotBlank()
 }
 
 @Entity(tableName = "dive_event_participants")

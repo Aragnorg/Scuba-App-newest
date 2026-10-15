@@ -2,6 +2,12 @@
 
 package com.example.ui.screens.diveops
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,15 +17,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -34,10 +49,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.data.model.DiveEventEntity
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SeaGreen
@@ -78,6 +96,15 @@ fun EditDiveEventDialog(
     var turnPressureBar by remember { mutableStateOf(event.turnPressureBar.toString()) }
     var equipmentRequirements by remember { mutableStateOf(event.equipmentRequirements) }
     var hazardsAndRules by remember { mutableStateOf(event.hazardsAndRules) }
+    var siteMapImageUri by remember { mutableStateOf(event.siteMapImageUri) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            siteMapImageUri = uri.toString()
+        }
+    }
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -342,6 +369,118 @@ fun EditDiveEventDialog(
                     maxLines = 2
                 )
 
+                HorizontalDivider()
+
+                // 4. Dive Site Map & Underwater Topography (Tauchplatzkarte)
+                Text("🗺️ Tauchplatzkarte & Unterwasser-Topografie", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = OceanPrimary)
+
+                if (siteMapImageUri.isNotBlank()) {
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(160.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            ) {
+                                AsyncImage(
+                                    model = siteMapImageUri,
+                                    contentDescription = "Tauchplatzkarte",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(160.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                OutlinedButton(
+                                    onClick = {
+                                        imagePickerLauncher.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
+                                    },
+                                    shape = RoundedCornerShape(12.dp),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Karte ändern", fontSize = 12.sp)
+                                }
+
+                                TextButton(
+                                    onClick = { siteMapImageUri = "" },
+                                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE53E3E))
+                                ) {
+                                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Entfernen", fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Map,
+                                contentDescription = null,
+                                tint = OceanPrimary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Text(
+                                text = "Keine Tauchplatzkarte hinterlegt",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Button(
+                                onClick = {
+                                    imagePickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
+                            ) {
+                                Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Karte hochladen", fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = siteMapImageUri,
+                    onValueChange = { siteMapImageUri = it },
+                    label = { Text("Oder Bild-URL / Drive-Link eingeben") },
+                    placeholder = { Text("https://... oder content://...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
                 if (errorMessage != null) {
                     Text(text = errorMessage!!, color = Color(0xFFE53E3E), style = MaterialTheme.typography.bodySmall)
                 }
@@ -375,7 +514,8 @@ fun EditDiveEventDialog(
                         entryExitInfo = entryExitInfo.trim(),
                         waterConditions = waterConditions.trim(),
                         equipmentRequirements = equipmentRequirements.trim(),
-                        hazardsAndRules = hazardsAndRules.trim()
+                        hazardsAndRules = hazardsAndRules.trim(),
+                        siteMapImageUri = siteMapImageUri.trim()
                     )
                     onConfirm(updatedEvent)
                 },

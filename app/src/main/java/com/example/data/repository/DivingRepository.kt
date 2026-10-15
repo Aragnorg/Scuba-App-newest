@@ -118,6 +118,9 @@ class DivingRepository(private val divingDao: DivingDao) {
     fun getUpcomingEventsForOrganization(orgId: String): Flow<List<DiveEventEntity>> =
         divingDao.getUpcomingEventsForOrganization(orgId)
 
+    fun getAllUpcomingEvents(): Flow<List<DiveEventEntity>> =
+        divingDao.getAllUpcomingEvents()
+
     fun getEventById(id: String): Flow<DiveEventEntity?> =
         divingDao.getEventById(id)
 
@@ -140,6 +143,10 @@ class DivingRepository(private val divingDao: DivingDao) {
         divingDao.updateEventRegisteredCount(id, count)
     }
 
+    suspend fun updateEventSiteMapImage(id: String, uri: String) {
+        divingDao.updateEventSiteMapImage(id, uri)
+    }
+
     suspend fun deleteEvent(id: String) {
         divingDao.deleteParticipantsForEvent(id)
         divingDao.deleteEvent(id)
@@ -148,6 +155,9 @@ class DivingRepository(private val divingDao: DivingDao) {
     // --- DiveOps Participants & Manifest Flows ---
     fun getParticipantsForEvent(eventId: String): Flow<List<DiveEventParticipantEntity>> =
         divingDao.getParticipantsForEvent(eventId)
+
+    fun getParticipantsForDiver(email: String, userId: String): Flow<List<DiveEventParticipantEntity>> =
+        divingDao.getParticipantsForDiver(email, userId)
 
     fun getParticipantById(id: String): Flow<DiveEventParticipantEntity?> =
         divingDao.getParticipantById(id)

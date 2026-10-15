@@ -13,11 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DirectionsBoat
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.outlined.DirectionsBoat
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.MenuBook
@@ -54,6 +56,7 @@ import com.example.ui.components.UserAvatarView
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
+import com.example.ui.screens.excursions.DiverExcursionsScreen
 import com.example.ui.screens.logbook.LogbookScreen
 import com.example.ui.screens.planning.DivePlanningScreen
 import com.example.ui.screens.profile.ProfileMenuModal
@@ -220,7 +223,20 @@ fun StudentEnvironment(
                     onClick = { selectedTab = 1 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 1) Icons.Filled.Explore else Icons.Outlined.Explore,
+                            imageVector = if (selectedTab == 1) Icons.Filled.DirectionsBoat else Icons.Outlined.DirectionsBoat,
+                            contentDescription = strings.tabExcursions
+                        )
+                    },
+                    label = { Text(strings.tabExcursions) },
+                    modifier = Modifier.testTag("nav_student_excursions")
+                )
+
+                NavigationBarItem(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    icon = {
+                        Icon(
+                            imageVector = if (selectedTab == 2) Icons.Filled.Explore else Icons.Outlined.Explore,
                             contentDescription = strings.tabDivePlanning
                         )
                     },
@@ -229,11 +245,11 @@ fun StudentEnvironment(
                 )
 
                 NavigationBarItem(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 2) Icons.Filled.MenuBook else Icons.Outlined.MenuBook,
+                            imageVector = if (selectedTab == 3) Icons.Filled.MenuBook else Icons.Outlined.MenuBook,
                             contentDescription = strings.tabLogbook
                         )
                     },
@@ -254,8 +270,9 @@ fun StudentEnvironment(
                         viewModel = viewModel,
                         onNavigateToDocuments = { showProfileModal = true }
                     )
-                    1 -> DivePlanningScreen(viewModel = viewModel)
-                    2 -> LogbookScreen(viewModel = viewModel)
+                    1 -> DiverExcursionsScreen(viewModel = viewModel)
+                    2 -> DivePlanningScreen(viewModel = viewModel)
+                    3 -> LogbookScreen(viewModel = viewModel)
                 }
             }
         }

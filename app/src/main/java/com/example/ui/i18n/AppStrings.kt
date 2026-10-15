@@ -7,6 +7,7 @@ class Strings {
     // Common / Navigation
     var appName: String = ""
     var tabLearn: String = ""
+    var tabExcursions: String = ""
     var tabSignals: String = ""
     var tabLogbook: String = ""
     var tabProgress: String = ""
@@ -788,6 +789,7 @@ class Strings {
 val EnglishStrings = Strings().apply {
     appName = "AquaLearn"
     tabLearn = "Learn & Progress"
+    tabExcursions = "Excursions & Centers"
     tabSignals = "Hand Signals"
     tabLogbook = "Diver Logbook"
     tabProgress = "My Progression"
@@ -1547,6 +1549,7 @@ val EnglishStrings = Strings().apply {
 val GermanStrings = Strings().apply {
     appName = "AquaLearn"
     tabLearn = "Lernen & Fortschritt"
+    tabExcursions = "Ausfahrten & Basen"
     tabSignals = "Handsignale"
     tabLogbook = "Taucherlogbuch"
     tabProgress = "Mein Fortschritt"

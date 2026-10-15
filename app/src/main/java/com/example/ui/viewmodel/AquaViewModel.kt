@@ -36,6 +36,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -391,6 +393,23 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     // --- Multi-Tenant Organization & DiveOps State Flows ---
     val allOrganizations: StateFlow<List<OrganizationEntity>> = repository.allOrganizations
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allUpcomingEvents: StateFlow<List<DiveEventEntity>> = repository.getAllUpcomingEvents()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val myDiverRegistrations: StateFlow<List<DiveEventParticipantEntity>> =
+        _currentUser.flatMapLatest { user ->
+            if (user == null) flowOf(emptyList())
+            else repository.getParticipantsForDiver(user.email, user.id)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val myMemberships: StateFlow<List<OrganizationMemberEntity>> =
+        _currentUser.flatMapLatest { user ->
+            if (user == null) flowOf(emptyList())
+            else repository.getMembershipsForUser(user.id)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _currentOrganization = MutableStateFlow<OrganizationEntity?>(null)
     val currentOrganization: StateFlow<OrganizationEntity?> = _currentOrganization.asStateFlow()
@@ -957,6 +976,111 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                 repository.updateEventRegisteredCount(eventId, newCount)
                 _selectedEvent.value = event.copy(registeredCount = newCount)
             }
+        }
+    }
+
+    fun updateEventSiteMapImage(eventId: String, imageUri: String) {
+        viewModelScope.launch {
+            repository.updateEventSiteMapImage(eventId, imageUri)
+            if (_selectedEvent.value?.id == eventId) {
+                _selectedEvent.value = _selectedEvent.value?.copy(siteMapImageUri = imageUri)
+            }
+        }
+    }
+
+    fun toggleDiverOrgConnection(org: OrganizationEntity) {
+        val user = _currentUser.value ?: return
+        viewModelScope.launch {
+            val existing = repository.getMemberByOrgAndUserDirect(org.id, user.id)
+            if (existing != null) {
+                if (existing.status == "ACTIVE") {
+                    repository.deleteMember(existing.id)
+                } else {
+                    repository.updateMemberStatus(existing.id, "ACTIVE")
+                }
+            } else {
+                val newMember = OrganizationMemberEntity(
+                    id = "mem_${UUID.randomUUID().toString().take(8)}",
+                    orgId = org.id,
+                    userId = user.id,
+                    fullName = user.fullName,
+                    email = user.email,
+                    role = "MEMBER",
+                    membershipNumber = "DIV-${(100..999).random()}",
+                    joinedDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date()),
+                    status = "ACTIVE",
+                    certLevel = "Open Water Diver",
+                    totalLoggedDives = 15,
+                    specialtiesJson = "[]"
+                )
+                repository.insertMember(newMember)
+            }
+        }
+    }
+
+    fun registerDiverForEvent(
+        event: DiveEventEntity,
+        tankSelection: String,
+        gasType: String,
+        rentalGear: List<String>,
+        carpoolNotes: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val user = _currentUser.value
+        val diverName = user?.fullName ?: "Diver"
+        val diverEmail = user?.email ?: "diver@example.com"
+        val diverId = user?.id ?: "usr_${UUID.randomUUID().toString().take(6)}"
+
+        viewModelScope.launch {
+            // Check if user is already registered for this event
+            val existingParticipants = repository.getParticipantsForDiver(diverEmail, diverId)
+            // Or check directly in db
+            val existingDirect = repository.getParticipantByIdDirect(diverId)
+            val newParticipant = DiveEventParticipantEntity(
+                id = "part_${UUID.randomUUID().toString().take(8)}",
+                eventId = event.id,
+                memberId = diverId,
+                diverName = diverName,
+                diverEmail = diverEmail,
+                diverCertLevel = "Open Water Diver",
+                diverTotalDives = 20,
+                checkInStatus = "REGISTERED",
+                safetyGatePassed = true,
+                safetyGateIssuesJson = "[]",
+                tankSelection = tankSelection,
+                gasType = gasType,
+                modMeters = if (gasType.contains("32")) 33.8f else 56.0f,
+                rentalGearJson = JSONArray(rentalGear).toString(),
+                transferCarPoolNote = carpoolNotes.trim(),
+                buddyTeamId = null,
+                groupGuideName = null,
+                tankPressureStartBar = 200,
+                tankPressureEndBar = 50,
+                checkInTimestamp = System.currentTimeMillis()
+            )
+            repository.insertParticipant(newParticipant)
+            val updatedCount = event.registeredCount + 1
+            repository.updateEventRegisteredCount(event.id, updatedCount)
+            if (_selectedEvent.value?.id == event.id) {
+                _selectedEvent.value = _selectedEvent.value?.copy(registeredCount = updatedCount)
+            }
+            onSuccess()
+        }
+    }
+
+    fun cancelDiverEventRegistration(eventId: String, participantId: String, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            repository.deleteParticipant(participantId)
+            val event = repository.getEventByIdDirect(eventId)
+            if (event != null) {
+                val newCount = maxOf(0, event.registeredCount - 1)
+                repository.updateEventRegisteredCount(eventId, newCount)
+                if (_selectedEvent.value?.id == eventId) {
+                    _selectedEvent.value = _selectedEvent.value?.copy(registeredCount = newCount)
+                }
+            }
+            onComplete()
         }
     }
 

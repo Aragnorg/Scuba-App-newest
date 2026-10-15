@@ -321,6 +321,9 @@ fun DiveOpsEventsTab(
             onNavigateToManifest = { targetEvent ->
                 onNavigateToManifest(targetEvent)
                 eventForDossier = null
+            },
+            onUpdateSiteMapImage = { uri ->
+                viewModel.updateEventSiteMapImage(liveEvent.id, uri)
             }
         )
     }

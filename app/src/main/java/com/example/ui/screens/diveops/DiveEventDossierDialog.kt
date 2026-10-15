@@ -24,16 +24,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Timer
@@ -43,6 +50,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -83,13 +92,58 @@ fun DiveEventDossierDialog(
     event: DiveEventEntity,
     primaryAccentColor: Color,
     onDismiss: () -> Unit,
-    onEditEvent: (DiveEventEntity) -> Unit,
-    onCheckIn: (DiveEventEntity) -> Unit,
-    onNavigateToBuddyBoard: (DiveEventEntity) -> Unit,
-    onNavigateToManifest: (DiveEventEntity) -> Unit
+    onEditEvent: (DiveEventEntity) -> Unit = {},
+    onCheckIn: (DiveEventEntity) -> Unit = {},
+    onNavigateToBuddyBoard: (DiveEventEntity) -> Unit = {},
+    onNavigateToManifest: (DiveEventEntity) -> Unit = {},
+    onUpdateSiteMapImage: ((String) -> Unit)? = null,
+    onRegisterClick: ((DiveEventEntity) -> Unit)? = null,
+    isAlreadyRegistered: Boolean = false
 ) {
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
+    var showFullscreenMap by remember { mutableStateOf(false) }
+
+    val mapPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        if (uri != null && onUpdateSiteMapImage != null) {
+            onUpdateSiteMapImage(uri.toString())
+        }
+    }
+
+    if (showFullscreenMap && event.siteMapImageUri.isNotBlank()) {
+        Dialog(
+            onDismissRequest = { showFullscreenMap = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
+                color = Color.Black
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AsyncImage(
+                        model = event.siteMapImageUri,
+                        contentDescription = "Tauchplatzkarte Vollbild",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    IconButton(
+                        onClick = { showFullscreenMap = false },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
+                            .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Schließen", tint = Color.White)
+                    }
+                }
+            }
+        }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -230,7 +284,17 @@ fun DiveEventDossierDialog(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     when (selectedTab) {
-                        0 -> BriefingTabContent(event = event, primaryAccentColor = primaryAccentColor)
+                        0 -> BriefingTabContent(
+                            event = event,
+                            primaryAccentColor = primaryAccentColor,
+                            onOpenMapPicker = {
+                                mapPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            onShowFullscreenMap = { showFullscreenMap = true },
+                            canUploadMap = onUpdateSiteMapImage != null
+                        )
                         1 -> EmergencyPlanTabContent(event = event, context = context)
                         2 -> OrganizationTabContent(
                             event = event,
@@ -244,18 +308,52 @@ fun DiveEventDossierDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Footer Actions: Centered Pill Button
+                // Footer Actions
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Button(
-                        onClick = onDismiss,
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 9.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Dossier schließen", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        if (onRegisterClick != null) {
+                            if (isAlreadyRegistered) {
+                                Surface(
+                                    shape = RoundedCornerShape(20.dp),
+                                    color = SeaGreen.copy(alpha = 0.15f)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("Angemeldet", fontWeight = FontWeight.Bold, color = SeaGreen, fontSize = 12.sp)
+                                    }
+                                }
+                            } else {
+                                Button(
+                                    onClick = { onRegisterClick(event) },
+                                    shape = RoundedCornerShape(20.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                                ) {
+                                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Anmelden", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                }
+                            }
+                        }
+
+                        Button(
+                            onClick = onDismiss,
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                        ) {
+                            Text("Dossier schließen", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        }
                     }
                 }
             }
@@ -269,7 +367,10 @@ fun DiveEventDossierDialog(
 @Composable
 private fun BriefingTabContent(
     event: DiveEventEntity,
-    primaryAccentColor: Color
+    primaryAccentColor: Color,
+    onOpenMapPicker: () -> Unit,
+    onShowFullscreenMap: () -> Unit,
+    canUploadMap: Boolean
 ) {
     // 1. Site Location & Target Parameters
     Card(
@@ -304,6 +405,91 @@ private fun BriefingTabContent(
                 Column {
                     Text("Umkehrdruck (Turn)", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text("${event.turnPressureBar} bar", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = Color(0xFFD69E2E))
+                }
+            }
+        }
+    }
+
+    // 2. Dive Site Map & Underwater Topography (Tauchplatzkarte)
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Map, contentDescription = null, tint = primaryAccentColor, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "🗺️ Tauchplatzkarte & Topografie",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                if (canUploadMap) {
+                    OutlinedButton(
+                        onClick = onOpenMapPicker,
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(if (event.siteMapImageUri.isNotBlank()) "Karte ändern" else "Karte hochladen", fontSize = 11.sp)
+                    }
+                }
+            }
+
+            if (event.siteMapImageUri.isNotBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onShowFullscreenMap() }
+                ) {
+                    AsyncImage(
+                        model = event.siteMapImageUri,
+                        contentDescription = "Tauchplatzkarte",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(bottomStart = 8.dp),
+                        color = Color.Black.copy(alpha = 0.65f),
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Text(
+                            text = "🔍 Zum Vergrößern tippen",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            } else {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Keine Tauchplatzkarte hinterlegt. Das Geländeprofil wird vor Ort im Briefing erläutert.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
