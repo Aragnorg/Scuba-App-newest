@@ -95,6 +95,8 @@ fun DiveOpsEventsTab(
     var showCreateDialog by remember { mutableStateOf(false) }
     var eventForCheckIn by remember { mutableStateOf<DiveEventEntity?>(null) }
     var eventToDelete by remember { mutableStateOf<DiveEventEntity?>(null) }
+    var eventForDossier by remember { mutableStateOf<DiveEventEntity?>(null) }
+    var eventForEdit by remember { mutableStateOf<DiveEventEntity?>(null) }
 
     val filteredEvents = remember(events, selectedTypeFilter) {
         when (selectedTypeFilter) {
@@ -245,6 +247,7 @@ fun DiveOpsEventsTab(
                 EventCard(
                     event = event,
                     primaryAccentColor = primaryAccentColor,
+                    onOpenDossier = { eventForDossier = event },
                     onCheckIn = { eventForCheckIn = event },
                     onNavigateToBuddyBoard = { onNavigateToBuddyBoard(event) },
                     onNavigateToManifest = { onNavigateToManifest(event) },
@@ -263,7 +266,7 @@ fun DiveOpsEventsTab(
         CreateDiveEventDialog(
             organization = organization,
             onDismiss = { showCreateDialog = false },
-            onConfirm = { title, eventType, siteName, location, eventDate, meetingTime, departureTime, maxCap, leadGuide, maxDepth, minCert, emergencyBriefing ->
+            onConfirm = { title, eventType, siteName, location, eventDate, meetingTime, departureTime, maxCap, leadGuide, maxDepth, minCert, emergencyBriefing, chamberName, chamberPhone, chamberDistanceTime, coastGuardVHF, emergencyNotes, entryExitInfo, waterConditions, turnPressureBar, equipmentRequirements, hazardsAndRules ->
                 viewModel.createDiveEvent(
                     title = title,
                     eventType = eventType,
@@ -276,9 +279,54 @@ fun DiveOpsEventsTab(
                     leadGuideName = leadGuide,
                     maxDepthMeters = maxDepth,
                     requiredMinCert = minCert,
-                    emergencyBriefing = emergencyBriefing
+                    emergencyBriefing = emergencyBriefing,
+                    chamberName = chamberName,
+                    chamberPhone = chamberPhone,
+                    chamberDistanceTime = chamberDistanceTime,
+                    coastGuardVHF = coastGuardVHF,
+                    emergencyNotes = emergencyNotes,
+                    entryExitInfo = entryExitInfo,
+                    waterConditions = waterConditions,
+                    turnPressureBar = turnPressureBar,
+                    equipmentRequirements = equipmentRequirements,
+                    hazardsAndRules = hazardsAndRules
                 )
                 showCreateDialog = false
+            }
+        )
+    }
+
+    eventForDossier?.let { dossierEvent ->
+        val liveEvent = events.find { it.id == dossierEvent.id } ?: dossierEvent
+        DiveEventDossierDialog(
+            event = liveEvent,
+            primaryAccentColor = primaryAccentColor,
+            onDismiss = { eventForDossier = null },
+            onEditEvent = { targetEvent ->
+                eventForEdit = targetEvent
+            },
+            onCheckIn = { targetEvent ->
+                eventForCheckIn = targetEvent
+                eventForDossier = null
+            },
+            onNavigateToBuddyBoard = { targetEvent ->
+                onNavigateToBuddyBoard(targetEvent)
+                eventForDossier = null
+            },
+            onNavigateToManifest = { targetEvent ->
+                onNavigateToManifest(targetEvent)
+                eventForDossier = null
+            }
+        )
+    }
+
+    eventForEdit?.let { editTarget ->
+        EditDiveEventDialog(
+            event = editTarget,
+            onDismiss = { eventForEdit = null },
+            onConfirm = { updatedEvent ->
+                viewModel.updateDiveEvent(updatedEvent)
+                eventForEdit = null
             }
         )
     }
@@ -332,6 +380,7 @@ fun DiveOpsEventsTab(
 fun EventCard(
     event: DiveEventEntity,
     primaryAccentColor: Color,
+    onOpenDossier: () -> Unit,
     onCheckIn: () -> Unit,
     onNavigateToBuddyBoard: () -> Unit,
     onNavigateToManifest: () -> Unit,
@@ -366,7 +415,9 @@ fun EventCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onOpenDossier() }
     ) {
         Column(
             modifier = Modifier
@@ -500,21 +551,41 @@ fun EventCard(
                 )
             }
 
-            if (event.emergencyBriefing.isNotBlank()) {
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
-                    modifier = Modifier.fillMaxWidth()
+            // Micro-Badges for EAP & Briefing (Clean, uncluttered indicator)
+            if (event.hasEmergencyPlan || event.hasBriefing) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "🚨 Notfall-Briefing: ${event.emergencyBriefing}",
-                        modifier = Modifier.padding(8.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (event.hasEmergencyPlan) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFC53030).copy(alpha = 0.12f)
+                        ) {
+                            Text(
+                                text = "🏥 Kammer: ${event.chamberName.ifBlank { "EAP aktiv" }.take(28)}",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFC53030)
+                            )
+                        }
+                    }
+                    if (event.hasBriefing) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = SeaGreen.copy(alpha = 0.12f)
+                        ) {
+                            Text(
+                                text = "📋 Briefing hinterlegt",
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = SeaGreen
+                            )
+                        }
+                    }
                 }
             }
 
@@ -526,34 +597,44 @@ fun EventCard(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Dossier & Briefing Shortcut
+                OutlinedButton(
+                    onClick = onOpenDossier,
+                    shape = RoundedCornerShape(14.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.weight(1.1f)
+                ) {
+                    Text(text = "ℹ️ Dossier", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                }
+
                 // 1-Click Check-in
                 Button(
                     onClick = onCheckIn,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                    modifier = Modifier.weight(1.2f)
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.weight(1.1f)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Check-in", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(13.dp))
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(text = "Check-in", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                 }
 
                 // Buddy-Board shortcut
                 OutlinedButton(
                     onClick = onNavigateToBuddyBoard,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "🤿 Buddy-Board", fontSize = 10.sp)
+                    Text(text = "🤿 Board", fontSize = 10.sp)
                 }
 
                 // Manifest shortcut
                 OutlinedButton(
                     onClick = onNavigateToManifest,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = "📋 Manifest", fontSize = 10.sp)
@@ -583,7 +664,17 @@ fun CreateDiveEventDialog(
         leadGuide: String,
         maxDepth: Float,
         minCert: String,
-        emergencyBriefing: String
+        emergencyBriefing: String,
+        chamberName: String,
+        chamberPhone: String,
+        chamberDistanceTime: String,
+        coastGuardVHF: String,
+        emergencyNotes: String,
+        entryExitInfo: String,
+        waterConditions: String,
+        turnPressureBar: Int,
+        equipmentRequirements: String,
+        hazardsAndRules: String
     ) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
@@ -597,12 +688,27 @@ fun CreateDiveEventDialog(
     var leadGuide by remember { mutableStateOf("Adrian Scheid") }
     var maxDepth by remember { mutableStateOf("25") }
     var minCert by remember { mutableStateOf("Open Water Diver") }
+    var turnPressureBar by remember { mutableStateOf("120") }
     var emergencyBriefing by remember { mutableStateOf("VHF Funk Kanal 16, O2 Koffer an Bord, Nächste Kammer 20 Min.") }
+
+    // Chamber & EAP data
+    var chamberName by remember { mutableStateOf(if (organization.isClub) "Druckkammerzentrum Überlingen (Helios Spital)" else "Hyperbaric Medical Center Sharm El Sheikh") }
+    var chamberPhone by remember { mutableStateOf(if (organization.isClub) "+49 7551 88-0" else "+20 69 3660922") }
+    var chamberDistanceTime by remember { mutableStateOf(if (organization.isClub) "4 km / 7 Min." else "12 NM / 25 Min.") }
+    var coastGuardVHF by remember { mutableStateOf("VHF Kanal 16") }
+    var emergencyNotes by remember { mutableStateOf("O2-Koffer 100% Demand-System & AED vor Ort einsatzbereit.") }
+
+    // Briefing data
+    var entryExitInfo by remember { mutableStateOf("Einstieg über Steg/Treppe. Sicherer Notausstieg in Briefing-Skizze markiert.") }
+    var waterConditions by remember { mutableStateOf("Sicht: 8-12m • Wassertemperatur: ca. 16°C • Leichte Strömung") }
+    var equipmentRequirements by remember { mutableStateOf("Tauchcomputer, Kaltwasser-Regler & Signalboje (SMB) pro Team obligatorisch.") }
+    var hazardsAndRules by remember { mutableStateOf("Maximaltiefe und Umkehrdruck strikt einhalten. Bootsverkehr beachten.") }
+
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("➕ Neue Tauchausfahrt planen") },
+        title = { Text("➕ Neue Tauchausfahrt planen", fontWeight = FontWeight.Bold) },
         text = {
             Column(
                 modifier = Modifier
@@ -706,6 +812,13 @@ fun CreateDiveEventDialog(
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedTextField(
+                        value = turnPressureBar,
+                        onValueChange = { turnPressureBar = it },
+                        label = { Text("Turn (bar)") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
                         value = maxCapacity,
                         onValueChange = { maxCapacity = it },
                         label = { Text("Max Plätze") },
@@ -735,11 +848,105 @@ fun CreateDiveEventDialog(
                     )
                 }
 
+                HorizontalDivider()
+
+                // Emergency & Chamber Section
+                Text("🏥 Druckkammer & Notfallrettung", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = Color(0xFFC53030))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            chamberName = "Druckkammerzentrum Überlingen (Helios Spital)"
+                            chamberPhone = "+49 7551 88-0"
+                            chamberDistanceTime = "3.8 km / 6 Min."
+                            coastGuardVHF = "Kanal 16 / Wasserschutzpolizei (112)"
+                        },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("⚡ Bodensee", fontSize = 10.sp)
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            chamberName = "Hyperbaric Medical Center Sharm El Sheikh"
+                            chamberPhone = "+20 69 3660922"
+                            chamberDistanceTime = "12 NM / 25 Min."
+                            coastGuardVHF = "VHF Kanal 16 / DSC CH 70"
+                        },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("⚡ Sharm", fontSize = 10.sp)
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            chamberName = "Druckkammerzentrum Berlin Helios"
+                            chamberPhone = "+49 30 9401-0"
+                            chamberDistanceTime = "15 km / 20 Min."
+                            coastGuardVHF = "VHF Kanal 16 / Leitstelle 112"
+                        },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("⚡ Berlin", fontSize = 10.sp)
+                    }
+                }
+
                 OutlinedTextField(
-                    value = emergencyBriefing,
-                    onValueChange = { emergencyBriefing = it },
-                    label = { Text("Notfall- & Rettungs-Briefing") },
+                    value = chamberName,
+                    onValueChange = { chamberName = it },
+                    label = { Text("Nächste Druckkammer") },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = chamberPhone,
+                        onValueChange = { chamberPhone = it },
+                        label = { Text("Kammer Tel / Notruf") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1.2f)
+                    )
+                    OutlinedTextField(
+                        value = chamberDistanceTime,
+                        onValueChange = { chamberDistanceTime = it },
+                        label = { Text("Fahrzeit / Distanz") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                OutlinedTextField(
+                    value = coastGuardVHF,
+                    onValueChange = { coastGuardVHF = it },
+                    label = { Text("Seefunk VHF Kanal / Notruf") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = entryExitInfo,
+                    onValueChange = { entryExitInfo = it },
+                    label = { Text("Einstieg & Ausstieg") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2
+                )
+
+                OutlinedTextField(
+                    value = waterConditions,
+                    onValueChange = { waterConditions = it },
+                    label = { Text("Sicht, Wassertemperatur & Strömung") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 2
                 )
 
                 if (errorMessage != null) {
@@ -756,13 +963,19 @@ fun CreateDiveEventDialog(
                     }
                     val capInt = maxCapacity.toIntOrNull() ?: 12
                     val depthFloat = maxDepth.toFloatOrNull() ?: 20f
+                    val turnInt = turnPressureBar.toIntOrNull() ?: 120
                     onConfirm(
                         title, eventType, siteName, location, eventDate, meetingTime, departureTime,
-                        capInt, leadGuide, depthFloat, minCert, emergencyBriefing
+                        capInt, leadGuide, depthFloat, minCert, emergencyBriefing,
+                        chamberName, chamberPhone, chamberDistanceTime, coastGuardVHF, emergencyNotes,
+                        entryExitInfo, waterConditions, turnInt, equipmentRequirements, hazardsAndRules
                     )
-                }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                shape = RoundedCornerShape(18.dp),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
             ) {
-                Text("Planen")
+                Text("Ausfahrt planen", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {

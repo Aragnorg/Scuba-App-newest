@@ -489,6 +489,19 @@ data class DiveEventEntity(
     val maxDepthMeters: Float = 20.0f,
     val requiredMinCert: String = "Open Water Diver",
     val emergencyBriefing: String = "",
+    // Emergency Action Plan (EAP) & Chamber Data
+    val chamberName: String = "",
+    val chamberPhone: String = "",
+    val chamberDistanceTime: String = "",
+    val coastGuardVHF: String = "",
+    val emergencyNotes: String = "",
+    // Comprehensive Dive Site Briefing & Operational Parameters
+    val entryExitInfo: String = "",
+    val waterConditions: String = "",
+    val turnPressureBar: Int = 120,
+    val equipmentRequirements: String = "",
+    val hazardsAndRules: String = "",
+    val briefingDocumentUri: String = "",
     val status: String = "PLANNING", // "PLANNING", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
     val createdAt: Long = System.currentTimeMillis()
 ) {
@@ -496,6 +509,8 @@ data class DiveEventEntity(
     val isShoreDive: Boolean get() = eventType == "SHORE_DIVE"
     val isCourse: Boolean get() = eventType == "COURSE_TRAINING"
     val isClubOuting: Boolean get() = eventType == "CLUB_OUTING"
+    val hasEmergencyPlan: Boolean get() = chamberName.isNotBlank() || emergencyBriefing.isNotBlank() || coastGuardVHF.isNotBlank()
+    val hasBriefing: Boolean get() = entryExitInfo.isNotBlank() || waterConditions.isNotBlank() || hazardsAndRules.isNotBlank() || equipmentRequirements.isNotBlank()
 }
 
 @Entity(tableName = "dive_event_participants")

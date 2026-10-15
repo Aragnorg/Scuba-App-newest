@@ -1839,6 +1839,16 @@ class DivingRepository(private val divingDao: DivingDao) {
                 maxDepthMeters = 30.0f,
                 requiredMinCert = "CMAS ** / AOWD",
                 emergencyBriefing = "Bodensee Kaltwasser-Tauchgang: Zwei getrennte Kaltwasser-Reglersysteme (DIN 300) zwingend erforderlich. Druckkammer Überlingen (Helios Spital) 5 Minuten entfernt. O2-Notfallkoffer am Vereins-Transporter.",
+                chamberName = "Druckkammerzentrum Überlingen (Helios Spital)",
+                chamberPhone = "+49 7551 88-0",
+                chamberDistanceTime = "3.8 km / ca. 6 Min. Fahrzeit",
+                coastGuardVHF = "Kanal 16 / Bodensee Wasserschutzpolizei (Tel. 112)",
+                emergencyNotes = "O2-Notfallkoffer 100% Demand-System & AED im Vereinsbus. Notfallbeauftragter: Adrian Scheid. Leitstelle Notruf 112.",
+                entryExitInfo = "Einstieg über Treppe/Geländer Parkhaus Post. Ausstieg identisch. Notausstieg 150m westlich am Badesteg.",
+                waterConditions = "Sicht: 6-9m • Wassertemperatur: 14°C Oberfläche, ab 11m Tiefe Sprungschicht auf 8°C Kaltwasser.",
+                turnPressureBar = 130,
+                equipmentRequirements = "Zwei getrennte Kaltwasser-Reglersysteme (DIN 300) Pflicht, Haupt- und Reservelampe, Signalboje (SMB) mit Spool pro Team.",
+                hazardsAndRules = "Steilwand fällt bis auf über 45m Tiefe ab - Maximaltiefe 30m strikt beachten! Keine Deko-Tauchgänge. Fährverkehr und Kursschiffe an der Oberfläche beachten.",
                 status = "CONFIRMED",
                 createdAt = System.currentTimeMillis() - (5 * 86400000L)
             )
@@ -1926,6 +1936,16 @@ class DivingRepository(private val divingDao: DivingDao) {
                 maxDepthMeters = 26.0f,
                 requiredMinCert = "Advanced Open Water Diver",
                 emergencyBriefing = "Tages-Bootsausfahrt auf M/Y Blue Horizon. Strömungstauchgang (Drift) mit Schlauchboot-Abholung (Zodiac). Signalboje (SMB) pro Buddy-Team Pflicht. Dekompressionskammer Sharm El Sheikh VHF Kanal 16. O2-Notfallkoffer und DAN Sauerstoff-Set auf dem Hauptdeck.",
+                chamberName = "Hyperbaric Medical Center Sharm El Sheikh",
+                chamberPhone = "+20 69 3660922",
+                chamberDistanceTime = "12 Seemeilen / ca. 25 Min. per Speedboat",
+                coastGuardVHF = "VHF Kanal 16 / Sharm Port Control DSC CH 70",
+                emergencyNotes = "Großer Notfallsauerstoff-Koffer (DAN Twin-Tank) & Notfallapotheke auf Hauptdeck. Sauerstoff-Provider: Sarah Connor.",
+                entryExitInfo = "Rückwärtsrolle oder großer Schritt vom Tauchdeck der M/Y Blue Horizon. Drift-Tauchgang mit Zodiac-Pick-up an der Signalboje.",
+                waterConditions = "Sicht: 25-35m glasklar • Wassertemperatur: 26°C angenehm • Strömung: mittel bis stark nach Süden.",
+                turnPressureBar = 100,
+                equipmentRequirements = "Oberflächenboje (SMB) pro Buddy-Team zwingend, Strömungshaken bei starkem Gegenstrom empfohlen.",
+                hazardsAndRules = "Starke Abwärtsströmungen am Shark Reef möglich. Taucher dürfen Riffwand und Yolanda-Fracht (Badewannen/Toilettenschüsseln) nicht berühren. Nationalpark-Regeln: Nichts anfassen, kein Müll.",
                 status = "CONFIRMED",
                 createdAt = System.currentTimeMillis() - (7 * 86400000L)
             )

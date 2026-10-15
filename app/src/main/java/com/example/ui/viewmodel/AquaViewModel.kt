@@ -717,7 +717,18 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         leadGuideName: String = "",
         maxDepthMeters: Float = 20.0f,
         requiredMinCert: String = "Open Water Diver",
-        emergencyBriefing: String = ""
+        emergencyBriefing: String = "",
+        chamberName: String = "",
+        chamberPhone: String = "",
+        chamberDistanceTime: String = "",
+        coastGuardVHF: String = "",
+        emergencyNotes: String = "",
+        entryExitInfo: String = "",
+        waterConditions: String = "",
+        turnPressureBar: Int = 120,
+        equipmentRequirements: String = "",
+        hazardsAndRules: String = "",
+        briefingDocumentUri: String = ""
     ) {
         val currentOrg = _currentOrganization.value ?: return
         val newEvent = DiveEventEntity(
@@ -737,12 +748,32 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             maxDepthMeters = maxDepthMeters,
             requiredMinCert = requiredMinCert.trim(),
             emergencyBriefing = emergencyBriefing.trim(),
+            chamberName = chamberName.trim(),
+            chamberPhone = chamberPhone.trim(),
+            chamberDistanceTime = chamberDistanceTime.trim(),
+            coastGuardVHF = coastGuardVHF.trim(),
+            emergencyNotes = emergencyNotes.trim(),
+            entryExitInfo = entryExitInfo.trim(),
+            waterConditions = waterConditions.trim(),
+            turnPressureBar = turnPressureBar,
+            equipmentRequirements = equipmentRequirements.trim(),
+            hazardsAndRules = hazardsAndRules.trim(),
+            briefingDocumentUri = briefingDocumentUri.trim(),
             status = "CONFIRMED",
             createdAt = System.currentTimeMillis()
         )
         viewModelScope.launch {
             repository.insertEvent(newEvent)
             selectDiveEvent(newEvent)
+        }
+    }
+
+    fun updateDiveEvent(event: DiveEventEntity) {
+        viewModelScope.launch {
+            repository.updateEvent(event)
+            if (_selectedEvent.value?.id == event.id) {
+                _selectedEvent.value = event
+            }
         }
     }
 
