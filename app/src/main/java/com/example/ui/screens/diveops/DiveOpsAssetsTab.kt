@@ -26,15 +26,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -174,11 +174,11 @@ fun DiveOpsAssetsTab(
 
                 Button(
                     onClick = { showAddItemDialog = true },
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(text = if (isGerman) "+ Ausrüstung" else "+ Equipment", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
@@ -188,15 +188,16 @@ fun DiveOpsAssetsTab(
         item {
             // KPI Traffic Lights Bar
             Card(
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
+                        .padding(14.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Row(
@@ -222,13 +223,13 @@ fun DiveOpsAssetsTab(
                     ) {
                         // Ready
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = SeaGreen.copy(alpha = 0.12f),
                             border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f)),
                             modifier = Modifier.weight(1f)
                         ) {
                             Column(
-                                modifier = Modifier.padding(6.dp),
+                                modifier = Modifier.padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(text = "${assetStats.first}", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = SeaGreen)
@@ -238,13 +239,13 @@ fun DiveOpsAssetsTab(
 
                         // Rented
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = OceanPrimary.copy(alpha = 0.12f),
                             border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.5f)),
                             modifier = Modifier.weight(1f)
                         ) {
                             Column(
-                                modifier = Modifier.padding(6.dp),
+                                modifier = Modifier.padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(text = "${assetStats.second}", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = OceanPrimary)
@@ -254,13 +255,13 @@ fun DiveOpsAssetsTab(
 
                         // Maintenance
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = Color(0xFFD69E2E).copy(alpha = 0.12f),
                             border = BorderStroke(1.dp, Color(0xFFD69E2E).copy(alpha = 0.5f)),
                             modifier = Modifier.weight(1f)
                         ) {
                             Column(
-                                modifier = Modifier.padding(6.dp),
+                                modifier = Modifier.padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(text = "${assetStats.third}", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFFB7791F))
@@ -270,13 +271,13 @@ fun DiveOpsAssetsTab(
 
                         // Locked / Expired TÜV
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = Color(0xFFE53E3E).copy(alpha = 0.12f),
                             border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f)),
                             modifier = Modifier.weight(1.1f)
                         ) {
                             Column(
-                                modifier = Modifier.padding(6.dp),
+                                modifier = Modifier.padding(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(text = "${assetStats.fourth}", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFFC53030))
@@ -288,16 +289,16 @@ fun DiveOpsAssetsTab(
                     // Active Rental Lock Alert
                     if (assetStats.fourth > 0) {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(14.dp),
                             color = Color(0xFFE53E3E).copy(alpha = 0.12f),
                             border = BorderStroke(1.dp, Color(0xFFE53E3E)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
-                                modifier = Modifier.padding(8.dp),
+                                modifier = Modifier.padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Warning, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.Warning, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "⛔ Verleih-Sperre aktiv: ${assetStats.fourth} Gegenstand/Flasche mit abgelaufenem TÜV für Ausgabe gesperrt!",
@@ -340,6 +341,7 @@ fun DiveOpsAssetsTab(
                 FilterChip(
                     selected = selectedCategoryFilter == "ALL",
                     onClick = { selectedCategoryFilter = "ALL" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("Alle (${inventory.size})", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -349,6 +351,7 @@ fun DiveOpsAssetsTab(
                 FilterChip(
                     selected = selectedCategoryFilter == "TANK",
                     onClick = { selectedCategoryFilter = "TANK" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🫧 Flaschen", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -358,6 +361,7 @@ fun DiveOpsAssetsTab(
                 FilterChip(
                     selected = selectedCategoryFilter == "REGULATOR",
                     onClick = { selectedCategoryFilter = "REGULATOR" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🤿 Regler", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -367,6 +371,7 @@ fun DiveOpsAssetsTab(
                 FilterChip(
                     selected = selectedCategoryFilter == "BCD_SUIT",
                     onClick = { selectedCategoryFilter = "BCD_SUIT" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🦺 Jackets", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -376,6 +381,7 @@ fun DiveOpsAssetsTab(
                 FilterChip(
                     selected = selectedCategoryFilter == "O2_KIT",
                     onClick = { selectedCategoryFilter = "O2_KIT" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🫁 O2-Koffer", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -389,8 +395,9 @@ fun DiveOpsAssetsTab(
         if (filteredInventory.isEmpty()) {
             item {
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -493,6 +500,8 @@ fun DiveOpsAssetsTab(
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text(if (isGerman) "Ausrüstung entfernen" else "Remove Equipment") },
             text = { Text("Möchtest du '${itemToDelete!!.internalCode} - ${itemToDelete!!.brand} ${itemToDelete!!.model}' wirklich aus dem Inventar löschen?") },
             confirmButton = {
@@ -501,13 +510,17 @@ fun DiveOpsAssetsTab(
                         viewModel.deleteInventoryItem(itemToDelete!!.id)
                         itemToDelete = null
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
                 ) {
                     Text("Löschen")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { itemToDelete = null }) { Text("Abbrechen") }
+                TextButton(
+                    onClick = { itemToDelete = null },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Abbrechen") }
             }
         )
     }
@@ -534,9 +547,10 @@ fun CompressorStationCard(
     }
 
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -574,12 +588,12 @@ fun CompressorStationCard(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = SeaGreen.copy(alpha = 0.15f)
                 ) {
                     Text(
                         text = "DIN EN 12021: OK",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -614,11 +628,11 @@ fun CompressorStationCard(
                         .fillMaxWidth()
                         .height(6.dp),
                     color = filterColor,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
             // Compressor Actions
             Row(
@@ -628,7 +642,7 @@ fun CompressorStationCard(
             ) {
                 OutlinedButton(
                     onClick = onResetFilter,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
                     Text(text = "🔄 Filter gewechselt", fontSize = 11.sp)
@@ -636,7 +650,7 @@ fun CompressorStationCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = onLogHours,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                 ) {
@@ -691,16 +705,20 @@ fun InventoryItemCard(
     }
 
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(if (isLocked) 1.5.dp else 1.dp, if (isLocked) Color(0xFFE53E3E).copy(alpha = 0.6f) else MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(
+            if (isLocked) 1.5.dp else 1.dp,
+            if (isLocked) MaterialTheme.colorScheme.error.copy(alpha = 0.6f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Header: Icon, Code, Brand/Model, Delete
             Row(
@@ -708,9 +726,9 @@ fun InventoryItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = primaryAccentColor.copy(alpha = 0.12f),
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(38.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(text = typeIcon, fontSize = 18.sp)
@@ -720,12 +738,12 @@ fun InventoryItemCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant
+                            shape = RoundedCornerShape(6.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh
                         ) {
                             Text(
                                 text = item.internalCode,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold
@@ -752,21 +770,21 @@ fun InventoryItemCard(
 
                 IconButton(
                     onClick = onDelete,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(28.dp)
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Löschen", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(15.dp))
+                    Icon(Icons.Rounded.Close, contentDescription = "Löschen", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                 }
             }
 
             // Status Badge
             Surface(
-                shape = RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(8.dp),
                 color = statusBadgeColor.copy(alpha = 0.12f),
                 border = BorderStroke(1.dp, statusBadgeColor.copy(alpha = 0.4f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -822,7 +840,7 @@ fun InventoryItemCard(
                 )
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
             // Management Action Buttons
             Row(
@@ -832,10 +850,10 @@ fun InventoryItemCard(
             ) {
                 OutlinedButton(
                     onClick = onUpdateService,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.size(12.dp))
+                    Icon(Icons.Rounded.Build, contentDescription = null, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(text = "TÜV / Service", fontSize = 10.sp)
                 }
@@ -843,7 +861,7 @@ fun InventoryItemCard(
                 if (isRented) {
                     Button(
                         onClick = onCheckIn,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                     ) {
@@ -853,7 +871,7 @@ fun InventoryItemCard(
                     Button(
                         onClick = onCheckOut,
                         enabled = !isLocked,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (isLocked) Color.Gray else OceanPrimary
                         ),
@@ -912,6 +930,8 @@ fun AddInventoryItemDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text(if (isGerman) "+ Neue Ausrüstung anlegen" else "+ Add New Equipment") },
         text = {
             Column(
@@ -930,6 +950,7 @@ fun AddInventoryItemDialog(
                         FilterChip(
                             selected = itemType == typeKey,
                             onClick = { itemType = typeKey },
+                            shape = RoundedCornerShape(10.dp),
                             label = { Text(typeLabel, fontSize = 10.sp) }
                         )
                     }
@@ -940,6 +961,7 @@ fun AddInventoryItemDialog(
                     onValueChange = { internalCode = it },
                     label = { Text("Inventarnummer / Kennung *") },
                     placeholder = { Text("z.B. T-12-05 oder REG-APX-03") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -953,6 +975,7 @@ fun AddInventoryItemDialog(
                         onValueChange = { brand = it },
                         label = { Text("Hersteller *") },
                         placeholder = { Text("z.B. Apeks, Faber") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -961,6 +984,7 @@ fun AddInventoryItemDialog(
                         onValueChange = { model = it },
                         label = { Text("Modell *") },
                         placeholder = { Text("z.B. XTX 50") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -971,6 +995,7 @@ fun AddInventoryItemDialog(
                     onValueChange = { sizeOrSpec = it },
                     label = { Text("Größe / Spezifikation") },
                     placeholder = { Text("z.B. 12L Stahl lang, 232 bar oder Größe L") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -979,6 +1004,7 @@ fun AddInventoryItemDialog(
                     value = serialNumber,
                     onValueChange = { serialNumber = it },
                     label = { Text("Seriennummer") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -987,6 +1013,7 @@ fun AddInventoryItemDialog(
                     value = nextServiceDate,
                     onValueChange = { nextServiceDate = it },
                     label = { Text("Nächster TÜV / Revision (YYYY-MM-DD)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -995,6 +1022,7 @@ fun AddInventoryItemDialog(
                     value = serviceNotes,
                     onValueChange = { serviceNotes = it },
                     label = { Text("Prüfbericht / Notizen") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -1011,13 +1039,17 @@ fun AddInventoryItemDialog(
                         return@Button
                     }
                     onConfirm(itemType, internalCode, brand, model, sizeOrSpec, serialNumber, nextServiceDate, serviceNotes)
-                }
+                },
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Speichern")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1035,9 +1067,16 @@ fun RentalCheckOutDialog(
     if (members.isEmpty()) {
         AlertDialog(
             onDismissRequest = onDismiss,
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text("Keine Personen vorhanden") },
             text = { Text("Bitte lege zuerst Mitglieder oder Kunden im Roster an.") },
-            confirmButton = { Button(onClick = onDismiss) { Text("OK") } }
+            confirmButton = {
+                Button(
+                    onClick = onDismiss,
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("OK") }
+            }
         )
         return
     }
@@ -1049,6 +1088,8 @@ fun RentalCheckOutDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text(if (isGerman) "📤 Ausrüstung ausgeben (Verleih)" else "📤 Rent Equipment") },
         text = {
             Column(
@@ -1068,11 +1109,12 @@ fun RentalCheckOutDialog(
                     members.forEach { m ->
                         val isSelected = m.id == selectedMember.id
                         Card(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainer
                             ),
-                            border = BorderStroke(1.dp, if (isSelected) OceanPrimary else Color.Transparent),
+                            border = BorderStroke(1.dp, if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { selectedMember = m }
@@ -1080,7 +1122,7 @@ fun RentalCheckOutDialog(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp),
+                                    .padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
@@ -1088,7 +1130,7 @@ fun RentalCheckOutDialog(
                                     Text(text = "${m.membershipNumber} • ${m.certLevel}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
                                 }
                                 if (isSelected) {
-                                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
                                 }
                             }
                         }
@@ -1099,6 +1141,7 @@ fun RentalCheckOutDialog(
                     value = dueDate,
                     onValueChange = { dueDate = it },
                     label = { Text("Rückgabe fällig am (YYYY-MM-DD)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1107,17 +1150,24 @@ fun RentalCheckOutDialog(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text("Verleih-Bemerkungen") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(selectedMember, dueDate, notes) }) {
+            Button(
+                onClick = { onConfirm(selectedMember, dueDate, notes) },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Ausgeben")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1138,6 +1188,8 @@ fun RentalCheckInDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text(if (isGerman) "📥 Ausrüstungs-Rückgabe erfassen" else "📥 Return Equipment") },
         text = {
             Column(
@@ -1166,11 +1218,13 @@ fun RentalCheckInDialog(
                     FilterChip(
                         selected = condition == "INTACT",
                         onClick = { condition = "INTACT" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("🟢 Einwandfrei", fontSize = 11.sp) }
                     )
                     FilterChip(
                         selected = condition == "DAMAGED",
                         onClick = { condition = "DAMAGED" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("🔴 Mangel / Defekt", fontSize = 11.sp) }
                     )
                 }
@@ -1181,18 +1235,25 @@ fun RentalCheckInDialog(
                         onValueChange = { damageNotes = it },
                         label = { Text("Schadensbericht / Mängelbeschreibung *") },
                         placeholder = { Text("z.B. Mundstück gerissen, Flossenband defekt") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(condition, damageNotes) }) {
+            Button(
+                onClick = { onConfirm(condition, damageNotes) },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Rücknahme bestätigen")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1212,6 +1273,8 @@ fun UpdateServiceTuvDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text("🛠️ TÜV / Revision aktualisieren") },
         text = {
             Column(
@@ -1226,6 +1289,7 @@ fun UpdateServiceTuvDialog(
                     value = nextDate,
                     onValueChange = { nextDate = it },
                     label = { Text("Neues Ablaufdatum (YYYY-MM-DD)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1233,6 +1297,7 @@ fun UpdateServiceTuvDialog(
                     value = lastDate,
                     onValueChange = { lastDate = it },
                     label = { Text("Prüfdatum (YYYY-MM-DD)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1241,17 +1306,24 @@ fun UpdateServiceTuvDialog(
                     onValueChange = { notes = it },
                     label = { Text("Prüfprotokoll / Prüfstelle") },
                     placeholder = { Text("z.B. TÜV Süd Prüfprotokoll #9941") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(nextDate, lastDate, notes) }) {
+            Button(
+                onClick = { onConfirm(nextDate, lastDate, notes) },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Aktualisieren (Freigeben)")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1271,6 +1343,8 @@ fun CompressorTelemetryDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text("⏱️ Kompressor-Stunden loggen") },
         text = {
             Column(
@@ -1285,6 +1359,7 @@ fun CompressorTelemetryDialog(
                     value = addedHoursText,
                     onValueChange = { addedHoursText = it },
                     label = { Text("Hinzugefügte Betriebsstunden (h)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1301,6 +1376,7 @@ fun CompressorTelemetryDialog(
                     value = airDate,
                     onValueChange = { airDate = it },
                     label = { Text("Datum Luftanalyse DIN EN 12021") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1311,13 +1387,17 @@ fun CompressorTelemetryDialog(
                 onClick = {
                     val addH = addedHoursText.toFloatOrNull() ?: 0f
                     onConfirm(addH, resetFilter, airDate)
-                }
+                },
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Speichern")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }

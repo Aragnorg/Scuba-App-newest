@@ -30,16 +30,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -53,6 +53,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -190,19 +191,25 @@ fun DiveOpsRosterTab(
                         )
                     },
                     leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = primaryAccentColor)
+                        Icon(Icons.Rounded.Search, contentDescription = null, tint = primaryAccentColor)
                     },
                     trailingIcon = {
                         if (searchQuery.isNotBlank()) {
                             IconButton(onClick = { searchQuery = "" }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                                Icon(Icons.Rounded.Close, contentDescription = "Clear")
                             }
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("diveops_search_field"),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = primaryAccentColor,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
                     singleLine = true
                 )
 
@@ -214,6 +221,7 @@ fun DiveOpsRosterTab(
                     FilterChip(
                         selected = selectedRoleFilter == "ALL",
                         onClick = { selectedRoleFilter = "ALL" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("Alle (${members.size})", fontSize = 11.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -223,6 +231,7 @@ fun DiveOpsRosterTab(
                     FilterChip(
                         selected = selectedRoleFilter == "OWNER",
                         onClick = { selectedRoleFilter = "OWNER" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (organization.isClub) "Vorstand" else "Leitung", fontSize = 11.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -232,6 +241,7 @@ fun DiveOpsRosterTab(
                     FilterChip(
                         selected = selectedRoleFilter == "INSTRUCTOR",
                         onClick = { selectedRoleFilter = "INSTRUCTOR" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (organization.isClub) "Ausbilder" else "Guides", fontSize = 11.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -241,6 +251,7 @@ fun DiveOpsRosterTab(
                     FilterChip(
                         selected = selectedRoleFilter == "TECH_MANAGER",
                         onClick = { selectedRoleFilter = "TECH_MANAGER" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (organization.isClub) "Gerätewart" else "Technik", fontSize = 11.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -250,6 +261,7 @@ fun DiveOpsRosterTab(
                     FilterChip(
                         selected = selectedRoleFilter == "MEMBER_GUEST",
                         onClick = { selectedRoleFilter = "MEMBER_GUEST" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (organization.isClub) "Mitglieder" else "Gäste", fontSize = 11.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -285,7 +297,8 @@ fun DiveOpsRosterTab(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedButton(
                         onClick = { viewModel.seedSampleMembersForCurrentOrg() },
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, primaryAccentColor.copy(alpha = 0.5f)),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
                     ) {
                         Text("⚡ Test-Mitglieder", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = primaryAccentColor)
@@ -293,11 +306,11 @@ fun DiveOpsRosterTab(
 
                     Button(
                         onClick = { showAddMemberDialog = true },
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(if (organization.isClub) "+ Mitglied" else "+ Gast/Diver", fontSize = 12.sp)
                     }
@@ -310,8 +323,10 @@ fun DiveOpsRosterTab(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -411,6 +426,8 @@ fun DiveOpsRosterTab(
     if (memberToDelete != null) {
         AlertDialog(
             onDismissRequest = { memberToDelete = null },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text("Person entfernen") },
             text = {
                 Text("Möchtest du '${memberToDelete!!.fullName}' wirklich aus dieser Organisation entfernen?")
@@ -421,13 +438,17 @@ fun DiveOpsRosterTab(
                         viewModel.removeOrganizationMember(memberToDelete!!.id)
                         memberToDelete = null
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
                 ) {
                     Text("Entfernen")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { memberToDelete = null }) {
+                TextButton(
+                    onClick = { memberToDelete = null },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text("Abbrechen")
                 }
             }
@@ -455,12 +476,12 @@ fun OrgHeroBanner(
     onOpenEmergencyPlan: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         border = BorderStroke(1.dp, primaryAccentColor.copy(alpha = 0.35f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -474,7 +495,7 @@ fun OrgHeroBanner(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(14.dp),
                     color = primaryAccentColor.copy(alpha = 0.15f),
                     modifier = Modifier.size(46.dp)
                 ) {
@@ -527,7 +548,7 @@ fun OrgHeroBanner(
                 if (organization.affiliations.isNotBlank()) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh
                     ) {
                         Text(
                             text = "Verband: ${organization.affiliations}",
@@ -547,7 +568,8 @@ fun OrgHeroBanner(
                 ) {
                     OutlinedButton(
                         onClick = onEditOrganization,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, primaryAccentColor.copy(alpha = 0.5f)),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
                         Text(text = "✏️", fontSize = 12.sp)
@@ -563,7 +585,7 @@ fun OrgHeroBanner(
                     // Emergency Plan Dossier Button
                     Button(
                         onClick = onOpenEmergencyPlan,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                     ) {
@@ -595,9 +617,10 @@ fun SafetyGateTrafficLightBar(
     strings: com.example.ui.i18n.Strings
 ) {
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -635,13 +658,13 @@ fun SafetyGateTrafficLightBar(
             ) {
                 // Green: Valid
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = Color(0xFF38A169).copy(alpha = 0.12f),
-                    border = BorderStroke(1.dp, Color(0xFF38A169)),
+                    border = BorderStroke(1.dp, Color(0xFF38A169).copy(alpha = 0.6f)),
                     modifier = Modifier.weight(1f)
                 ) {
                     Column(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -661,13 +684,13 @@ fun SafetyGateTrafficLightBar(
 
                 // Yellow: Expiring Soon
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = Color(0xFFD69E2E).copy(alpha = 0.12f),
-                    border = BorderStroke(1.dp, Color(0xFFD69E2E)),
+                    border = BorderStroke(1.dp, Color(0xFFD69E2E).copy(alpha = 0.6f)),
                     modifier = Modifier.weight(1f)
                 ) {
                     Column(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -687,13 +710,13 @@ fun SafetyGateTrafficLightBar(
 
                 // Red: Expired / Missing
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = Color(0xFFE53E3E).copy(alpha = 0.12f),
-                    border = BorderStroke(1.dp, Color(0xFFE53E3E)),
+                    border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.6f)),
                     modifier = Modifier.weight(1f)
                 ) {
                     Column(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -715,22 +738,22 @@ fun SafetyGateTrafficLightBar(
             // Safety Gate Active Alert
             if (expiredCount > 0) {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = Color(0xFFE53E3E).copy(alpha = 0.12f),
                     border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Warning,
+                            imageVector = Icons.Rounded.Warning,
                             contentDescription = null,
                             tint = Color(0xFFE53E3E),
                             modifier = Modifier.size(16.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "⛔ Safety Gate: $expiredCount Person(en) ohne gültige TTU gesperrt für Tief-/Bootsausfahrten!",
                             style = MaterialTheme.typography.bodySmall,
@@ -795,11 +818,12 @@ fun MemberRosterCard(
     }
 
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(
             width = if (ttuInfo.level == ExpirationAlertLevel.EXPIRED) 1.5.dp else 1.dp,
-            color = if (ttuInfo.level == ExpirationAlertLevel.EXPIRED) Color(0xFFE53E3E).copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant
+            color = if (ttuInfo.level == ExpirationAlertLevel.EXPIRED) Color(0xFFE53E3E).copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
         ),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -815,9 +839,9 @@ fun MemberRosterCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = CircleShape,
+                    shape = RoundedCornerShape(14.dp),
                     color = roleColor.copy(alpha = 0.15f),
-                    border = BorderStroke(1.5.dp, roleColor),
+                    border = BorderStroke(1.5.dp, roleColor.copy(alpha = 0.7f)),
                     modifier = Modifier.size(42.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -842,12 +866,12 @@ fun MemberRosterCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
-                            shape = RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(6.dp),
                             color = roleColor.copy(alpha = 0.15f)
                         ) {
                             Text(
                                 text = roleTitle,
-                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
@@ -870,7 +894,7 @@ fun MemberRosterCard(
                     modifier = Modifier.size(28.dp)
                 ) {
                     Icon(
-                        imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        imageVector = if (expanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
                         contentDescription = "Expand",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -884,12 +908,12 @@ fun MemberRosterCard(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = OceanPrimary.copy(alpha = 0.12f)
                 ) {
                     Text(
                         text = "🤿 ${member.certLevel}",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -898,12 +922,12 @@ fun MemberRosterCard(
                 }
                 if (member.totalLoggedDives > 0) {
                     Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh
                     ) {
                         Text(
                             text = if (isGerman) "${member.totalLoggedDives} Tauchgänge" else "${member.totalLoggedDives} Dives",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -922,12 +946,12 @@ fun MemberRosterCard(
                 ) {
                     specialties.forEach { spec ->
                         Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            shape = RoundedCornerShape(6.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh
                         ) {
                             Text(
                                 text = spec,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 9.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -939,7 +963,7 @@ fun MemberRosterCard(
 
             // TTU / Medical Traffic Light Banner
             Surface(
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = ttuColor.copy(alpha = 0.12f),
                 border = BorderStroke(1.dp, ttuColor.copy(alpha = 0.4f)),
                 modifier = Modifier.fillMaxWidth()
@@ -1001,7 +1025,7 @@ fun MemberRosterCard(
                         .padding(top = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                     if (member.emergencyContactName.isNotBlank() || member.emergencyContactPhone.isNotBlank()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1058,10 +1082,11 @@ fun MemberRosterCard(
                     ) {
                         OutlinedButton(
                             onClick = onChangeRole,
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(13.dp))
+                            Icon(Icons.Rounded.Edit, contentDescription = null, modifier = Modifier.size(13.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(if (isGerman) "Rolle ändern" else "Change Role", fontSize = 11.sp)
                         }
@@ -1070,7 +1095,7 @@ fun MemberRosterCard(
                             onClick = onDelete,
                             modifier = Modifier.size(30.dp)
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = if (isGerman) "Löschen" else "Delete", tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Delete, contentDescription = if (isGerman) "Löschen" else "Delete", tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -1101,6 +1126,8 @@ fun EmergencyPlanDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "🚨", fontSize = 22.sp)
@@ -1128,12 +1155,12 @@ fun EmergencyPlanDialog(
 
                 // 1. Chamber
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(10.dp)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             text = "🏥 Nächste Dekompressionskammer:",
                             style = MaterialTheme.typography.labelSmall,
@@ -1151,15 +1178,15 @@ fun EmergencyPlanDialog(
 
                 // 2. Emergency Phone / SAR
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = Color(0xFFE53E3E).copy(alpha = 0.12f),
-                    border = BorderStroke(1.dp, Color(0xFFE53E3E)),
+                    border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.6f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp),
+                            .padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -1186,19 +1213,19 @@ fun EmergencyPlanDialog(
                                 context.startActivity(intent)
                             }
                         ) {
-                            Icon(Icons.Default.Phone, contentDescription = "Dial", tint = Color(0xFFC53030))
+                            Icon(Icons.Rounded.Phone, contentDescription = "Dial", tint = Color(0xFFC53030))
                         }
                     }
                 }
 
                 // 3. GPS Evacuation Point
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(10.dp)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             text = "📍 Rettungstreffpunkt / Slipstelle:",
                             style = MaterialTheme.typography.labelSmall,
@@ -1216,12 +1243,12 @@ fun EmergencyPlanDialog(
 
                 // 4. Oxygen Kit Location
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(10.dp)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             text = "🫁 100% Notfall-Sauerstoff (O2-Koffer):",
                             style = MaterialTheme.typography.labelSmall,
@@ -1239,7 +1266,10 @@ fun EmergencyPlanDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onDismiss) {
+            Button(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Schließen")
             }
         }
@@ -1269,6 +1299,8 @@ fun AddOrganizationMemberDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text(if (isClub) "Mitglied anlegen" else "Kunde / Gast anlegen") },
         text = {
             Column(
@@ -1281,6 +1313,7 @@ fun AddOrganizationMemberDialog(
                     value = fullName,
                     onValueChange = { fullName = it },
                     label = { Text("Vollständiger Name *") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1288,6 +1321,7 @@ fun AddOrganizationMemberDialog(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("E-Mail-Adresse *") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1295,6 +1329,7 @@ fun AddOrganizationMemberDialog(
                     value = phoneNumber,
                     onValueChange = { phoneNumber = it },
                     label = { Text("Telefonnummer") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1303,6 +1338,7 @@ fun AddOrganizationMemberDialog(
                     onValueChange = { membershipNumber = it },
                     label = { Text(if (isClub) "Mitgliedsnummer" else "Kundennummer / Pass") },
                     placeholder = { Text(if (isClub) "z.B. TCD-099" else "z.B. GST-4421") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1311,6 +1347,7 @@ fun AddOrganizationMemberDialog(
                     onValueChange = { certLevel = it },
                     label = { Text("Brevet-Stufe") },
                     placeholder = { Text("z.B. CMAS * / OWD / AOWD") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1319,6 +1356,7 @@ fun AddOrganizationMemberDialog(
                     onValueChange = { ttuExpiryDate = it },
                     label = { Text("TTU Ablaufdatum (YYYY-MM-DD)") },
                     placeholder = { Text("2027-05-15") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1332,16 +1370,19 @@ fun AddOrganizationMemberDialog(
                     FilterChip(
                         selected = role == (if (isClub) "MEMBER" else "GUEST"),
                         onClick = { role = if (isClub) "MEMBER" else "GUEST" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isClub) "Mitglied" else "Gast", fontSize = 11.sp) }
                     )
                     FilterChip(
                         selected = role == "INSTRUCTOR",
                         onClick = { role = "INSTRUCTOR" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isClub) "Ausbilder" else "Guide", fontSize = 11.sp) }
                     )
                     FilterChip(
                         selected = role == "TECH_MANAGER",
                         onClick = { role = "TECH_MANAGER" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isClub) "Gerätewart" else "Technik", fontSize = 11.sp) }
                     )
                 }
@@ -1350,6 +1391,7 @@ fun AddOrganizationMemberDialog(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text("Notizen") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -1366,13 +1408,17 @@ fun AddOrganizationMemberDialog(
                         return@Button
                     }
                     onConfirm(fullName, email, role, certLevel, phoneNumber, membershipNumber, ttuExpiryDate, notes)
-                }
+                },
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Speichern")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1392,6 +1438,8 @@ fun UpdateTtuDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text("🩺 TTU / Attest aktualisieren") },
         text = {
             Column(
@@ -1406,6 +1454,7 @@ fun UpdateTtuDialog(
                     value = expiryDate,
                     onValueChange = { expiryDate = it },
                     label = { Text("Neues Ablaufdatum (YYYY-MM-DD)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1413,18 +1462,25 @@ fun UpdateTtuDialog(
                     value = doctorName,
                     onValueChange = { doctorName = it },
                     label = { Text("Ausstellender Arzt / Praxis") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(expiryDate, doctorName) }) {
+            Button(
+                onClick = { onConfirm(expiryDate, doctorName) },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Aktualisieren")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1449,6 +1505,8 @@ fun ChangeMemberRoleDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text("Rolle ändern") },
         text = {
             Column(
@@ -1458,11 +1516,12 @@ fun ChangeMemberRoleDialog(
                 Text("Wähle eine neue Rolle für ${member.fullName}:", style = MaterialTheme.typography.bodySmall)
                 roles.forEach { (roleKey, roleLabel) ->
                     Card(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(14.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (selectedRole == roleKey) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            containerColor = if (selectedRole == roleKey) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainer
                         ),
-                        border = BorderStroke(1.dp, if (selectedRole == roleKey) OceanPrimary else Color.Transparent),
+                        border = BorderStroke(1.dp, if (selectedRole == roleKey) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { selectedRole = roleKey }
@@ -1470,7 +1529,7 @@ fun ChangeMemberRoleDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
+                                .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -1480,7 +1539,7 @@ fun ChangeMemberRoleDialog(
                                 modifier = Modifier.weight(1f)
                             )
                             if (selectedRole == roleKey) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
@@ -1488,10 +1547,16 @@ fun ChangeMemberRoleDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(selectedRole) }) { Text("Übernehmen") }
+            Button(
+                onClick = { onConfirm(selectedRole) },
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Übernehmen") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }

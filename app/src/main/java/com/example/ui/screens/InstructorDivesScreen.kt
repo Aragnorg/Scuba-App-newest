@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,30 +21,31 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.Water
+import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.QrCode
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -86,6 +88,7 @@ import com.example.ui.viewmodel.AquaViewModel
  * - Instructors provide the Official Stamp QR code for students to scan.
  * - Instructors can also review and directly stamp student dive logs.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InstructorDivesScreen(
     viewModel: AquaViewModel,
@@ -98,7 +101,7 @@ fun InstructorDivesScreen(
     val strings = LocalAppStrings.current
     val currentLanguage = LocalCurrentLanguage.current
 
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: Student Dives to Stamp, 1: Provide Center QR Code, 2: Student Documents
+    var selectedTab by remember { mutableIntStateOf(0) } // 0: Student Dives to Stamp, 1: Student Documents, 2: Provide Center QR Code
     var diveForQrPresentation by remember { mutableStateOf<DiveLogEntity?>(null) }
     var selectedCenterStampIndex by remember { mutableIntStateOf(0) }
     var documentForApproval by remember { mutableStateOf<DiverDocumentEntity?>(null) }
@@ -116,57 +119,57 @@ fun InstructorDivesScreen(
     ) {
         // Authority Header Banner
         Surface(
-            color = Color(0xFF0F2636),
-            contentColor = Color.White,
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .size(34.dp)
+                            .size(38.dp)
                             .clip(CircleShape)
-                            .background(SeaGreen.copy(alpha = 0.2f)),
+                            .background(SeaGreen.copy(alpha = 0.18f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Verified,
+                            imageVector = Icons.Rounded.Verified,
                             contentDescription = null,
                             tint = SeaGreen,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                             text = strings.officialQrProvider,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
-                            color = AquaCyan
+                            color = OceanPrimary
                         )
                         Text(
                             text = "${strings.authorizedInstructor}: $instructorName (PADI OWSI #482910)",
                             style = MaterialTheme.typography.labelSmall,
-                            fontSize = 10.sp,
-                            color = Color.LightGray
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
 
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = SeaGreen.copy(alpha = 0.2f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, SeaGreen)
+                    color = SeaGreen.copy(alpha = 0.15f),
+                    border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
                 ) {
                     Text(
                         text = strings.instructorAuthority,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = SeaGreen,
@@ -177,18 +180,18 @@ fun InstructorDivesScreen(
         }
 
         // Tab Selector
-        TabRow(
+        PrimaryTabRow(
             selectedTabIndex = selectedTab,
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             contentColor = OceanPrimary,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { selectedTab = 0 },
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${strings.reviewDivesTab} (${pendingDives.size})",
@@ -204,7 +207,7 @@ fun InstructorDivesScreen(
                 onClick = { selectedTab = 1 },
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Description, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = if (currentLanguage == AppLanguage.DE) "Dokumente (${pendingDocs.size})" else "Documents (${pendingDocs.size})",
@@ -220,7 +223,7 @@ fun InstructorDivesScreen(
                 onClick = { selectedTab = 2 },
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.QrCode, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.QrCode, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = strings.provideCenterQrTab,
@@ -237,7 +240,8 @@ fun InstructorDivesScreen(
             // LIST OF PENDING & APPROVED STUDENT LOGS
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item {
                     Text(
@@ -251,29 +255,40 @@ fun InstructorDivesScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
 
                 if (pendingDives.isEmpty()) {
                     item {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(24.dp),
+                                    .padding(28.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(Icons.Default.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(36.dp))
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Surface(
+                                    modifier = Modifier.size(54.dp),
+                                    shape = CircleShape,
+                                    color = SeaGreen.copy(alpha = 0.15f)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Rounded.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(30.dp))
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = strings.allStudentDivesUpToDate,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = strings.noPendingDivesDesc,
                                     style = MaterialTheme.typography.labelSmall,
@@ -281,7 +296,6 @@ fun InstructorDivesScreen(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 } else {
                     items(pendingDives, key = { it.id }) { dive ->
@@ -300,44 +314,51 @@ fun InstructorDivesScreen(
                                 diveForQrPresentation = dive
                             }
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = "${strings.previouslyApprovedDives} (${approvedDives.size})",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 items(approvedDives, key = { it.id }) { dive ->
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp),
+                                .padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(24.dp))
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Surface(
+                                modifier = Modifier.size(40.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = SeaGreen.copy(alpha = 0.15f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(22.dp))
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = "${strings.diveNumberPrefix}${dive.diveNumber}: ${dive.siteName} (${dive.diverName.ifBlank { "Leo Chen" }})",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = "${dive.date} • ${dive.maxDepthMeters}m • ${dive.durationMinutes} min • ${strings.statusLabel}: ${dive.approvalStatus}",
                                     style = MaterialTheme.typography.labelSmall,
@@ -352,7 +373,7 @@ fun InstructorDivesScreen(
             // TAB 1: STUDENT DOCUMENTS & CERTIFICATIONS TO REVIEW & APPROVE
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item {
@@ -373,23 +394,34 @@ fun InstructorDivesScreen(
                 if (pendingDocs.isEmpty()) {
                     item {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
-                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                            shape = RoundedCornerShape(20.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(24.dp),
+                                    .padding(28.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(Icons.Default.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(36.dp))
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Surface(
+                                    modifier = Modifier.size(54.dp),
+                                    shape = CircleShape,
+                                    color = SeaGreen.copy(alpha = 0.15f)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Rounded.Check, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(30.dp))
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = if (currentLanguage == AppLanguage.DE) "Alle Schüler-Dokumente sind verifiziert!" else "All student documents are verified!",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = if (currentLanguage == AppLanguage.DE) "Keine ausstehenden Brevetkarten oder Atteste zur Genehmigung." else "No pending certification cards or medical statements awaiting approval.",
                                     style = MaterialTheme.typography.labelSmall,
@@ -402,9 +434,10 @@ fun InstructorDivesScreen(
                     items(pendingDocs, key = { it.id }) { doc ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(
@@ -419,13 +452,13 @@ fun InstructorDivesScreen(
                                         color = OceanPrimary
                                     )
                                     Surface(
-                                        shape = CircleShape,
-                                        color = SandGold.copy(alpha = 0.2f),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, SandGold)
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = SandGold.copy(alpha = 0.18f),
+                                        border = BorderStroke(1.dp, SandGold.copy(alpha = 0.4f))
                                     ) {
                                         Text(
                                             text = if (currentLanguage == AppLanguage.DE) "WARTE AUF PRÜFUNG" else "AWAITING APPROVAL",
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.Bold,
@@ -434,12 +467,13 @@ fun InstructorDivesScreen(
                                     }
                                 }
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
                                     text = doc.title,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = "${if (currentLanguage == AppLanguage.DE) "Kandidat" else "Candidate"}: ${doc.diverName} (${doc.diverEmail}) • #${doc.documentNumber}",
@@ -448,21 +482,21 @@ fun InstructorDivesScreen(
                                 )
 
                                 if (doc.category == "MEDICAL_FORM" || doc.documentUri != null) {
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(6.dp))
                                     Surface(
-                                        shape = RoundedCornerShape(6.dp),
+                                        shape = RoundedCornerShape(8.dp),
                                         color = SeaGreen.copy(alpha = 0.12f),
-                                        border = androidx.compose.foundation.BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
+                                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
                                     ) {
                                         Row(
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Icon(Icons.Default.Description, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
-                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Icon(Icons.Rounded.Description, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = if (currentLanguage == AppLanguage.DE) "📄 Physisches Dokument angehängt (Prüfbereit)" else "📄 Physical Paper Statement Attached (Ready for Cross-Check)",
-                                                fontSize = 9.sp,
+                                                fontSize = 10.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = SeaGreen
                                             )
@@ -471,38 +505,39 @@ fun InstructorDivesScreen(
                                 }
 
                                 if (doc.notes.isNotBlank()) {
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(6.dp))
                                     Text(
                                         text = "${if (currentLanguage == AppLanguage.DE) "Bemerkungen" else "Remarks"}: \"${doc.notes}\"",
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(14.dp))
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
                                     OutlinedButton(
                                         onClick = { documentForDetails = doc },
                                         modifier = Modifier.weight(1f),
-                                        shape = RoundedCornerShape(10.dp),
-                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                                        shape = RoundedCornerShape(12.dp),
+                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
                                     ) {
-                                        Text(if (currentLanguage == AppLanguage.DE) "Details ansehen" else "View Details", fontSize = 11.sp)
+                                        Text(if (currentLanguage == AppLanguage.DE) "Details ansehen" else "View Details", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
 
                                     Button(
                                         onClick = { documentForApproval = doc },
                                         modifier = Modifier.weight(1.3f),
-                                        shape = RoundedCornerShape(10.dp),
-                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                        shape = RoundedCornerShape(12.dp),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
                                     ) {
-                                        Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(if (currentLanguage == AppLanguage.DE) "Prüfen & Signieren" else "Sign & Approve", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
@@ -525,23 +560,35 @@ fun InstructorDivesScreen(
                     items(approvedDocs, key = { it.id }) { doc ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp),
+                                    .padding(14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(24.dp))
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Surface(
+                                    modifier = Modifier.size(40.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = SeaGreen.copy(alpha = 0.15f)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(22.dp))
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = "${doc.title} (${doc.diverName})",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
+                                    Spacer(modifier = Modifier.height(2.dp))
                                     Text(
                                         text = "${if (currentLanguage == AppLanguage.DE) "Freigegeben von" else "Approved by"}: ${doc.approverName} • ${if (currentLanguage == AppLanguage.DE) "Stempel" else "Stamp"}: ${doc.approvalStampCode}",
                                         style = MaterialTheme.typography.labelSmall,
@@ -566,9 +613,9 @@ fun InstructorDivesScreen(
             ) {
                 item {
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color(0xFF0A2333),
-                        contentColor = Color.White,
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
@@ -578,14 +625,14 @@ fun InstructorDivesScreen(
                             // Authority Pill
                             Surface(
                                 shape = RoundedCornerShape(12.dp),
-                                color = SeaGreen.copy(alpha = 0.2f),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, SeaGreen)
+                                color = SeaGreen.copy(alpha = 0.15f),
+                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
                             ) {
                                 Row(
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(Icons.Default.Lock, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
+                                    Icon(Icons.Rounded.Lock, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = strings.diveCenterQrAuthority,
@@ -596,60 +643,70 @@ fun InstructorDivesScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             Text(
                                 text = strings.officialCenterStampQrTitle,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = AquaCyan
+                                color = OceanPrimary
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = strings.presentQrToStudentsInstruction,
                                 style = MaterialTheme.typography.bodySmall,
                                 textAlign = TextAlign.Center,
-                                color = Color.LightGray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(18.dp))
 
                             // High-contrast QR Matrix Generated for the Instructor
-                            QrCodeRenderer(
-                                content = qrContent,
-                                size = 200.dp
-                            )
+                            Surface(
+                                shape = RoundedCornerShape(20.dp),
+                                color = Color.White,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Box(modifier = Modifier.padding(12.dp)) {
+                                    QrCodeRenderer(
+                                        content = qrContent,
+                                        size = 200.dp
+                                    )
+                                }
+                            }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(18.dp))
 
                             Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color(0xFF13364C),
+                                shape = RoundedCornerShape(16.dp),
+                                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
+                                Column(modifier = Modifier.padding(14.dp)) {
                                     Text(
                                         text = currentStamp.centerName,
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = AquaCyan
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
+                                    Spacer(modifier = Modifier.height(2.dp))
                                     Text(
                                         text = "${strings.instructorLabel}: ${currentStamp.instructorName}",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color.White
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = "${strings.licenseLabel}: ${currentStamp.licenseNumber} • ${currentStamp.location}",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color.LightGray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
                     Text(
                         text = strings.selectCenterBranch,
@@ -668,26 +725,34 @@ fun InstructorDivesScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainer
                             ),
-                            border = if (isSelected) androidx.compose.foundation.BorderStroke(1.5.dp, OceanPrimary) else null,
-                            shape = RoundedCornerShape(12.dp)
+                            border = if (isSelected) BorderStroke(1.5.dp, OceanPrimary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp),
+                                    .padding(14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    imageVector = if (isSelected) Icons.Default.Check else Icons.Default.School,
-                                    contentDescription = null,
-                                    tint = if (isSelected) OceanPrimary else Color.Gray,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Surface(
+                                    modifier = Modifier.size(36.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = if (isSelected) OceanPrimary.copy(alpha = 0.18f) else MaterialTheme.colorScheme.surfaceContainerHighest
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = if (isSelected) Icons.Rounded.Check else Icons.Rounded.School,
+                                            contentDescription = null,
+                                            tint = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(text = stamp.centerName, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                                    Text(text = stamp.centerName, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                                     Text(text = "${stamp.instructorName} • ${stamp.licenseNumber}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
@@ -707,12 +772,13 @@ fun InstructorDivesScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.92f)
-                    .clip(RoundedCornerShape(20.dp)),
-                color = Color(0xFF0A2333),
-                contentColor = Color.White
+                    .clip(RoundedCornerShape(24.dp)),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shape = RoundedCornerShape(24.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
                 Column(
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier.padding(22.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
@@ -724,10 +790,10 @@ fun InstructorDivesScreen(
                             text = "${strings.diveNumberPrefix}${dive.diveNumber} ${strings.qrCodeLabel}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = AquaCyan
+                            color = OceanPrimary
                         )
                         IconButton(onClick = { diveForQrPresentation = null }) {
-                            Icon(Icons.Default.Close, contentDescription = strings.close, tint = Color.White)
+                            Icon(Icons.Rounded.Close, contentDescription = strings.close)
                         }
                     }
 
@@ -735,31 +801,50 @@ fun InstructorDivesScreen(
                         text = strings.holdQrForStudentInstruction,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
-                        color = Color.LightGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    QrCodeRenderer(
-                        content = "AQUALEARN-CERT-STAMP-ADRIAN-OWSI482910-DIVE-${dive.id}",
-                        size = 210.dp
                     )
 
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFF13364C),
-                        modifier = Modifier.fillMaxWidth()
+                        shape = RoundedCornerShape(18.dp),
+                        color = Color.White,
+                        modifier = Modifier.padding(6.dp)
                     ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
-                            Text(text = "${strings.diveSiteLabel}: ${dive.siteName}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color.White)
-                            Text(text = "${strings.diverLabel}: ${dive.diverName.ifBlank { "Leo Chen" }} • ${dive.maxDepthMeters}m • ${dive.durationMinutes} min", style = MaterialTheme.typography.labelSmall, color = Color.LightGray)
+                        Box(modifier = Modifier.padding(12.dp)) {
+                            QrCodeRenderer(
+                                content = "AQUALEARN-CERT-STAMP-ADRIAN-OWSI482910-DIVE-${dive.id}",
+                                size = 210.dp
+                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "${strings.diveSiteLabel}: ${dive.siteName}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "${strings.diverLabel}: ${dive.diverName.ifBlank { "Leo Chen" }} • ${dive.maxDepthMeters}m • ${dive.durationMinutes} min",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Box(
                         modifier = Modifier.fillMaxWidth(),
@@ -777,14 +862,14 @@ fun InstructorDivesScreen(
                                 diveForQrPresentation = null
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(14.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
                         ) {
-                            Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF00382E))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = strings.directlyStampAndVerifyNow,
-                                color = Color(0xFF00382E),
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -845,24 +930,25 @@ private fun InstructorPendingDiveCard(
 ) {
     val strings = LocalAppStrings.current
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(14.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = OceanPrimary.copy(alpha = 0.15f)
                 ) {
                     Text(
                         text = "${strings.diveNumberPrefix}${dive.diveNumber}",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = OceanPrimary
@@ -870,69 +956,73 @@ private fun InstructorPendingDiveCard(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = Color(0xFFFFF8E1)
+                    shape = RoundedCornerShape(8.dp),
+                    color = SandGold.copy(alpha = 0.18f),
+                    border = BorderStroke(1.dp, SandGold.copy(alpha = 0.4f))
                 ) {
                     Text(
                         text = strings.pendingVerification,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE65100)
+                        color = SandGold
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "${dive.siteName} (${dive.location})",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = "${strings.diverLabel}: ${dive.diverName.ifBlank { "Leo Chen" }} • ${dive.date}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                TelemetryTag(icon = Icons.Default.Water, label = "${dive.maxDepthMeters}m Max")
-                TelemetryTag(icon = Icons.Default.Timer, label = "${dive.durationMinutes} min")
-                TelemetryTag(icon = Icons.Default.Air, label = "${(dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0)} bar")
+                TelemetryTag(icon = Icons.Rounded.Water, label = "${dive.maxDepthMeters}m Max")
+                TelemetryTag(icon = Icons.Rounded.Timer, label = "${dive.durationMinutes} min")
+                TelemetryTag(icon = Icons.Rounded.Air, label = "${(dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0)} bar")
             }
 
             if (dive.notes.isNotBlank()) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "${strings.diverNotesLabel}: \"${dive.notes}\"",
                     style = MaterialTheme.typography.labelSmall,
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Two Instructor Actions: Present QR to Student OR 1-Click Authorize
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 OutlinedButton(
                     onClick = onPresentQrClick,
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .weight(1f)
-                        .height(42.dp)
+                        .height(44.dp)
                         .testTag("present_qr_dive_${dive.diveNumber}")
                 ) {
-                    Icon(Icons.Default.QrCode, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(Icons.Rounded.QrCode, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(strings.showQr, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
 
@@ -940,16 +1030,16 @@ private fun InstructorPendingDiveCard(
                     onClick = onStampClick,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = SeaGreen,
-                        contentColor = Color(0xFF00382E)
+                        contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .weight(1.3f)
-                        .height(42.dp)
+                        .height(44.dp)
                         .testTag("instructor_stamp_dive_${dive.diveNumber}")
                 ) {
-                    Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = strings.authorizeStamp,
                         fontWeight = FontWeight.Bold,
@@ -964,16 +1054,17 @@ private fun InstructorPendingDiveCard(
 @Composable
 private fun TelemetryTag(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
     Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(12.dp), tint = OceanPrimary)
-            Spacer(modifier = Modifier.width(3.dp))
-            Text(text = label, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
+            Icon(icon, contentDescription = null, modifier = Modifier.size(13.dp), tint = OceanPrimary)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(text = label, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, fontWeight = FontWeight.Medium)
         }
     }
 }

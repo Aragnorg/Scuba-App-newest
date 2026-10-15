@@ -22,21 +22,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AssignmentTurnedIn
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.EditNote
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Slideshow
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.rounded.AssignmentTurnedIn
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Movie
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Quiz
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Slideshow
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -132,11 +132,12 @@ fun InstructorRosterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("roster_summary_card"),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(18.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -147,7 +148,7 @@ fun InstructorRosterScreen(
                                 text = strings.rosterTitle,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -157,40 +158,43 @@ fun InstructorRosterScreen(
                     // Summary Stats Badges
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(16.dp),
                             color = SeaGreen.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.3f))
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.25f))
                         ) {
-                            Column(modifier = Modifier.padding(10.dp)) {
+                            Column(modifier = Modifier.padding(12.dp)) {
                                 Text(strings.activeStudentsTab, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, color = SeaGreen, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text("${activeStudents.size}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = SeaGreen)
                             }
                         }
 
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(16.dp),
                             color = OceanPrimary.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.3f))
+                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.25f))
                         ) {
-                            Column(modifier = Modifier.padding(10.dp)) {
+                            Column(modifier = Modifier.padding(12.dp)) {
                                 Text(strings.pastStudentsTab, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, color = OceanPrimary, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text("${pastStudents.size}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = OceanPrimary)
                             }
                         }
 
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(16.dp),
                             color = SandGold.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, SandGold.copy(alpha = 0.3f))
+                            border = BorderStroke(1.dp, SandGold.copy(alpha = 0.25f))
                         ) {
-                            Column(modifier = Modifier.padding(10.dp)) {
+                            Column(modifier = Modifier.padding(12.dp)) {
                                 Text(strings.allStudentsTab, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, color = SandGold, fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text("${allStudents.size}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = DepthNavy)
                             }
                         }
@@ -205,11 +209,11 @@ fun InstructorRosterScreen(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 label = { Text(strings.searchStudentsPlaceholder) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = strings.searchStudentsPlaceholder) },
+                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = strings.searchStudentsPlaceholder) },
                 trailingIcon = {
                     if (searchQuery.isNotBlank()) {
                         IconButton(onClick = { searchQuery = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = strings.close)
+                            Icon(Icons.Rounded.Clear, contentDescription = strings.close)
                         }
                     }
                 },
@@ -217,7 +221,7 @@ fun InstructorRosterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("student_search_input"),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp)
             )
         }
 
@@ -233,12 +237,13 @@ fun InstructorRosterScreen(
                     label = { Text("${strings.activeStudentsTab} (${activeStudents.size})") },
                     leadingIcon = {
                         Icon(
-                            Icons.Default.School,
+                            Icons.Rounded.School,
                             contentDescription = strings.activeStudentsTab,
                             tint = if (filterMode == StudentFilter.ACTIVE) SeaGreen else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = SeaGreen.copy(alpha = 0.15f),
                         selectedLabelColor = SeaGreen
@@ -252,12 +257,13 @@ fun InstructorRosterScreen(
                     label = { Text("${strings.pastStudentsTab} (${pastStudents.size})") },
                     leadingIcon = {
                         Icon(
-                            Icons.Default.History,
+                            Icons.Rounded.History,
                             contentDescription = strings.pastStudentsTab,
                             tint = if (filterMode == StudentFilter.PAST) OceanPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = OceanPrimary.copy(alpha = 0.15f),
                         selectedLabelColor = OceanPrimary
@@ -271,11 +277,12 @@ fun InstructorRosterScreen(
                     label = { Text("${strings.allStudentsTab} (${allStudents.size})") },
                     leadingIcon = {
                         Icon(
-                            Icons.Default.FilterList,
+                            Icons.Rounded.FilterList,
                             contentDescription = strings.allStudentsTab,
                             modifier = Modifier.size(16.dp)
                         )
                     },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.testTag("filter_all_students")
                 )
             }
@@ -349,13 +356,10 @@ fun StudentRosterItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("student_card_${student.id}"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(
-            width = 1.dp,
-            color = if (isActive) SeaGreen.copy(alpha = 0.35f) else OceanPrimary.copy(alpha = 0.3f)
-        )
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Top Row: Avatar, Name, Email, Status Badge
@@ -364,8 +368,8 @@ fun StudentRosterItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    modifier = Modifier.size(46.dp),
-                    shape = CircleShape,
+                    modifier = Modifier.size(48.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = if (isActive) SeaGreen.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.15f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -403,7 +407,7 @@ fun StudentRosterItemCard(
                 Surface(
                     shape = RoundedCornerShape(8.dp),
                     color = if (isActive) SeaGreen.copy(alpha = 0.15f) else SandGold.copy(alpha = 0.2f),
-                    border = BorderStroke(1.dp, if (isActive) SeaGreen else SandGold)
+                    border = BorderStroke(1.dp, (if (isActive) SeaGreen else SandGold).copy(alpha = 0.5f))
                 ) {
                     Text(
                         text = if (isGerman) {
@@ -420,7 +424,7 @@ fun StudentRosterItemCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Progression Bar & Readiness Gauge
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -432,7 +436,8 @@ fun StudentRosterItemCard(
                     Text(
                         text = strings.examReadinessLabel,
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "${student.examReadinessScore}%",
@@ -448,11 +453,11 @@ fun StudentRosterItemCard(
                         .height(8.dp)
                         .clip(RoundedCornerShape(4.dp)),
                     color = if (student.examReadinessScore >= 80) SeaGreen else OceanPrimary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Quick Progression Counters
             Row(
@@ -462,15 +467,16 @@ fun StudentRosterItemCard(
                 // Presentations
                 Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(6.dp),
+                        modifier = Modifier.padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Slideshow, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(Icons.Rounded.Slideshow, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = "${student.presentationsCompleted}/${student.totalPresentations}",
                             style = MaterialTheme.typography.labelSmall,
@@ -482,15 +488,16 @@ fun StudentRosterItemCard(
                 // Videos
                 Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(6.dp),
+                        modifier = Modifier.padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Movie, contentDescription = null, tint = OceanSecondary, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(Icons.Rounded.Movie, contentDescription = null, tint = OceanSecondary, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = "${student.videosWatched}/${student.totalVideos}",
                             style = MaterialTheme.typography.labelSmall,
@@ -502,15 +509,16 @@ fun StudentRosterItemCard(
                 // Quizzes
                 Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(6.dp),
+                        modifier = Modifier.padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Quiz, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(Icons.Rounded.Quiz, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = "${student.quizzesPassed}/${student.totalQuizzes}",
                             style = MaterialTheme.typography.labelSmall,
@@ -522,15 +530,16 @@ fun StudentRosterItemCard(
                 // Final Mock Exam
                 Surface(
                     modifier = Modifier.weight(1.2f),
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(6.dp),
+                        modifier = Modifier.padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = SandGold, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(Icons.Rounded.EmojiEvents, contentDescription = null, tint = SandGold, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = if (isGerman) {
                                 if (student.finalMockExamScore != null) "Prüfung: ${student.finalMockExamScore}%" else "Prüfung: Ausstehend"
@@ -546,7 +555,7 @@ fun StudentRosterItemCard(
             }
 
             if (student.instructorNotes.isNotBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = if (isGerman) "Notizen: \"${student.instructorNotes}\"" else "Notes: \"${student.instructorNotes}\"",
                     style = MaterialTheme.typography.bodySmall,
@@ -556,19 +565,19 @@ fun StudentRosterItemCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Action Buttons: View Detailed Progression & Toggle Active/Past Status
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 OutlinedButton(
                     onClick = onViewDetail,
                     modifier = Modifier
                         .weight(1f)
                         .testTag("view_student_progress_${student.id}"),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(strings.viewProgressionButton, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
@@ -578,7 +587,7 @@ fun StudentRosterItemCard(
                     modifier = Modifier
                         .weight(1f)
                         .testTag("toggle_student_status_${student.id}"),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isActive) OceanPrimary else SeaGreen
                     )
@@ -611,6 +620,8 @@ fun StudentDetailDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -622,6 +633,7 @@ fun StudentDetailDialog(
                         fontWeight = FontWeight.Bold
                     )
                 }
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${student.email} • ${student.targetCourse}",
                     style = MaterialTheme.typography.bodySmall,
@@ -636,13 +648,14 @@ fun StudentDetailDialog(
             ) {
                 // Readiness Score Card
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (student.examReadinessScore >= 80) SeaGreen.copy(alpha = 0.12f) else OceanPrimary.copy(alpha = 0.12f)
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
+                            .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -709,7 +722,7 @@ fun StudentDetailDialog(
                     placeholder = { Text(strings.instructorNotesPlaceholder) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
             }
         },
@@ -719,13 +732,17 @@ fun StudentDetailDialog(
                     onSaveNotes(notesText.trim())
                     onDismiss()
                 },
+                shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
             ) {
                 Text(strings.saveNotesAndClose)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(14.dp)
+            ) {
                 Text(strings.cancel)
             }
         }
@@ -741,9 +758,9 @@ fun ModuleProgressLine(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(6.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(horizontal = 10.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

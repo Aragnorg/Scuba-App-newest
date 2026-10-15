@@ -30,16 +30,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.ui.platform.LocalContext
 import com.example.util.GoogleDriveHelper
 import androidx.compose.material3.AlertDialog
@@ -142,11 +142,10 @@ fun DiveOpsDocsTab(
         // 1. Compliance KPI Banner
         item {
             Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                ),
-                border = BorderStroke(1.dp, primaryAccentColor.copy(alpha = 0.2f)),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -171,10 +170,10 @@ fun DiveOpsDocsTab(
                         Button(
                             onClick = { showUploadDialog = true },
                             colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(strings.uploadNewDocAction, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                         }
@@ -227,10 +226,10 @@ fun DiveOpsDocsTab(
                             onClick = {
                                 GoogleDriveHelper.openInGoogleDriveOrBrowser(context, "https://drive.google.com")
                             },
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
                         ) {
-                            Icon(Icons.Default.Cloud, contentDescription = null, modifier = Modifier.size(16.dp), tint = primaryAccentColor)
+                            Icon(Icons.Rounded.Cloud, contentDescription = null, modifier = Modifier.size(16.dp), tint = primaryAccentColor)
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = if (isGerman) "Vereins-Drive öffnen" else "Open Club Drive",
@@ -271,6 +270,7 @@ fun DiveOpsDocsTab(
                         FilterChip(
                             selected = selectedCategoryFilter == catKey,
                             onClick = { selectedCategoryFilter = catKey },
+                            shape = RoundedCornerShape(10.dp),
                             label = { Text(catLabel, fontSize = 11.sp) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -302,6 +302,7 @@ fun DiveOpsDocsTab(
                         FilterChip(
                             selected = selectedVisibilityFilter == visKey,
                             onClick = { selectedVisibilityFilter = visKey },
+                            shape = RoundedCornerShape(10.dp),
                             label = { Text(visLabel, fontSize = 11.sp) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -318,8 +319,10 @@ fun DiveOpsDocsTab(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -431,6 +434,8 @@ fun DiveOpsDocsTab(
     docToDelete?.let { doc ->
         AlertDialog(
             onDismissRequest = { docToDelete = null },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text(if (isGerman) "Dokument löschen?" else "Delete Document?") },
             text = {
                 Text(
@@ -446,13 +451,17 @@ fun DiveOpsDocsTab(
                         viewModel.deleteOrganizationDocument(doc.id)
                         docToDelete = null
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text(strings.delete)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { docToDelete = null }) {
+                TextButton(
+                    onClick = { docToDelete = null },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text(strings.cancel)
                 }
             }
@@ -471,8 +480,8 @@ private fun DocKpiCounter(
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f)),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.25f)),
         modifier = modifier
     ) {
         Column(
@@ -530,12 +539,13 @@ private fun DocumentCard(
     }
 
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         border = BorderStroke(
             1.dp,
             if (doc.requiresAcknowledgment) Color(0xFFFFA000).copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
         ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -550,7 +560,7 @@ private fun DocumentCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(12.dp),
                         color = primaryAccentColor.copy(alpha = 0.12f),
                         modifier = Modifier.size(38.dp)
                     ) {
@@ -575,7 +585,7 @@ private fun DocumentCard(
                             if (GoogleDriveHelper.isGoogleDriveUrl(doc.fileUri)) {
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
+                                    shape = RoundedCornerShape(6.dp),
                                     color = SeaGreen.copy(alpha = 0.15f)
                                 ) {
                                     Text(
@@ -597,7 +607,7 @@ private fun DocumentCard(
                     modifier = Modifier.size(28.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = Icons.Rounded.Delete,
                         contentDescription = strings.delete,
                         tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
                         modifier = Modifier.size(18.dp)
@@ -624,7 +634,7 @@ private fun DocumentCard(
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Icon(
-                                Icons.Default.Warning,
+                                Icons.Rounded.Warning,
                                 contentDescription = null,
                                 tint = Color(0xFFE65100),
                                 modifier = Modifier.size(12.dp)
@@ -661,7 +671,7 @@ private fun DocumentCard(
 
                 // Signatures Pill
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = if (signaturesCount > 0) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant,
                     modifier = Modifier.clickable { onViewSignatures() }
                 ) {
@@ -670,7 +680,7 @@ private fun DocumentCard(
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Icon(
-                            if (signaturesCount > 0) Icons.Default.CheckCircle else Icons.Default.Info,
+                            if (signaturesCount > 0) Icons.Rounded.CheckCircle else Icons.Rounded.Info,
                             contentDescription = null,
                             tint = if (signaturesCount > 0) SeaGreen else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(12.dp)
@@ -691,8 +701,8 @@ private fun DocumentCard(
             if (doc.contentSummary.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -707,7 +717,7 @@ private fun DocumentCard(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
             Spacer(modifier = Modifier.height(10.dp))
 
             // Action Buttons
@@ -718,7 +728,7 @@ private fun DocumentCard(
                 // Open / Preview
                 OutlinedButton(
                     onClick = onPreview,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(vertical = 6.dp)
                 ) {
@@ -728,14 +738,14 @@ private fun DocumentCard(
                 // Sign / Acknowledge
                 Button(
                     onClick = onSign,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (doc.requiresAcknowledgment) Color(0xFFE65100) else primaryAccentColor
                     ),
                     modifier = Modifier.weight(1.2f),
                     contentPadding = PaddingValues(vertical = 6.dp)
                 ) {
-                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Rounded.Edit, contentDescription = null, modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(strings.signDocAction, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
@@ -763,6 +773,8 @@ private fun UploadOrganizationDocumentDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
                 text = strings.uploadDocDialogTitle,
@@ -783,6 +795,7 @@ private fun UploadOrganizationDocumentDialog(
                     label = { Text(strings.docTitleLabel) },
                     placeholder = { Text(if (isGerman) "z. B. Haftungsausschluss Saison 2026" else "e.g. Liability Waiver 2026") },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true
                 )
 
@@ -792,8 +805,9 @@ private fun UploadOrganizationDocumentDialog(
                     onValueChange = { googleDriveLink = it },
                     label = { Text("☁️ Google Drive Link (optional)") },
                     placeholder = { Text("https://drive.google.com/...") },
-                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null, tint = primaryAccentColor) },
+                    leadingIcon = { Icon(Icons.Rounded.Cloud, contentDescription = null, tint = primaryAccentColor) },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     supportingText = {
                         if (GoogleDriveHelper.isGoogleDriveUrl(googleDriveLink)) {
@@ -820,6 +834,7 @@ private fun UploadOrganizationDocumentDialog(
                             selected = category == cat,
                             onClick = { category = cat },
                             label = { Text(cat, fontSize = 10.sp) },
+                            shape = RoundedCornerShape(10.dp),
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -841,6 +856,7 @@ private fun UploadOrganizationDocumentDialog(
                             selected = visibility == vis,
                             onClick = { visibility = vis },
                             label = { Text(vis.take(8), fontSize = 10.sp) },
+                            shape = RoundedCornerShape(10.dp),
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -874,6 +890,7 @@ private fun UploadOrganizationDocumentDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
+                    shape = RoundedCornerShape(14.dp),
                     maxLines = 4
                 )
             }
@@ -882,13 +899,17 @@ private fun UploadOrganizationDocumentDialog(
             Button(
                 onClick = { onConfirm(title, category, visibility, requiresAcknowledgment, contentSummary, googleDriveLink) },
                 enabled = title.isNotBlank(),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor)
             ) {
                 Text(strings.save)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.cancel)
             }
         }
@@ -907,6 +928,8 @@ private fun ViewDocumentPreviewDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("📄", fontSize = 20.sp)
@@ -929,8 +952,9 @@ private fun ViewDocumentPreviewDialog(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
@@ -955,8 +979,9 @@ private fun ViewDocumentPreviewDialog(
                 )
 
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -983,10 +1008,10 @@ private fun ViewDocumentPreviewDialog(
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (isDrive) SeaGreen else OceanPrimary
                             ),
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
                         ) {
-                            Icon(if (isDrive) Icons.Default.Cloud else Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(if (isDrive) Icons.Rounded.Cloud else Icons.Rounded.Info, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = if (isDrive) "☁️ Auf Google Drive öffnen" else "📄 Datei öffnen",
@@ -998,12 +1023,18 @@ private fun ViewDocumentPreviewDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onProceedToSign) {
+            Button(
+                onClick = onProceedToSign,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.signDocAction)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.close)
             }
         }
@@ -1029,6 +1060,8 @@ private fun SignDocumentDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("✍️", fontSize = 20.sp)
@@ -1066,7 +1099,8 @@ private fun SignDocumentDialog(
                         FilterChip(
                             selected = selectedMemberId == m.id,
                             onClick = { selectedMemberId = m.id },
-                            label = { Text(m.fullName, fontSize = 11.sp) }
+                            label = { Text(m.fullName, fontSize = 11.sp) },
+                            shape = RoundedCornerShape(10.dp)
                         )
                     }
                 }
@@ -1078,9 +1112,9 @@ private fun SignDocumentDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -1119,8 +1153,8 @@ private fun SignDocumentDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(110.dp)
-                                .background(Color.White, RoundedCornerShape(8.dp))
-                                .border(BorderStroke(1.5.dp, primaryAccentColor), RoundedCornerShape(8.dp))
+                                .background(Color.White, RoundedCornerShape(12.dp))
+                                .border(BorderStroke(1.5.dp, primaryAccentColor), RoundedCornerShape(12.dp))
                                 .pointerInput(Unit) {
                                     detectDragGestures { change, dragAmount ->
                                         change.consume()
@@ -1154,6 +1188,7 @@ private fun SignDocumentDialog(
                         if (touchPoints.isNotEmpty()) {
                             TextButton(
                                 onClick = { touchPoints.clear() },
+                                shape = RoundedCornerShape(10.dp),
                                 modifier = Modifier.align(Alignment.End)
                             ) {
                                 Text(if (isGerman) "Unterschrift leeren" else "Clear signature", fontSize = 11.sp)
@@ -1196,13 +1231,17 @@ private fun SignDocumentDialog(
                     }
                 },
                 enabled = acceptedCheckbox && selectedMember != null,
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor)
             ) {
                 Text(strings.confirmSignatureButton)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.cancel)
             }
         }
@@ -1221,6 +1260,8 @@ private fun ViewSignaturesDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Column {
                 Text(
@@ -1258,8 +1299,9 @@ private fun ViewSignaturesDialog(
                 ) {
                     items(signatures, key = { it.id }) { sig ->
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainer,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(modifier = Modifier.padding(10.dp)) {
@@ -1274,7 +1316,7 @@ private fun ViewSignaturesDialog(
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                     Surface(
-                                        shape = RoundedCornerShape(4.dp),
+                                        shape = RoundedCornerShape(6.dp),
                                         color = if (sig.signatureType == "DIGITAL_SIGNATURE") SeaGreen.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.2f)
                                     ) {
                                         Text(
@@ -1282,7 +1324,7 @@ private fun ViewSignaturesDialog(
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = if (sig.signatureType == "DIGITAL_SIGNATURE") SeaGreen else OceanPrimary,
-                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                         )
                                     }
                                 }
@@ -1306,7 +1348,10 @@ private fun ViewSignaturesDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onDismiss) {
+            Button(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(strings.close)
             }
         }

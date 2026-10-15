@@ -26,11 +26,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Emergency
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Emergency
+import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -110,8 +110,10 @@ fun DiveOpsManifestTab(
             contentAlignment = Alignment.Center
         ) {
             Card(
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
@@ -130,8 +132,11 @@ fun DiveOpsManifestTab(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.height(14.dp))
-                    Button(onClick = onNavigateToTrips) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = onNavigateToTrips,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
                         Text("Zu den Ausfahrten")
                     }
                 }
@@ -212,6 +217,7 @@ fun DiveOpsManifestTab(
                     FilterChip(
                         selected = isSelected,
                         onClick = { viewModel.selectDiveEvent(ev) },
+                        shape = RoundedCornerShape(10.dp),
                         label = {
                             Text(
                                 text = "${ev.title} (${ev.registeredCount})",
@@ -233,15 +239,16 @@ fun DiveOpsManifestTab(
             item {
                 // Live Operational Safety KPI Dashboard Bar
                 Card(
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
+                            .padding(14.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Row(
@@ -269,12 +276,13 @@ fun DiveOpsManifestTab(
                         ) {
                             // Total Checked In
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(text = "$totalCheckedIn", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
@@ -284,13 +292,13 @@ fun DiveOpsManifestTab(
 
                             // On Board
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 color = OceanPrimary.copy(alpha = 0.12f),
-                                border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.5f)),
+                                border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.4f)),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(text = "$onBoardCount", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = OceanPrimary)
@@ -300,13 +308,13 @@ fun DiveOpsManifestTab(
 
                             // In Water (Emphasized!)
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = if (inWaterCount > 0) AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                border = BorderStroke(if (inWaterCount > 0) 1.5.dp else 1.dp, if (inWaterCount > 0) Color(0xFF007799) else Color.Transparent),
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (inWaterCount > 0) AquaCyan.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainerHigh,
+                                border = BorderStroke(if (inWaterCount > 0) 1.5.dp else 1.dp, if (inWaterCount > 0) Color(0xFF007799) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)),
                                 modifier = Modifier.weight(1.1f)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
@@ -326,13 +334,13 @@ fun DiveOpsManifestTab(
 
                             // Surfaced OK
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 color = SeaGreen.copy(alpha = 0.12f),
-                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f)),
+                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f)),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(text = "$surfacedCount", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = SeaGreen)
@@ -353,21 +361,25 @@ fun DiveOpsManifestTab(
                     FilterChip(
                         selected = selectedStatusFilter == "ALL",
                         onClick = { selectedStatusFilter = "ALL" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("Alle ($totalCheckedIn)", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = selectedStatusFilter == "ON_BOARD",
                         onClick = { selectedStatusFilter = "ON_BOARD" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("An Bord ($onBoardCount)", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = selectedStatusFilter == "IN_WATER",
                         onClick = { selectedStatusFilter = "IN_WATER" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("Im Wasser ($inWaterCount)", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = selectedStatusFilter == "SURFACED_OK",
                         onClick = { selectedStatusFilter = "SURFACED_OK" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("Ausgetaucht ($surfacedCount)", fontSize = 10.sp) }
                     )
                 }
@@ -377,8 +389,9 @@ fun DiveOpsManifestTab(
             if (filteredParticipants.isEmpty()) {
                 item {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
@@ -474,16 +487,20 @@ fun ManifestParticipantCard(
     }
 
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(if (isInWater) 1.5.dp else 1.dp, statusBorder),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(
+            if (isInWater) 1.5.dp else 1.dp,
+            if (isInWater) Color(0xFF007799) else if (isSurfaced) SeaGreen.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Header Row: Diver Name, Team, Status Pill
             Row(
@@ -493,7 +510,7 @@ fun ManifestParticipantCard(
                 Surface(
                     shape = CircleShape,
                     color = (if (isInWater) Color(0xFF007799) else if (isSurfaced) SeaGreen else OceanPrimary).copy(alpha = 0.15f),
-                    modifier = Modifier.size(34.dp)
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
@@ -517,12 +534,12 @@ fun ManifestParticipantCard(
                         Spacer(modifier = Modifier.width(6.dp))
                         if (participant.buddyTeamId != null) {
                             Surface(
-                                shape = RoundedCornerShape(4.dp),
+                                shape = RoundedCornerShape(6.dp),
                                 color = OceanPrimary.copy(alpha = 0.12f)
                             ) {
                                 Text(
                                     text = participant.buddyTeamId,
-                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp),
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Bold,
@@ -541,7 +558,7 @@ fun ManifestParticipantCard(
 
                 // Status Badge
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = statusBg,
                     border = BorderStroke(1.dp, statusBorder)
                 ) {
@@ -551,7 +568,7 @@ fun ManifestParticipantCard(
                             isSurfaced -> "🟢 OK (SURFACED)"
                             else -> "🚤 AN BORD"
                         },
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -587,7 +604,7 @@ fun ManifestParticipantCard(
                 }
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
 
             // Operational Action Buttons
             Row(
@@ -601,10 +618,10 @@ fun ManifestParticipantCard(
                 if (emergencyPhone.isNotBlank()) {
                     OutlinedButton(
                         onClick = { onEmergencyDial(emergencyPhone) },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                     ) {
-                        Icon(Icons.Default.Phone, contentDescription = null, modifier = Modifier.size(12.dp), tint = Color(0xFFC53030))
+                        Icon(Icons.Rounded.Phone, contentDescription = null, modifier = Modifier.size(12.dp), tint = Color(0xFFC53030))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(text = "Notfall: $emergencyName", fontSize = 10.sp, color = Color(0xFFC53030))
                     }
@@ -616,7 +633,7 @@ fun ManifestParticipantCard(
                 if (isOnBoard) {
                     Button(
                         onClick = onRecordSplash,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007799)),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                     ) {
@@ -625,7 +642,7 @@ fun ManifestParticipantCard(
                 } else if (isInWater) {
                     Button(
                         onClick = onRecordSurfaced,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                     ) {
@@ -633,8 +650,9 @@ fun ManifestParticipantCard(
                     }
                 } else {
                     Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = SeaGreen.copy(alpha = 0.1f)
+                        shape = RoundedCornerShape(8.dp),
+                        color = SeaGreen.copy(alpha = 0.1f),
+                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
                     ) {
                         Text(
                             text = "✅ Sicher ausgetaucht",
@@ -667,6 +685,8 @@ fun RecordSurfacedDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text("🟢 Auftauchen erfassen") },
         text = {
             Column(
@@ -681,6 +701,7 @@ fun RecordSurfacedDialog(
                     value = timeOutText,
                     onValueChange = { timeOutText = it },
                     label = { Text("Auftauchzeit (HH:mm)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -688,6 +709,7 @@ fun RecordSurfacedDialog(
                     value = endPressureText,
                     onValueChange = { endPressureText = it },
                     label = { Text("Flaschendruck Ende (bar)") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -699,13 +721,17 @@ fun RecordSurfacedDialog(
                     val pOut = endPressureText.toIntOrNull() ?: 50
                     onConfirm(pOut, timeOutText)
                 },
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = SeaGreen)
             ) {
                 Text("Speichern (Surfaced OK)")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -730,16 +756,17 @@ fun EmergencyDispatchBar(
     val o2KitLocation = emergencyJson.optString("o2KitLocation", "Basis Notfallkoffer & Bord-O2")
 
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF5F5)),
-        border = BorderStroke(1.dp, Color(0xFFE53E3E)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -747,7 +774,7 @@ fun EmergencyDispatchBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Emergency, contentDescription = null, tint = Color(0xFFC53030), modifier = Modifier.size(18.dp))
+                    Icon(Icons.Rounded.Emergency, contentDescription = null, tint = Color(0xFFC53030), modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "🚨 Notfall-Schnellzugriff & Rettungskette",
@@ -759,11 +786,11 @@ fun EmergencyDispatchBar(
 
                 Button(
                     onClick = { onEmergencyDial(emergencyPhone) },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC53030)),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Icon(Icons.Default.Phone, contentDescription = null, modifier = Modifier.size(12.dp))
+                    Icon(Icons.Rounded.Phone, contentDescription = null, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(text = "Notruf", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                 }

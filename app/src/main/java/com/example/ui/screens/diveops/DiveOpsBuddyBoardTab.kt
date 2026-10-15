@@ -23,13 +23,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -104,8 +104,10 @@ fun DiveOpsBuddyBoardTab(
             contentAlignment = Alignment.Center
         ) {
             Card(
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
@@ -124,8 +126,11 @@ fun DiveOpsBuddyBoardTab(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.height(14.dp))
-                    Button(onClick = onNavigateToTrips) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = onNavigateToTrips,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
                         Text("Zu den Ausfahrten")
                     }
                 }
@@ -185,6 +190,7 @@ fun DiveOpsBuddyBoardTab(
                     FilterChip(
                         selected = isSelected,
                         onClick = { viewModel.selectDiveEvent(ev) },
+                        shape = RoundedCornerShape(10.dp),
                         label = {
                             Text(
                                 text = "${ev.title} (${ev.registeredCount} P.)",
@@ -206,16 +212,17 @@ fun DiveOpsBuddyBoardTab(
             item {
                 // Event Quick Summary Card & Auto-Suggest Button
                 Card(
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -257,13 +264,13 @@ fun DiveOpsBuddyBoardTab(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Surface(
-                                shape = RoundedCornerShape(6.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 color = SeaGreen.copy(alpha = 0.12f),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
                                     text = "🟢 ${participants.count { it.safetyGatePassed }} Freigegeben",
-                                    modifier = Modifier.padding(6.dp),
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = SeaGreen
@@ -271,13 +278,13 @@ fun DiveOpsBuddyBoardTab(
                             }
                             if (blockedParticipants.isNotEmpty()) {
                                 Surface(
-                                    shape = RoundedCornerShape(6.dp),
+                                    shape = RoundedCornerShape(8.dp),
                                     color = Color(0xFFE53E3E).copy(alpha = 0.12f),
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text(
                                         text = "⛔ ${blockedParticipants.size} Gesperrt",
-                                        modifier = Modifier.padding(6.dp),
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color(0xFFC53030)
@@ -293,17 +300,17 @@ fun DiveOpsBuddyBoardTab(
             if (blockedParticipants.isNotEmpty()) {
                 item {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = Color(0xFFE53E3E).copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, Color(0xFFE53E3E)),
+                        border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Warning, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.Warning, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "Sicherheits-Gate aktiv: ${blockedParticipants.size} Taucher nicht freigegeben!",
@@ -344,8 +351,9 @@ fun DiveOpsBuddyBoardTab(
             if (assignedTeams.isEmpty()) {
                 item {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
@@ -388,8 +396,9 @@ fun DiveOpsBuddyBoardTab(
             if (unassignedParticipants.isEmpty()) {
                 item {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = SeaGreen.copy(alpha = 0.1f),
+                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
@@ -433,6 +442,8 @@ fun DiveOpsBuddyBoardTab(
     if (participantToRemove != null) {
         AlertDialog(
             onDismissRequest = { participantToRemove = null },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text("Taucher abmelden") },
             text = { Text("Möchtest du '${participantToRemove!!.diverName}' von dieser Ausfahrt abmelden?") },
             confirmButton = {
@@ -441,13 +452,17 @@ fun DiveOpsBuddyBoardTab(
                         viewModel.removeParticipantFromEvent(participantToRemove!!.id, participantToRemove!!.eventId)
                         participantToRemove = null
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
                 ) {
                     Text("Abmelden")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { participantToRemove = null }) { Text("Abbrechen") }
+                TextButton(
+                    onClick = { participantToRemove = null },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Abbrechen") }
             }
         )
     }
@@ -465,17 +480,17 @@ fun BuddyTeamCard(
     onRemoveFromTeam: (DiveEventParticipantEntity) -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.4f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             // Team Title Banner
             Row(
@@ -484,12 +499,12 @@ fun BuddyTeamCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = OceanPrimary.copy(alpha = 0.15f)
                 ) {
                     Text(
                         text = "🤿 $teamName (${members.size} Taucher)",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = OceanPrimary
@@ -506,20 +521,21 @@ fun BuddyTeamCard(
             // Divers in team
             members.forEach { diver ->
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
                             shape = CircleShape,
                             color = primaryAccentColor.copy(alpha = 0.2f),
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(32.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
@@ -530,7 +546,7 @@ fun BuddyTeamCard(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -556,16 +572,16 @@ fun BuddyTeamCard(
                         // Reassign
                         IconButton(
                             onClick = { onReassign(diver) },
-                            modifier = Modifier.size(26.dp)
+                            modifier = Modifier.size(30.dp)
                         ) {
-                            Icon(Icons.Default.Edit, contentDescription = "Team wechseln", modifier = Modifier.size(13.dp))
+                            Icon(Icons.Rounded.Edit, contentDescription = "Team wechseln", modifier = Modifier.size(15.dp))
                         }
                         // Remove from team
                         IconButton(
                             onClick = { onRemoveFromTeam(diver) },
-                            modifier = Modifier.size(26.dp)
+                            modifier = Modifier.size(30.dp)
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Aus Team entfernen", modifier = Modifier.size(13.dp))
+                            Icon(Icons.Rounded.Close, contentDescription = "Aus Team entfernen", modifier = Modifier.size(15.dp))
                         }
                     }
                 }
@@ -584,20 +600,21 @@ fun UnassignedDiverCard(
     onRemove: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (participant.safetyGatePassed) MaterialTheme.colorScheme.surface else Color(0xFFFFF5F5)
+            containerColor = if (participant.safetyGatePassed) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
         ),
         border = BorderStroke(
             width = 1.dp,
-            color = if (participant.safetyGatePassed) MaterialTheme.colorScheme.outlineVariant else Color(0xFFE53E3E).copy(alpha = 0.5f)
+            color = if (participant.safetyGatePassed) MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.error.copy(alpha = 0.4f)
         ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -635,8 +652,8 @@ fun UnassignedDiverCard(
             if (participant.safetyGatePassed) {
                 Button(
                     onClick = onAssign,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(text = "+ Zuweisen", fontSize = 11.sp)
                 }
@@ -644,9 +661,9 @@ fun UnassignedDiverCard(
 
             IconButton(
                 onClick = onRemove,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(30.dp)
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Entfernen", tint = Color(0xFFE53E3E), modifier = Modifier.size(14.dp))
+                Icon(Icons.Rounded.Delete, contentDescription = "Entfernen", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
             }
         }
     }
@@ -668,6 +685,8 @@ fun AssignBuddyTeamDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text("Buddy-Team zuweisen") },
         text = {
             Column(
@@ -681,11 +700,12 @@ fun AssignBuddyTeamDialog(
                 allOptions.forEach { team ->
                     val isSelected = selectedTeam == team
                     Card(
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                            containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainer
                         ),
-                        border = BorderStroke(1.dp, if (isSelected) OceanPrimary else Color.Transparent),
+                        border = BorderStroke(1.dp, if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { selectedTeam = team }
@@ -693,7 +713,7 @@ fun AssignBuddyTeamDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
+                                .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -703,7 +723,7 @@ fun AssignBuddyTeamDialog(
                                 modifier = Modifier.weight(1f)
                             )
                             if (isSelected) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
@@ -711,12 +731,18 @@ fun AssignBuddyTeamDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(selectedTeam) }) {
+            Button(
+                onClick = { onConfirm(selectedTeam) },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Zuweisen")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }

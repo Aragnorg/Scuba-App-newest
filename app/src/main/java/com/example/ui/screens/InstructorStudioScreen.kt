@@ -28,17 +28,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material.icons.filled.Slideshow
-import androidx.compose.material.icons.filled.VideoLibrary
-import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.FileUpload
+import androidx.compose.material.icons.rounded.Movie
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Quiz
+import androidx.compose.material.icons.rounded.Slideshow
+import androidx.compose.material.icons.rounded.VideoLibrary
+import androidx.compose.material.icons.rounded.Visibility
 import com.example.util.GoogleDriveHelper
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -129,14 +129,16 @@ fun InstructorStudioScreen(
                 },
                 containerColor = OceanPrimary,
                 contentColor = Color.White,
-                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                shape = RoundedCornerShape(16.dp),
+                icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
                 text = {
                     Text(
                         when (selectedTab) {
                             0 -> strings.uploadPresentation
                             1 -> strings.uploadVideo
                             else -> strings.createQuiz
-                        }
+                        },
+                        fontWeight = FontWeight.Bold
                     )
                 },
                 modifier = Modifier
@@ -153,7 +155,8 @@ fun InstructorStudioScreen(
             // Instructor Header Banner
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surfaceVariant
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -170,12 +173,12 @@ fun InstructorStudioScreen(
                             )
                         }
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = OceanPrimary.copy(alpha = 0.15f)
+                            shape = RoundedCornerShape(12.dp),
+                            color = OceanPrimary.copy(alpha = 0.12f)
                         ) {
                             Text(
                                 text = strings.instructorLabel,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
@@ -188,27 +191,27 @@ fun InstructorStudioScreen(
             // Tab bar
             PrimaryTabRow(
                 selectedTabIndex = selectedTab,
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
             ) {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    text = { Text("${strings.presentationsTab} (${presentations.size})") },
-                    icon = { Icon(Icons.Default.Slideshow, contentDescription = strings.presentationsTab) },
+                    text = { Text("${strings.presentationsTab} (${presentations.size})", fontWeight = FontWeight.SemiBold) },
+                    icon = { Icon(Icons.Rounded.Slideshow, contentDescription = strings.presentationsTab) },
                     modifier = Modifier.testTag("tab_presentations")
                 )
                 Tab(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    text = { Text("${strings.videosTab} (${videos.size})") },
-                    icon = { Icon(Icons.Default.VideoLibrary, contentDescription = strings.videosTab) },
+                    text = { Text("${strings.videosTab} (${videos.size})", fontWeight = FontWeight.SemiBold) },
+                    icon = { Icon(Icons.Rounded.VideoLibrary, contentDescription = strings.videosTab) },
                     modifier = Modifier.testTag("tab_videos")
                 )
                 Tab(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    text = { Text("${strings.quizzesTab} (${quizzes.size})") },
-                    icon = { Icon(Icons.Default.Quiz, contentDescription = strings.quizzesTab) },
+                    text = { Text("${strings.quizzesTab} (${quizzes.size})", fontWeight = FontWeight.SemiBold) },
+                    icon = { Icon(Icons.Rounded.Quiz, contentDescription = strings.quizzesTab) },
                     modifier = Modifier.testTag("tab_quizzes")
                 )
             }
@@ -307,8 +310,10 @@ fun PresentationsList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("presentation_item_${pres.id}"),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    shape = RoundedCornerShape(14.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column {
                         Row(
@@ -318,13 +323,13 @@ fun PresentationsList(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                modifier = Modifier.size(44.dp),
+                                modifier = Modifier.size(46.dp),
                                 shape = CircleShape,
-                                color = OceanPrimary.copy(alpha = 0.15f)
+                                color = OceanPrimary.copy(alpha = 0.12f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        Icons.Default.Slideshow,
+                                        Icons.Rounded.Slideshow,
                                         contentDescription = "Slides",
                                         tint = OceanPrimary
                                     )
@@ -351,7 +356,7 @@ fun PresentationsList(
                                 onClick = { onOpen(pres) },
                                 modifier = Modifier.testTag("preview_presentation_${pres.id}")
                             ) {
-                                Icon(Icons.Default.Visibility, contentDescription = "View Deck", tint = OceanPrimary)
+                                Icon(Icons.Rounded.Visibility, contentDescription = "View Deck", tint = OceanPrimary)
                             }
 
                             if (pres.isInstructorUploaded) {
@@ -359,7 +364,7 @@ fun PresentationsList(
                                     onClick = { onDelete(pres) },
                                     modifier = Modifier.testTag("delete_presentation_${pres.id}")
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = CoralAlert)
+                                    Icon(Icons.Rounded.Delete, contentDescription = strings.delete, tint = CoralAlert)
                                 }
                             }
                         }
@@ -367,25 +372,25 @@ fun PresentationsList(
                         // Deployment Controls & Origin Badges
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                         )
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = if (pres.isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (pres.isInstructorUploaded) AquaCyan.copy(alpha = 0.18f) else OceanPrimary.copy(alpha = 0.1f)
                                 ) {
                                     Text(
                                         text = if (pres.isInstructorUploaded) (if (isGerman) "👨‍🏫 Eigene Inhalte" else "👨‍🏫 Instructor Custom") else (if (isGerman) "🌐 App-Standard" else "🌐 General App Material"),
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
+                                        fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (pres.isInstructorUploaded) OceanPrimary else OceanSecondary
                                     )
@@ -393,14 +398,14 @@ fun PresentationsList(
                                 if (GoogleDriveHelper.isGoogleDriveUrl(pres.documentUri)) {
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Surface(
-                                        shape = RoundedCornerShape(4.dp),
-                                        color = AquaCyan.copy(alpha = 0.2f)
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = AquaCyan.copy(alpha = 0.18f)
                                     ) {
                                         Text(
                                             text = "☁️ Google Drive",
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontSize = 9.sp,
+                                            fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = OceanPrimary
                                         )
@@ -408,14 +413,14 @@ fun PresentationsList(
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
+                                    shape = RoundedCornerShape(8.dp),
                                     color = if (pres.isDeployed) SeaGreen.copy(alpha = 0.15f) else Color.Gray.copy(alpha = 0.15f)
                                 ) {
                                     Text(
                                         text = if (pres.isDeployed) "🟢 Deployed" else "⚪ Draft (Hidden)",
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
+                                        fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (pres.isDeployed) SeaGreen else Color.Gray
                                     )
@@ -481,8 +486,10 @@ fun VideosList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("video_item_${vid.id}"),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    shape = RoundedCornerShape(14.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column {
                         Row(
@@ -492,25 +499,25 @@ fun VideosList(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                modifier = Modifier.size(44.dp),
-                                shape = CircleShape,
+                                modifier = Modifier.size(46.dp),
+                                shape = RoundedCornerShape(14.dp),
                                 color = OceanSecondary.copy(alpha = 0.15f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        Icons.Default.Movie,
+                                        Icons.Rounded.Movie,
                                         contentDescription = "Video",
                                         tint = OceanSecondary
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = vid.title,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.weight(1f, fill = false)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 val durMin = vid.durationSeconds / 60
@@ -527,7 +534,7 @@ fun VideosList(
                                 onClick = { onOpen(vid) },
                                 modifier = Modifier.testTag("play_video_${vid.id}")
                             ) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = OceanPrimary)
+                                Icon(Icons.Rounded.PlayArrow, contentDescription = "Play", tint = OceanPrimary)
                             }
 
                             if (vid.isInstructorUploaded) {
@@ -535,7 +542,7 @@ fun VideosList(
                                     onClick = { onDelete(vid) },
                                     modifier = Modifier.testTag("delete_video_${vid.id}")
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = CoralAlert)
+                                    Icon(Icons.Rounded.Delete, contentDescription = strings.delete, tint = CoralAlert)
                                 }
                             }
                         }
@@ -543,57 +550,57 @@ fun VideosList(
                         // Deployment Controls & Origin Badges
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                         )
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = if (vid.isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (vid.isInstructorUploaded) AquaCyan.copy(alpha = 0.18f) else OceanPrimary.copy(alpha = 0.12f)
                                 ) {
                                     Text(
                                         text = if (vid.isInstructorUploaded) (if (isGerman) "👨‍🏫 Eigene Inhalte" else "👨‍🏫 Instructor Custom") else (if (isGerman) "🌐 App-Standard" else "🌐 General App Material"),
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = if (vid.isInstructorUploaded) OceanPrimary else OceanSecondary
                                     )
                                 }
                                 if (GoogleDriveHelper.isGoogleDriveUrl(vid.videoUrlOrUri)) {
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Surface(
-                                        shape = RoundedCornerShape(4.dp),
-                                        color = SeaGreen.copy(alpha = 0.2f)
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = SeaGreen.copy(alpha = 0.18f)
                                     ) {
                                         Text(
                                             text = "☁️ Google Drive",
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.SemiBold,
                                             color = SeaGreen
                                         )
                                     }
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = if (vid.isDeployed) SeaGreen.copy(alpha = 0.15f) else Color.Gray.copy(alpha = 0.15f)
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (vid.isDeployed) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHighest
                                 ) {
                                     Text(
                                         text = if (vid.isDeployed) "🟢 Deployed" else "⚪ Draft (Hidden)",
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (vid.isDeployed) SeaGreen else Color.Gray
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (vid.isDeployed) SeaGreen else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -658,8 +665,10 @@ fun QuizzesList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("quiz_item_${qz.id}"),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    shape = RoundedCornerShape(14.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column {
                         Row(
@@ -669,31 +678,32 @@ fun QuizzesList(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                modifier = Modifier.size(44.dp),
-                                shape = CircleShape,
+                                modifier = Modifier.size(46.dp),
+                                shape = RoundedCornerShape(14.dp),
                                 color = if (qz.isMockExam) SandGold.copy(alpha = 0.2f) else SeaGreen.copy(alpha = 0.15f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        Icons.Default.Quiz,
+                                        Icons.Rounded.Quiz,
                                         contentDescription = "Quiz",
                                         tint = if (qz.isMockExam) SandGold else SeaGreen
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = qz.title,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.weight(1f, fill = false)
                                     )
                                     if (qz.isMockExam) {
-                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
                                         Surface(
-                                            shape = RoundedCornerShape(4.dp),
+                                            shape = RoundedCornerShape(6.dp),
                                             color = SandGold.copy(alpha = 0.25f)
                                         ) {
                                             Text(
@@ -719,7 +729,7 @@ fun QuizzesList(
                                 onClick = { onOpen(qz) },
                                 modifier = Modifier.testTag("preview_quiz_${qz.id}")
                             ) {
-                                Icon(Icons.Default.Visibility, contentDescription = "Test Quiz", tint = OceanPrimary)
+                                Icon(Icons.Rounded.Visibility, contentDescription = "Test Quiz", tint = OceanPrimary)
                             }
 
                             if (qz.isInstructorUploaded) {
@@ -727,7 +737,7 @@ fun QuizzesList(
                                     onClick = { onDelete(qz) },
                                     modifier = Modifier.testTag("delete_quiz_${qz.id}")
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = strings.delete, tint = CoralAlert)
+                                    Icon(Icons.Rounded.Delete, contentDescription = strings.delete, tint = CoralAlert)
                                 }
                             }
                         }
@@ -735,41 +745,41 @@ fun QuizzesList(
                         // Deployment Controls & Origin Badges
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                         )
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = if (qz.isInstructorUploaded) AquaCyan.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.1f)
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (qz.isInstructorUploaded) AquaCyan.copy(alpha = 0.18f) else OceanPrimary.copy(alpha = 0.12f)
                                 ) {
                                     Text(
                                         text = if (qz.isInstructorUploaded) (if (isGerman) "👨‍🏫 Eigene Inhalte" else "👨‍🏫 Instructor Custom") else (if (isGerman) "🌐 App-Standard" else "🌐 General App Material"),
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = if (qz.isInstructorUploaded) OceanPrimary else OceanSecondary
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = if (qz.isDeployed) SeaGreen.copy(alpha = 0.15f) else Color.Gray.copy(alpha = 0.15f)
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (qz.isDeployed) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHighest
                                 ) {
                                     Text(
                                         text = if (qz.isDeployed) (if (isGerman) "🟢 Bereitgestellt" else "🟢 Deployed") else (if (isGerman) "⚪ Entwurf (Versteckt)" else "⚪ Draft (Hidden)"),
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                         style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (qz.isDeployed) SeaGreen else Color.Gray
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if (qz.isDeployed) SeaGreen else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -850,6 +860,8 @@ fun CreatePresentationDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
                 text = strings.uploadCreatePresentationTitle,
@@ -868,18 +880,30 @@ fun CreatePresentationDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .clickable { filePicker.launch("*/*") }
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(12.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable { filePicker.launch("*/*") },
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.FileUpload,
-                            contentDescription = if (isGerman) "Dokument hochladen" else "Upload Document",
-                            tint = OceanPrimary
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            modifier = Modifier.size(42.dp),
+                            shape = CircleShape,
+                            color = OceanPrimary.copy(alpha = 0.15f)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Rounded.FileUpload,
+                                    contentDescription = if (isGerman) "Dokument hochladen" else "Upload Document",
+                                    tint = OceanPrimary
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = if (selectedDocumentUri != null) strings.fileSelectedBadge else strings.uploadDeckFileOrPdf,
@@ -902,8 +926,9 @@ fun CreatePresentationDialog(
                     onValueChange = { googleDriveUrlText = it },
                     label = { Text("☁️ Google Drive / Slides Link") },
                     placeholder = { Text("https://drive.google.com/... oder docs.google.com/presentation/...") },
-                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null, tint = OceanPrimary) },
+                    leadingIcon = { Icon(Icons.Rounded.Cloud, contentDescription = null, tint = OceanPrimary) },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     supportingText = {
                         if (GoogleDriveHelper.isGoogleDriveUrl(googleDriveUrlText)) {
                             Text("✓ Google Drive / Slides Link erkannt", color = SeaGreen, fontWeight = FontWeight.Bold)
@@ -920,7 +945,8 @@ fun CreatePresentationDialog(
                     placeholder = { Text(strings.presentationTitlePlaceholder) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("presentation_title_input")
+                        .testTag("presentation_title_input"),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 OutlinedTextField(
@@ -928,7 +954,8 @@ fun CreatePresentationDialog(
                     onValueChange = { description = it },
                     label = { Text(strings.descriptionLabel) },
                     placeholder = { Text(strings.presentationDescPlaceholder) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 // Module selector
@@ -944,7 +971,8 @@ fun CreatePresentationDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        shape = RoundedCornerShape(14.dp)
                     )
                     ExposedDropdownMenu(
                         expanded = expandedDropdown,
@@ -973,10 +1001,13 @@ fun CreatePresentationDialog(
                 slides.forEachIndexed { index, slide ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Text(
@@ -1013,9 +1044,9 @@ fun CreatePresentationDialog(
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = if (isGerman) "Folie hinzufügen" else "Add Slide")
+                    Icon(Icons.Rounded.Add, contentDescription = if (isGerman) "Folie hinzufügen" else "Add Slide")
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(strings.addAnotherSlideButton)
                 }
@@ -1044,7 +1075,7 @@ fun CreatePresentationDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             ) {
                 Text(strings.cancel)
             }
@@ -1090,6 +1121,8 @@ fun CreateVideoDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
                 text = strings.uploadVideo,
@@ -1108,22 +1141,34 @@ fun CreateVideoDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .clickable {
                             videoPicker.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
                             )
-                        }
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(12.dp)
+                        },
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.Movie,
-                            contentDescription = "Pick Video",
-                            tint = OceanSecondary
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            modifier = Modifier.size(42.dp),
+                            shape = CircleShape,
+                            color = OceanSecondary.copy(alpha = 0.15f)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Rounded.Movie,
+                                    contentDescription = "Pick Video",
+                                    tint = OceanSecondary
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = if (videoUriText.isNotBlank()) strings.videoAttachedBadge else strings.selectVideoFromDevice,
@@ -1146,8 +1191,9 @@ fun CreateVideoDialog(
                     onValueChange = { googleDriveUrlText = it },
                     label = { Text("☁️ Google Drive Video-Link (Cloud Stream)") },
                     placeholder = { Text("https://drive.google.com/file/d/...") },
-                    leadingIcon = { Icon(Icons.Default.Cloud, contentDescription = null, tint = OceanSecondary) },
+                    leadingIcon = { Icon(Icons.Rounded.Cloud, contentDescription = null, tint = OceanSecondary) },
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
                     supportingText = {
                         if (GoogleDriveHelper.isGoogleDriveUrl(googleDriveUrlText)) {
                             Text("✓ Google Drive Video erkannt (Streaming aktiv)", color = SeaGreen, fontWeight = FontWeight.Bold)
@@ -1164,21 +1210,24 @@ fun CreateVideoDialog(
                     placeholder = { Text(strings.videoTitlePlaceholder) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("video_title_input")
+                        .testTag("video_title_input"),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text(strings.videoDescInstructionsLabel) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 OutlinedTextField(
                     value = durationMinutesText,
                     onValueChange = { durationMinutesText = it },
                     label = { Text(strings.approxDurationMinutesLabel) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 // Module selector
@@ -1194,7 +1243,8 @@ fun CreateVideoDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        shape = RoundedCornerShape(14.dp)
                     )
                     ExposedDropdownMenu(
                         expanded = expandedDropdown,
@@ -1238,13 +1288,18 @@ fun CreateVideoDialog(
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                shape = RoundedCornerShape(14.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("save_video_button")
             ) {
                 Text(strings.publishVideoButton)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(14.dp)
+            ) {
                 Text(strings.cancel)
             }
         }
@@ -1304,6 +1359,8 @@ fun CreateQuizDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
                 text = "Quiz oder Probeprüfung erstellen",
@@ -1325,14 +1382,16 @@ fun CreateQuizDialog(
                     placeholder = { Text("z.B. Navigation & Kompass-Quiz") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("quiz_title_input")
+                        .testTag("quiz_title_input"),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Beschreibung") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Row(
@@ -1351,7 +1410,8 @@ fun CreateQuizDialog(
                     value = passScoreText,
                     onValueChange = { passScoreText = it },
                     label = { Text("Bestehensgrenze (%)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 // Module selector
@@ -1367,7 +1427,8 @@ fun CreateQuizDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        shape = RoundedCornerShape(14.dp)
                     )
                     ExposedDropdownMenu(
                         expanded = expandedDropdown,
@@ -1396,10 +1457,13 @@ fun CreateQuizDialog(
                 questions.forEachIndexed { i, q ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(10.dp),
+                            modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
@@ -1420,11 +1484,14 @@ fun CreateQuizDialog(
                 // Add Question Section
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
                             text = "+ Frage zum Quiz hinzufügen",
@@ -1435,31 +1502,36 @@ fun CreateQuizDialog(
                             value = newQText,
                             onValueChange = { newQText = it },
                             label = { Text("Fragentext") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt0,
                             onValueChange = { newOpt0 = it },
                             label = { Text("Option A") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt1,
                             onValueChange = { newOpt1 = it },
                             label = { Text("Option B") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt2,
                             onValueChange = { newOpt2 = it },
                             label = { Text("Option C") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt3,
                             onValueChange = { newOpt3 = it },
                             label = { Text("Option D") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
                         )
 
                         Text("Richtige Option auswählen:", style = MaterialTheme.typography.labelMedium)
@@ -1479,7 +1551,8 @@ fun CreateQuizDialog(
                             value = newExpl,
                             onValueChange = { newExpl = it },
                             label = { Text("Erklärung für Schüler / Prüflinge") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
                         )
 
                         Button(
@@ -1510,11 +1583,11 @@ fun CreateQuizDialog(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(14.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = OceanSecondary)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Add")
+                            Icon(Icons.Rounded.Add, contentDescription = "Add")
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Frage hinzufügen")
                         }
@@ -1536,7 +1609,7 @@ fun CreateQuizDialog(
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(14.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("save_quiz_button")
             ) {
@@ -1546,7 +1619,7 @@ fun CreateQuizDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(14.dp)
             ) {
                 Text("Abbrechen")
             }

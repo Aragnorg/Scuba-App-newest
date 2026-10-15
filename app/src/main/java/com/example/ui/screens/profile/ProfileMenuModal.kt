@@ -26,47 +26,47 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DriveFileRenameOutline
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.HealthAndSafety
-import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AttachFile
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.CorporateFare
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.DriveFileRenameOutline
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.HourglassTop
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.PhotoLibrary
+import androidx.compose.material.icons.rounded.QrCode
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Straighten
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Switch
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Straighten
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Wifi
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -207,53 +207,58 @@ fun ProfileMenuModal(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 // Top Action Header
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            shape = CircleShape,
-                            color = OceanPrimary.copy(alpha = 0.15f),
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.School, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(20.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = CircleShape,
+                                color = OceanPrimary.copy(alpha = 0.15f),
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Rounded.School, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(22.dp))
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = strings.profileTitle,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = strings.personalDocumentsDesc,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Text(
-                                text = strings.profileTitle,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = strings.personalDocumentsDesc,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontSize = 10.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        LanguageSwitchButton(
-                            currentLanguage = currentLanguage,
-                            onLanguageChange = { viewModel.setLanguage(it) },
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            LanguageSwitchButton(
+                                currentLanguage = currentLanguage,
+                                onLanguageChange = { viewModel.setLanguage(it) },
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
 
-                        IconButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.testTag("close_profile_modal_btn")
-                        ) {
-                            Icon(Icons.Default.Close, contentDescription = strings.close)
+                            IconButton(
+                                onClick = onDismiss,
+                                modifier = Modifier.testTag("close_profile_modal_btn")
+                            ) {
+                                Icon(Icons.Rounded.Close, contentDescription = strings.close)
+                            }
                         }
                     }
                 }
@@ -271,11 +276,12 @@ fun ProfileMenuModal(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("profile_diver_card"),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
-                            Column(modifier = Modifier.padding(18.dp)) {
+                            Column(modifier = Modifier.padding(20.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
@@ -307,7 +313,7 @@ fun ProfileMenuModal(
                                                 modifier = Modifier.size(24.dp)
                                             ) {
                                                 Icon(
-                                                    Icons.Default.DriveFileRenameOutline,
+                                                    Icons.Rounded.DriveFileRenameOutline,
                                                     contentDescription = if (currentLanguage == AppLanguage.DE) "Name bearbeiten" else "Edit Name",
                                                     tint = OceanPrimary,
                                                     modifier = Modifier.size(16.dp)
@@ -328,14 +334,14 @@ fun ProfileMenuModal(
                                             color = SeaGreen.copy(alpha = 0.15f)
                                         ) {
                                             Row(
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
+                                                Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
                                                     text = if (currentUser?.role == "INSTRUCTOR") strings.instructorLabel else strings.diverStatusActive,
-                                                    fontSize = 10.sp,
+                                                    fontSize = 11.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     color = SeaGreen
                                                 )
@@ -344,7 +350,7 @@ fun ProfileMenuModal(
                                     }
                                 }
 
-                                Spacer(modifier = Modifier.height(14.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
                                 // Avatar Actions Row
                                 Row(
@@ -356,11 +362,11 @@ fun ProfileMenuModal(
                                         modifier = Modifier
                                             .weight(1f)
                                             .testTag("avatar_take_photo_btn"),
-                                        shape = RoundedCornerShape(10.dp),
+                                        shape = RoundedCornerShape(12.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
                                     ) {
-                                        Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(15.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(strings.takePhotoCamera, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
 
@@ -373,10 +379,10 @@ fun ProfileMenuModal(
                                         modifier = Modifier
                                             .weight(1f)
                                             .testTag("avatar_gallery_btn"),
-                                        shape = RoundedCornerShape(10.dp)
+                                        shape = RoundedCornerShape(12.dp)
                                     ) {
-                                        Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Icon(Icons.Rounded.PhotoLibrary, contentDescription = null, modifier = Modifier.size(15.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(strings.uploadProfilePhoto, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
@@ -389,7 +395,7 @@ fun ProfileMenuModal(
                                             .fillMaxWidth()
                                             .testTag("remove_avatar_btn")
                                     ) {
-                                        Icon(Icons.Default.Delete, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(14.dp))
+                                        Icon(Icons.Rounded.Delete, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(14.dp))
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(strings.removeProfilePicture, color = Color(0xFFE53E3E), fontSize = 11.sp)
                                     }
@@ -409,11 +415,12 @@ fun ProfileMenuModal(
                                     // Row 1: Brevet & Dives
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = OceanPrimary.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = OceanPrimary.copy(alpha = 0.08f),
+                                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.2f)),
                                             modifier = Modifier.weight(1f)
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
+                                            Column(modifier = Modifier.padding(10.dp)) {
                                                 Text("Brevet & Verband", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
                                                     text = "${currentUser?.certAgency ?: "VDST / CMAS"} • ${currentUser?.certLevel ?: "Open Water Diver"}",
@@ -428,11 +435,12 @@ fun ProfileMenuModal(
                                         }
 
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = SeaGreen.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = SeaGreen.copy(alpha = 0.08f),
+                                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.2f)),
                                             modifier = Modifier.weight(0.7f)
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
+                                            Column(modifier = Modifier.padding(10.dp)) {
                                                 Text("Geloggte Dives", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
                                                     text = "🤿 ${currentUser?.totalLoggedDives ?: 12} Dives",
@@ -447,11 +455,12 @@ fun ProfileMenuModal(
                                     // Row 2: TTU Medical & Insurance
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = Color(0xFF38A169).copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = Color(0xFF38A169).copy(alpha = 0.08f),
+                                            border = BorderStroke(1.dp, Color(0xFF38A169).copy(alpha = 0.25f)),
                                             modifier = Modifier.weight(1f)
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
+                                            Column(modifier = Modifier.padding(10.dp)) {
                                                 Text("TTU Attest", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
                                                     text = "🩺 ${currentUser?.ttuExpiryDate ?: "2027-06-30"}",
@@ -466,11 +475,12 @@ fun ProfileMenuModal(
                                         }
 
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                                             modifier = Modifier.weight(1f)
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
+                                            Column(modifier = Modifier.padding(10.dp)) {
                                                 Text("Tauchversicherung", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
                                                     text = "🛡️ ${currentUser?.insuranceProvider.takeIf { !it.isNullOrBlank() } ?: "DAN Europe"}",
@@ -486,11 +496,12 @@ fun ProfileMenuModal(
 
                                     // Row 3: Emergency contact & Rental preferences
                                     Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Column(modifier = Modifier.padding(8.dp)) {
+                                        Column(modifier = Modifier.padding(10.dp)) {
                                             Text(
                                                 text = "🚨 Notfallkontakt: ${currentUser?.emergencyContactName.takeIf { !it.isNullOrBlank() } ?: "Monika Scheid"} (${currentUser?.emergencyContactPhone.takeIf { !it.isNullOrBlank() } ?: "+49 171 9876543"})",
                                                 style = MaterialTheme.typography.bodySmall,
@@ -509,12 +520,12 @@ fun ProfileMenuModal(
                                     // If Instructor / Leadership: Show Instructor Badge details
                                     if (currentUser?.role == "INSTRUCTOR") {
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = OceanPrimary.copy(alpha = 0.12f),
-                                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.3f)),
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = OceanPrimary.copy(alpha = 0.08f),
+                                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.25f)),
                                             modifier = Modifier.fillMaxWidth()
                                         ) {
-                                            Column(modifier = Modifier.padding(8.dp)) {
+                                            Column(modifier = Modifier.padding(10.dp)) {
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                                     Text("🏢", fontSize = 14.sp)
                                                     Spacer(modifier = Modifier.width(6.dp))
@@ -553,11 +564,11 @@ fun ProfileMenuModal(
                                         Button(
                                             onClick = { showEditFullProfileDialog = true },
                                             modifier = Modifier.weight(1f).testTag("edit_full_profile_btn"),
-                                            shape = RoundedCornerShape(12.dp),
+                                            shape = RoundedCornerShape(14.dp),
                                             colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
                                         ) {
-                                            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(15.dp))
+                                            Icon(Icons.Rounded.Edit, contentDescription = null, modifier = Modifier.size(15.dp))
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = if (currentLanguage == AppLanguage.DE) "Profil bearbeiten" else "Edit Profile",
@@ -572,10 +583,10 @@ fun ProfileMenuModal(
                                                 showAddDocumentDialog = true
                                             },
                                             modifier = Modifier.weight(1f).testTag("profile_quick_add_doc_btn"),
-                                            shape = RoundedCornerShape(12.dp),
+                                            shape = RoundedCornerShape(14.dp),
                                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
                                         ) {
-                                            Icon(Icons.Default.AttachFile, contentDescription = null, modifier = Modifier.size(15.dp), tint = OceanPrimary)
+                                            Icon(Icons.Rounded.AttachFile, contentDescription = null, modifier = Modifier.size(15.dp), tint = OceanPrimary)
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = if (currentLanguage == AppLanguage.DE) "Datei anhängen" else "Attach File",
@@ -599,21 +610,21 @@ fun ProfileMenuModal(
                             StatMiniCard(
                                 title = strings.totalDocumentsCount,
                                 count = documents.size.toString(),
-                                icon = Icons.Default.Description,
+                                icon = Icons.Rounded.Description,
                                 color = OceanPrimary,
                                 modifier = Modifier.weight(1f)
                             )
                             StatMiniCard(
                                 title = strings.approvedDocumentsCount,
                                 count = approvedCount.toString(),
-                                icon = Icons.Default.Verified,
+                                icon = Icons.Rounded.Verified,
                                 color = SeaGreen,
                                 modifier = Modifier.weight(1f)
                             )
                             StatMiniCard(
                                 title = "Exam Readiness",
                                 count = "$readiness%",
-                                icon = Icons.Default.EmojiEvents,
+                                icon = Icons.Rounded.EmojiEvents,
                                 color = SandGold,
                                 modifier = Modifier.weight(1f)
                             )
@@ -633,16 +644,17 @@ fun ProfileMenuModal(
                                 .fillMaxWidth()
                                 .padding(bottom = 14.dp)
                                 .testTag("profile_role_switcher_card"),
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(24.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (currentUser?.role == "INSTRUCTOR") OceanPrimary.copy(alpha = 0.08f) else SeaGreen.copy(alpha = 0.08f)
                             ),
                             border = BorderStroke(
                                 1.dp,
                                 if (currentUser?.role == "INSTRUCTOR") OceanPrimary.copy(alpha = 0.35f) else SeaGreen.copy(alpha = 0.35f)
-                            )
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(modifier = Modifier.padding(18.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -671,8 +683,8 @@ fun ProfileMenuModal(
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = if (currentUser?.role == "INSTRUCTOR") SeaGreen else OceanPrimary
                                         ),
-                                        shape = RoundedCornerShape(10.dp),
-                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                        shape = RoundedCornerShape(12.dp),
+                                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                                     ) {
                                         Text(
                                             text = if (currentUser?.role == "INSTRUCTOR") {
@@ -685,7 +697,7 @@ fun ProfileMenuModal(
                                         )
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = if (currentUser?.role == "INSTRUCTOR") {
                                         if (currentLanguage == AppLanguage.DE)
@@ -711,15 +723,15 @@ fun ProfileMenuModal(
                                 .fillMaxWidth()
                                 .padding(bottom = 14.dp)
                                 .testTag("profile_org_card"),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 val currentOrg by viewModel.currentOrganization.collectAsState()
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.CorporateFare, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(22.dp))
+                                    Icon(Icons.Rounded.CorporateFare, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(22.dp))
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = if (currentLanguage == AppLanguage.DE) "Tauchorganisation (Verein / Basis)" else "Diving Organization (Club / Center)",
@@ -747,7 +759,7 @@ fun ProfileMenuModal(
                                     OutlinedButton(
                                         onClick = { showCreateOrgDialog = true },
                                         modifier = Modifier.weight(1f),
-                                        shape = RoundedCornerShape(10.dp)
+                                        shape = RoundedCornerShape(12.dp)
                                     ) {
                                         Text(
                                             text = if (currentLanguage == AppLanguage.DE) "+ Neue Org anlegen" else "+ Create New Org",
@@ -760,7 +772,7 @@ fun ProfileMenuModal(
                                         Button(
                                             onClick = { showEditOrgDialog = true },
                                             modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(10.dp),
+                                            shape = RoundedCornerShape(12.dp),
                                             colors = ButtonDefaults.buttonColors(containerColor = if (currentOrg!!.isClub) SeaGreen else OceanPrimary)
                                         ) {
                                             Text(
@@ -778,11 +790,12 @@ fun ProfileMenuModal(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("profile_settings_card"),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
-                            Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                            Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                                 Text(
                                     text = if (currentLanguage == AppLanguage.DE) "App-Einstellungen & Präferenzen" else "App Settings & Preferences",
                                     style = MaterialTheme.typography.titleMedium,
@@ -800,7 +813,7 @@ fun ProfileMenuModal(
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                         Icon(
-                                            imageVector = Icons.Default.DarkMode,
+                                            imageVector = Icons.Rounded.DarkMode,
                                             contentDescription = null,
                                             tint = OceanPrimary,
                                             modifier = Modifier.size(22.dp)
@@ -836,7 +849,7 @@ fun ProfileMenuModal(
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                         Icon(
-                                            imageVector = Icons.Default.Straighten,
+                                            imageVector = Icons.Rounded.Straighten,
                                             contentDescription = null,
                                             tint = OceanPrimary,
                                             modifier = Modifier.size(22.dp)
@@ -884,7 +897,7 @@ fun ProfileMenuModal(
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                         Icon(
-                                            imageVector = Icons.Default.Language,
+                                            imageVector = Icons.Rounded.Language,
                                             contentDescription = null,
                                             tint = OceanPrimary,
                                             modifier = Modifier.size(22.dp)
@@ -920,7 +933,7 @@ fun ProfileMenuModal(
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                         Icon(
-                                            imageVector = Icons.Default.Wifi,
+                                            imageVector = Icons.Rounded.Wifi,
                                             contentDescription = null,
                                             tint = OceanPrimary,
                                             modifier = Modifier.size(22.dp)
@@ -956,7 +969,7 @@ fun ProfileMenuModal(
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                                         Icon(
-                                            imageVector = Icons.Default.Notifications,
+                                            imageVector = Icons.Rounded.Notifications,
                                             contentDescription = null,
                                             tint = OceanPrimary,
                                             modifier = Modifier.size(22.dp)
@@ -1015,11 +1028,11 @@ fun ProfileMenuModal(
                                         showAddDocumentDialog = true
                                     },
                                     modifier = Modifier.testTag("profile_add_doc_btn"),
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                                 ) {
-                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = strings.addDocumentButton,
@@ -1050,12 +1063,12 @@ fun ProfileMenuModal(
                                 Text(if (currentLanguage == AppLanguage.DE) "Zertifikate, TTU, Brevets durchsuchen..." else "Search certifications, medical statement, waivers...")
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Search, contentDescription = if (currentLanguage == AppLanguage.DE) "Suchen" else "Search")
+                                Icon(Icons.Rounded.Search, contentDescription = if (currentLanguage == AppLanguage.DE) "Suchen" else "Search")
                             },
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setDocumentSearchQuery("") }) {
-                                        Icon(Icons.Default.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "Löschen" else "Clear")
+                                        Icon(Icons.Rounded.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "Löschen" else "Clear")
                                     }
                                 }
                             },
@@ -1063,7 +1076,7 @@ fun ProfileMenuModal(
                                 .fillMaxWidth()
                                 .testTag("profile_doc_search_bar"),
                             singleLine = true,
-                            shape = RoundedCornerShape(14.dp)
+                            shape = RoundedCornerShape(16.dp)
                         )
                     }
 
@@ -1121,19 +1134,21 @@ fun ProfileMenuModal(
                         item {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(20.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
-                                )
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(24.dp),
+                                        .padding(28.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(text = "🗂️", fontSize = 36.sp)
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(10.dp))
                                     Text(
                                         text = strings.noDocumentsFound,
                                         style = MaterialTheme.typography.titleSmall,
@@ -1143,7 +1158,7 @@ fun ProfileMenuModal(
                                         text = strings.noDocumentsFoundDesc,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        fontSize = 11.sp
+                                        fontSize = 12.sp
                                     )
                                 }
                             }
@@ -1176,12 +1191,12 @@ fun ProfileMenuModal(
                                     viewModel.logout()
                                 },
                                 modifier = Modifier.testTag("profile_logout_btn"),
-                                shape = RoundedCornerShape(20.dp),
-                                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
                                 border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f))
                             ) {
-                                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(strings.signOut, color = Color(0xFFE53E3E), fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             }
                         }
@@ -1361,20 +1376,21 @@ private fun StatMiniCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = count, fontWeight = FontWeight.Black, fontSize = 16.sp, color = color)
-            Text(text = title, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+            Text(text = title, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
     }
 }
@@ -1388,15 +1404,16 @@ private fun ProfileFilterChip(
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() },
-        shape = RoundedCornerShape(10.dp),
-        color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(12.dp),
+        color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceContainerHigh,
+        border = BorderStroke(1.dp, if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
         contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
     ) {
         Text(
             text = title,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontSize = 11.sp
@@ -1440,6 +1457,8 @@ fun EditFullProfileDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Column {
                 Text(
@@ -1464,12 +1483,12 @@ fun EditFullProfileDialog(
                 // Tab switcher between Diver and Instructor
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (selectedTab == 0) OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (selectedTab == 0) OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainerHighest,
                         border = BorderStroke(1.dp, if (selectedTab == 0) OceanPrimary else Color.Transparent),
                         modifier = Modifier.weight(1f).clickable { selectedTab = 0 }
                     ) {
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 10.dp)) {
                             Text(
                                 text = "👤 Taucher-Profil",
                                 style = MaterialTheme.typography.labelMedium,
@@ -1480,12 +1499,12 @@ fun EditFullProfileDialog(
                     }
 
                     Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = if (selectedTab == 1) SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(12.dp),
+                        color = if (selectedTab == 1) SeaGreen.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainerHighest,
                         border = BorderStroke(1.dp, if (selectedTab == 1) SeaGreen else Color.Transparent),
                         modifier = Modifier.weight(1f).clickable { selectedTab = 1 }
                     ) {
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 8.dp)) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 10.dp)) {
                             Text(
                                 text = "🤿 Leitung & TL",
                                 style = MaterialTheme.typography.labelMedium,
@@ -1767,7 +1786,8 @@ fun EditFullProfileDialog(
                     onSave(updated)
                     onDismiss()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Speichern")
             }

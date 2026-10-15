@@ -25,18 +25,18 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.MarkEmailRead
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.MarkEmailRead
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -176,31 +176,36 @@ fun AuthScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Tab Row (Log In vs Register)
-        PrimaryTabRow(
-            selectedTabIndex = selectedTab,
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .fillMaxWidth()
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Tab(
-                selected = selectedTab == 0,
-                onClick = {
-                    selectedTab = 0
-                    viewModel.clearAuthMessages()
-                },
-                text = { Text(strings.signIn, fontWeight = FontWeight.Bold) },
-                modifier = Modifier.testTag("tab_login")
-            )
-            Tab(
-                selected = selectedTab == 1,
-                onClick = {
-                    selectedTab = 1
-                    viewModel.clearAuthMessages()
-                },
-                text = { Text(strings.register, fontWeight = FontWeight.Bold) },
-                modifier = Modifier.testTag("tab_register")
-            )
+            PrimaryTabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = Color.Transparent,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = {
+                        selectedTab = 0
+                        viewModel.clearAuthMessages()
+                    },
+                    text = { Text(strings.signIn, fontWeight = FontWeight.Bold) },
+                    modifier = Modifier.testTag("tab_login")
+                )
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = {
+                        selectedTab = 1
+                        viewModel.clearAuthMessages()
+                    },
+                    text = { Text(strings.register, fontWeight = FontWeight.Bold) },
+                    modifier = Modifier.testTag("tab_register")
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -209,21 +214,21 @@ fun AuthScreen(
         if (authError != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = CoralAlert.copy(alpha = 0.12f),
-                border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.5f))
+                border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.4f))
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.ErrorOutline,
+                        Icons.Rounded.ErrorOutline,
                         contentDescription = null,
                         tint = CoralAlert,
                         modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = authError!!,
                         style = MaterialTheme.typography.bodySmall,
@@ -239,21 +244,21 @@ fun AuthScreen(
         if (authSuccess != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = SeaGreen.copy(alpha = 0.12f),
-                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f))
+                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.CheckCircle,
+                        Icons.Rounded.CheckCircle,
                         contentDescription = null,
                         tint = SeaGreen,
                         modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = authSuccess!!,
                         style = MaterialTheme.typography.bodySmall,
@@ -303,36 +308,37 @@ fun LoginForm(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = strings.welcomeBackAquaLearn,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
             // Quick Demo Switchers
             Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = OceanPrimary.copy(alpha = 0.08f),
-                border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.2f)),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
+                Column(modifier = Modifier.padding(14.dp)) {
                     Text(
                         text = strings.quickDemoLoginSubtitle,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = OceanPrimary
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -342,7 +348,7 @@ fun LoginForm(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("quick_login_student_button"),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, OceanPrimary)
                         ) {
                             Text("🎓 ${strings.studentDemoButton}", fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -352,7 +358,7 @@ fun LoginForm(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("quick_login_instructor_button"),
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
                         ) {
                             Text("🤿 ${strings.instructorDemoButton}", fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -365,13 +371,13 @@ fun LoginForm(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
+                Spacer(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)))
                 Text(
                     text = "  ${strings.orSignInWithCredentials}  ",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
+                Spacer(modifier = Modifier.weight(1f).height(1.dp).background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)))
             }
 
             OutlinedTextField(
@@ -379,7 +385,8 @@ fun LoginForm(
                 onValueChange = { email = it },
                 label = { Text(strings.emailAddressLabel) },
                 placeholder = { Text("e.g. diver@gmail.com") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = strings.email) },
+                leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = strings.email) },
+                shape = RoundedCornerShape(14.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                 modifier = Modifier
@@ -391,16 +398,17 @@ fun LoginForm(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(strings.passwordLabel) },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = strings.password) },
+                leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = strings.password) },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            imageVector = if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
                             contentDescription = "Toggle Password Visibility"
                         )
                     }
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                shape = RoundedCornerShape(14.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                 modifier = Modifier
@@ -416,9 +424,9 @@ fun LoginForm(
                     onClick = { onLogin(email.trim(), password) },
                     enabled = email.isNotBlank() && password.isNotBlank(),
                     colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 36.dp, vertical = 12.dp),
-                    modifier = Modifier.testTag("login_submit_button")
+                    shape = RoundedCornerShape(16.dp),
+                    contentPadding = PaddingValues(horizontal = 40.dp, vertical = 14.dp),
+                    modifier = Modifier.fillMaxWidth().testTag("login_submit_button")
                 ) {
                     Text(strings.signIn, fontWeight = FontWeight.Bold)
                 }
@@ -460,17 +468,18 @@ fun RegisterForm(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = strings.createAccountTitle,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -491,7 +500,8 @@ fun RegisterForm(
                 onValueChange = { fullName = it },
                 label = { Text(strings.fullName) },
                 placeholder = { Text(if (isGerman) "z. B. Alex Morgan" else "e.g. Alex Morgan") },
-                leadingIcon = { Icon(Icons.Default.Person, contentDescription = strings.fullName) },
+                leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = strings.fullName) },
+                shape = RoundedCornerShape(14.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 modifier = Modifier
@@ -504,7 +514,8 @@ fun RegisterForm(
                 onValueChange = { email = it },
                 label = { Text(strings.emailAddressLabel) },
                 placeholder = { Text(if (isGerman) "z. B. alex.diver@gmail.com" else "e.g. alex.diver@gmail.com") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = strings.email) },
+                leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = strings.email) },
+                shape = RoundedCornerShape(14.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                 modifier = Modifier
@@ -516,16 +527,17 @@ fun RegisterForm(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("${strings.passwordLabel} (Min 6)") },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = strings.password) },
+                leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = strings.password) },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            imageVector = if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
                             contentDescription = null
                         )
                     }
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                shape = RoundedCornerShape(14.dp),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
                 modifier = Modifier
@@ -537,8 +549,9 @@ fun RegisterForm(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
                 label = { Text(strings.confirmPasswordLabel) },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = strings.confirmPasswordLabel) },
+                leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = strings.confirmPasswordLabel) },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                shape = RoundedCornerShape(14.dp),
                 singleLine = true,
                 isError = confirmPassword.isNotBlank() && !passwordsMatch,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
@@ -565,14 +578,14 @@ fun RegisterForm(
                             .weight(1f)
                             .clickable { selectedRole = "STUDENT" }
                             .testTag("role_student_select"),
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (selectedRole == "STUDENT") OceanPrimary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (selectedRole == "STUDENT") OceanPrimary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainerHigh,
                         border = BorderStroke(
                             width = if (selectedRole == "STUDENT") 2.dp else 1.dp,
-                            color = if (selectedRole == "STUDENT") OceanPrimary else MaterialTheme.colorScheme.outlineVariant
+                            color = if (selectedRole == "STUDENT") OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
                     ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
+                        Column(modifier = Modifier.padding(12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 RadioButton(
                                     selected = selectedRole == "STUDENT",
@@ -602,14 +615,14 @@ fun RegisterForm(
                             .weight(1f)
                             .clickable { selectedRole = "INSTRUCTOR" }
                             .testTag("role_instructor_select"),
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (selectedRole == "INSTRUCTOR") AquaCyan.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (selectedRole == "INSTRUCTOR") AquaCyan.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHigh,
                         border = BorderStroke(
                             width = if (selectedRole == "INSTRUCTOR") 2.dp else 1.dp,
-                            color = if (selectedRole == "INSTRUCTOR") OceanPrimary else MaterialTheme.colorScheme.outlineVariant
+                            color = if (selectedRole == "INSTRUCTOR") OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
                     ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
+                        Column(modifier = Modifier.padding(12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 RadioButton(
                                     selected = selectedRole == "INSTRUCTOR",
@@ -636,38 +649,43 @@ fun RegisterForm(
             }
 
             // Scuba safety agreement
-            Row(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { agreeMedicalDeclaration = !agreeMedicalDeclaration }
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .clickable { agreeMedicalDeclaration = !agreeMedicalDeclaration },
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
-                Checkbox(
-                    checked = agreeMedicalDeclaration,
-                    onCheckedChange = { agreeMedicalDeclaration = it },
-                    colors = CheckboxDefaults.colors(checkedColor = OceanPrimary)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = if (isGerman) {
-                        if (selectedRole == "STUDENT") {
-                            "Zustimmung zum Open Water Sicherheitsprotokoll"
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = agreeMedicalDeclaration,
+                        onCheckedChange = { agreeMedicalDeclaration = it },
+                        colors = CheckboxDefaults.colors(checkedColor = OceanPrimary)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (isGerman) {
+                            if (selectedRole == "STUDENT") {
+                                "Zustimmung zum Open Water Sicherheitsprotokoll"
+                            } else {
+                                "Autorisierung als zertifizierter Tauchlehrer"
+                            }
                         } else {
-                            "Autorisierung als zertifizierter Tauchlehrer"
-                        }
-                    } else {
-                        if (selectedRole == "STUDENT") {
-                            "Open Water Safety Protocol Agreement"
-                        } else {
-                            "Certified Scuba Instructor Authorization"
-                        }
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 16.sp
-                )
+                            if (selectedRole == "STUDENT") {
+                                "Open Water Safety Protocol Agreement"
+                            } else {
+                                "Certified Scuba Instructor Authorization"
+                            }
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 16.sp
+                    )
+                }
             }
 
             Box(
@@ -678,11 +696,11 @@ fun RegisterForm(
                     onClick = { onRegister(email.trim(), password, fullName, selectedRole) },
                     enabled = email.isNotBlank() && passwordLengthOk && passwordsMatch && agreeMedicalDeclaration,
                     colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 36.dp, vertical = 12.dp),
-                    modifier = Modifier.testTag("register_submit_button")
+                    shape = RoundedCornerShape(16.dp),
+                    contentPadding = PaddingValues(horizontal = 36.dp, vertical = 14.dp),
+                    modifier = Modifier.fillMaxWidth().testTag("register_submit_button")
                 ) {
-                    Icon(Icons.Default.Email, contentDescription = strings.register)
+                    Icon(Icons.Rounded.Email, contentDescription = strings.register)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(strings.register, fontWeight = FontWeight.Bold)
                 }
@@ -754,7 +772,7 @@ fun EmailVerificationScreen(
                 onClick = onBackToLogin,
                 modifier = Modifier.testTag("back_to_login_button")
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.backToLoginButton)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = strings.backToLoginButton)
             }
         }
 
@@ -762,12 +780,12 @@ fun EmailVerificationScreen(
         Surface(
             modifier = Modifier.size(80.dp),
             shape = CircleShape,
-            color = AquaCyan.copy(alpha = 0.2f),
+            color = AquaCyan.copy(alpha = 0.15f),
             border = BorderStroke(2.dp, AquaCyan)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
-                    Icons.Default.MarkEmailRead,
+                    Icons.Rounded.MarkEmailRead,
                     contentDescription = strings.verifyEmailTitle,
                     tint = OceanPrimary,
                     modifier = Modifier.size(44.dp)
@@ -791,12 +809,13 @@ fun EmailVerificationScreen(
         )
 
         Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         ) {
             Text(
                 text = email,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = OceanPrimary
@@ -807,16 +826,16 @@ fun EmailVerificationScreen(
         if (authError != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = CoralAlert.copy(alpha = 0.12f),
-                border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.5f))
+                border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.4f))
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = CoralAlert)
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Rounded.ErrorOutline, contentDescription = null, tint = CoralAlert)
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = authError,
                         style = MaterialTheme.typography.bodySmall,
@@ -831,16 +850,16 @@ fun EmailVerificationScreen(
         if (authSuccess != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = SeaGreen.copy(alpha = 0.12f),
-                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f))
+                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = SeaGreen)
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = SeaGreen)
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = authSuccess,
                         style = MaterialTheme.typography.bodySmall,
@@ -857,14 +876,14 @@ fun EmailVerificationScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("incoming_email_preview_card"),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.5.dp, OceanPrimary.copy(alpha = 0.4f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.35f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -879,7 +898,7 @@ fun EmailVerificationScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        Icons.Default.Email,
+                                        Icons.Rounded.Email,
                                         contentDescription = null,
                                         tint = SeaGreen,
                                         modifier = Modifier.size(16.dp)
@@ -898,12 +917,12 @@ fun EmailVerificationScreen(
                             )
                         }
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = AquaCyan.copy(alpha = 0.2f)
+                            shape = RoundedCornerShape(8.dp),
+                            color = AquaCyan.copy(alpha = 0.15f)
                         ) {
                             Text(
                                 text = "INBOX",
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = OceanPrimary
@@ -927,10 +946,11 @@ fun EmailVerificationScreen(
                     // Security Code Highlight
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
+                        Column(modifier = Modifier.padding(14.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -955,6 +975,7 @@ fun EmailVerificationScreen(
                                     onClick = {
                                         verificationCode = latestEmailMessage.verificationCode
                                     },
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = OceanSecondary),
                                     modifier = Modifier.testTag("autofill_verification_code_button")
                                 ) {
@@ -962,7 +983,7 @@ fun EmailVerificationScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
@@ -973,12 +994,12 @@ fun EmailVerificationScreen(
                                         verificationCode = latestEmailMessage.verificationCode
                                         onVerify(latestEmailMessage.verificationCode)
                                     },
-                                    modifier = Modifier.testTag("instant_activate_button"),
+                                    modifier = Modifier.fillMaxWidth().testTag("instant_activate_button"),
                                     colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                    shape = RoundedCornerShape(20.dp),
-                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp)
+                                    shape = RoundedCornerShape(14.dp),
+                                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
                                 ) {
-                                    Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = if (com.example.ui.i18n.LocalCurrentLanguage.current == com.example.ui.i18n.AppLanguage.DE)
@@ -1002,12 +1023,12 @@ fun EmailVerificationScreen(
                     AnimatedVisibility(visible = showFullEmailPreview) {
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f)
                         ) {
                             Text(
                                 text = latestEmailMessage.emailHtmlBody,
-                                modifier = Modifier.padding(10.dp),
+                                modifier = Modifier.padding(12.dp),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -1020,16 +1041,18 @@ fun EmailVerificationScreen(
         // Code Entry Field
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
                     text = strings.verificationCodeLabel,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -1042,6 +1065,7 @@ fun EmailVerificationScreen(
                     },
                     placeholder = { Text("123456") },
                     singleLine = true,
+                    shape = RoundedCornerShape(14.dp),
                     textStyle = MaterialTheme.typography.headlineSmall.copy(
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Black,
@@ -1069,11 +1093,11 @@ fun EmailVerificationScreen(
                         onClick = { onVerify(verificationCode) },
                         enabled = verificationCode.length == 6,
                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                        shape = RoundedCornerShape(24.dp),
-                        contentPadding = PaddingValues(horizontal = 36.dp, vertical = 12.dp),
-                        modifier = Modifier.testTag("verify_code_submit_button")
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 36.dp, vertical = 14.dp),
+                        modifier = Modifier.fillMaxWidth().testTag("verify_code_submit_button")
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = strings.verifyButton)
+                        Icon(Icons.Rounded.Check, contentDescription = strings.verifyButton)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(strings.verifyButton, fontWeight = FontWeight.Bold)
                     }

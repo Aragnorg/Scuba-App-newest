@@ -20,17 +20,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Quiz
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Slideshow
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Quiz
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Slideshow
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -95,9 +95,10 @@ fun StudentProgressScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("student_progress_header_card"),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(
@@ -106,9 +107,9 @@ fun StudentProgressScreen(
                     ) {
                         Surface(
                             modifier = Modifier.size(56.dp),
-                            shape = CircleShape,
+                            shape = RoundedCornerShape(16.dp),
                             color = OceanPrimary.copy(alpha = 0.15f),
-                            border = BorderStroke(2.dp, OceanPrimary)
+                            border = BorderStroke(1.5.dp, OceanPrimary)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(text = "🎓", fontSize = 28.sp)
@@ -128,9 +129,10 @@ fun StudentProgressScreen(
                                 color = OceanSecondary,
                                 fontWeight = FontWeight.SemiBold
                             )
+                            Spacer(modifier = Modifier.height(2.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    Icons.Default.CheckCircle,
+                                    Icons.Rounded.CheckCircle,
                                     contentDescription = strings.verifiedStudentAccount,
                                     tint = SeaGreen,
                                     modifier = Modifier.size(13.dp)
@@ -156,15 +158,24 @@ fun StudentProgressScreen(
                     ) {
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            color = OceanTertiary.copy(alpha = 0.12f)
+                            shape = RoundedCornerShape(14.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.LocalFireDepartment, contentDescription = strings.studyStreak, tint = OceanTertiary, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Surface(
+                                    modifier = Modifier.size(32.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = OceanTertiary.copy(alpha = 0.15f)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Rounded.LocalFireDepartment, contentDescription = strings.studyStreak, tint = OceanTertiary, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Column {
                                     Text(strings.studyStreak, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     Text("${progress?.studyStreakDays ?: 1} ${strings.daysUnit}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
@@ -174,15 +185,24 @@ fun StudentProgressScreen(
 
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            color = OceanPrimary.copy(alpha = 0.12f)
+                            shape = RoundedCornerShape(14.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Timer, contentDescription = strings.studyTime, tint = OceanPrimary, modifier = Modifier.size(18.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Surface(
+                                    modifier = Modifier.size(32.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = OceanPrimary.copy(alpha = 0.15f)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Rounded.Timer, contentDescription = strings.studyTime, tint = OceanPrimary, modifier = Modifier.size(18.dp))
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Column {
                                     Text(strings.studyTime, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     Text("${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
@@ -203,27 +223,35 @@ fun StudentProgressScreen(
         item {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.Security,
-                        contentDescription = "Environment",
-                        tint = OceanPrimary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Surface(
+                        modifier = Modifier.size(36.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        color = OceanPrimary.copy(alpha = 0.15f)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Rounded.Security,
+                                contentDescription = "Environment",
+                                tint = OceanPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = strings.studentEnvironmentDisclosure,
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 15.sp
+                        lineHeight = 16.sp
                     )
                 }
             }
@@ -233,31 +261,32 @@ fun StudentProgressScreen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text(
                         text = strings.curriculumCompletionProgress,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     // Presentations completed
                     val presCompleted = presentations.count { it.isCompleted }
                     Column {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(strings.presentationsRead, style = MaterialTheme.typography.bodySmall)
+                            Text(strings.presentationsRead, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                             Text("$presCompleted / ${presentations.size}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         LinearProgressIndicator(
                             progress = { if (presentations.isNotEmpty()) presCompleted.toFloat() / presentations.size else 0f },
-                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                            modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
                             color = OceanPrimary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
                     }
 
@@ -265,15 +294,15 @@ fun StudentProgressScreen(
                     val vidCompleted = videos.count { it.isCompleted }
                     Column {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(strings.trainingVideosWatched, style = MaterialTheme.typography.bodySmall)
+                            Text(strings.trainingVideosWatched, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                             Text("$vidCompleted / ${videos.size}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         LinearProgressIndicator(
                             progress = { if (videos.isNotEmpty()) vidCompleted.toFloat() / videos.size else 0f },
-                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                            modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
                             color = OceanSecondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
                     }
 
@@ -281,15 +310,15 @@ fun StudentProgressScreen(
                     val quizPassed = quizzes.count { it.isPassed }
                     Column {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(strings.quizzesAndExamsPassed, style = MaterialTheme.typography.bodySmall)
+                            Text(strings.quizzesAndExamsPassed, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                             Text("$quizPassed / ${quizzes.size}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         LinearProgressIndicator(
                             progress = { if (quizzes.isNotEmpty()) quizPassed.toFloat() / quizzes.size else 0f },
-                            modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                            modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
                             color = SeaGreen,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
                         )
                     }
                 }
@@ -302,7 +331,7 @@ fun StudentProgressScreen(
                 text = strings.myQuizPerformance,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -311,27 +340,28 @@ fun StudentProgressScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("student_quiz_card_${quiz.id}"),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 border = BorderStroke(
                     1.dp,
-                    if (quiz.isPassed) SeaGreen.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant
+                    if (quiz.isPassed) SeaGreen.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                 )
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp),
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        modifier = Modifier.size(44.dp),
-                        shape = CircleShape,
+                        modifier = Modifier.size(46.dp),
+                        shape = RoundedCornerShape(14.dp),
                         color = if (quiz.isPassed) SeaGreen.copy(alpha = 0.15f) else OceanPrimary.copy(alpha = 0.12f)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                imageVector = if (quiz.isPassed) Icons.Default.CheckCircle else Icons.Default.Quiz,
+                                imageVector = if (quiz.isPassed) Icons.Rounded.CheckCircle else Icons.Rounded.Quiz,
                                 contentDescription = "Quiz Status",
                                 tint = if (quiz.isPassed) SeaGreen else OceanPrimary,
                                 modifier = Modifier.size(24.dp)
@@ -339,14 +369,16 @@ fun StudentProgressScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(14.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = quiz.title,
                             style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = if (quiz.isMockExam) "${strings.finalExamPrefix} • ${strings.passReqPrefix}: ${quiz.passScorePercentage}%" else "${strings.passReqPrefix}: ${quiz.passScorePercentage}%",
                             style = MaterialTheme.typography.bodySmall,
@@ -367,7 +399,7 @@ fun StudentProgressScreen(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (quiz.isPassed) OceanSecondary else OceanPrimary
                         ),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(if (quiz.isPassed) strings.retakeButton else strings.startButton, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
@@ -382,13 +414,15 @@ fun StudentProgressScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("certificate_qualification_card"),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = DepthNavy
-                    )
+                    ),
+                    border = BorderStroke(1.5.dp, SandGold.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier.padding(22.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Surface(
@@ -398,11 +432,11 @@ fun StudentProgressScreen(
                             border = BorderStroke(2.dp, SandGold)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.EmojiEvents, contentDescription = "Certificate", tint = SandGold, modifier = Modifier.size(30.dp))
+                                Icon(Icons.Rounded.EmojiEvents, contentDescription = "Certificate", tint = SandGold, modifier = Modifier.size(30.dp))
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
                             text = strings.officialKnowledgeClearance,
@@ -429,15 +463,15 @@ fun StudentProgressScreen(
                             lineHeight = 16.sp
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(10.dp),
                             color = Color.White.copy(alpha = 0.1f)
                         ) {
                             Text(
                                 text = strings.diverAcademyLabel,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = AquaCyan,
                                 fontWeight = FontWeight.SemiBold

@@ -11,13 +11,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.People
@@ -133,7 +133,7 @@ fun InstructorEnvironment(
                         Spacer(modifier = Modifier.width(8.dp))
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = OceanPrimary.copy(alpha = 0.15f)
+                            color = OceanPrimary.copy(alpha = 0.12f)
                         ) {
                             Text(
                                 text = "🏢 ${strings.instructorLabel} • $instructorName",
@@ -166,29 +166,29 @@ fun InstructorEnvironment(
                         modifier = Modifier.testTag("instructor_logout_button")
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                            imageVector = Icons.AutoMirrored.Rounded.Logout,
                             contentDescription = strings.signOut,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
             )
         },
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.testTag("instructor_navigation_bar"),
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 0.dp
             ) {
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 0) Icons.Filled.Upload else Icons.Outlined.Upload,
+                            imageVector = if (selectedTab == 0) Icons.Rounded.Upload else Icons.Outlined.Upload,
                             contentDescription = strings.tabDeploy
                         )
                     },
@@ -201,7 +201,7 @@ fun InstructorEnvironment(
                     onClick = { selectedTab = 1 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 1) Icons.Filled.People else Icons.Outlined.People,
+                            imageVector = if (selectedTab == 1) Icons.Rounded.People else Icons.Outlined.People,
                             contentDescription = strings.tabStudents
                         )
                     },
@@ -214,7 +214,7 @@ fun InstructorEnvironment(
                     onClick = { selectedTab = 2 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 2) Icons.Filled.Verified else Icons.Outlined.Verified,
+                            imageVector = if (selectedTab == 2) Icons.Rounded.Verified else Icons.Outlined.Verified,
                             contentDescription = strings.tabApprovals
                         )
                     },
@@ -227,7 +227,7 @@ fun InstructorEnvironment(
                     onClick = { selectedTab = 3 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 3) Icons.Filled.Explore else Icons.Outlined.Explore,
+                            imageVector = if (selectedTab == 3) Icons.Rounded.Explore else Icons.Outlined.Explore,
                             contentDescription = strings.tabDivePlanning
                         )
                     },
@@ -240,7 +240,7 @@ fun InstructorEnvironment(
                     onClick = { selectedTab = 4 },
                     icon = {
                         Icon(
-                            imageVector = if (selectedTab == 4) Icons.Filled.Description else Icons.Outlined.Description,
+                            imageVector = if (selectedTab == 4) Icons.Rounded.Description else Icons.Outlined.Description,
                             contentDescription = strings.tabDocuments
                         )
                     },

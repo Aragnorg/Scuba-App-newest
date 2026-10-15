@@ -27,13 +27,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -148,11 +148,11 @@ fun DiveOpsEventsTab(
 
                 Button(
                     onClick = { showCreateDialog = true },
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(text = "+ Ausfahrt planen", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
@@ -168,6 +168,7 @@ fun DiveOpsEventsTab(
                 FilterChip(
                     selected = selectedTypeFilter == "ALL",
                     onClick = { selectedTypeFilter = "ALL" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("Alle (${events.size})", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -177,6 +178,7 @@ fun DiveOpsEventsTab(
                 FilterChip(
                     selected = selectedTypeFilter == "BOAT_TRIP",
                     onClick = { selectedTypeFilter = "BOAT_TRIP" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🚤 Boot", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -186,6 +188,7 @@ fun DiveOpsEventsTab(
                 FilterChip(
                     selected = selectedTypeFilter == "SHORE_DIVE",
                     onClick = { selectedTypeFilter = "SHORE_DIVE" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🌊 Hausriff/See", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -195,6 +198,7 @@ fun DiveOpsEventsTab(
                 FilterChip(
                     selected = selectedTypeFilter == "COURSE_TRAINING",
                     onClick = { selectedTypeFilter = "COURSE_TRAINING" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text("🎓 Ausbildung", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -204,6 +208,7 @@ fun DiveOpsEventsTab(
                 FilterChip(
                     selected = selectedTypeFilter == "CLUB_OUTING",
                     onClick = { selectedTypeFilter = "CLUB_OUTING" },
+                    shape = RoundedCornerShape(10.dp),
                     label = { Text(if (isGerman) "🏛️ Verein" else "🏛️ Club", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = primaryAccentColor.copy(alpha = 0.2f),
@@ -218,8 +223,10 @@ fun DiveOpsEventsTab(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -242,7 +249,7 @@ fun DiveOpsEventsTab(
                         Spacer(modifier = Modifier.height(14.dp))
                         Button(
                             onClick = { showCreateDialog = true },
-                            shape = RoundedCornerShape(10.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor)
                         ) {
                             Text("+ Erste Ausfahrt anlegen")
@@ -364,6 +371,8 @@ fun DiveOpsEventsTab(
     if (eventToDelete != null) {
         AlertDialog(
             onDismissRequest = { eventToDelete = null },
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text("Ausfahrt löschen") },
             text = { Text("Möchtest du '${eventToDelete!!.title}' wirklich absagen und entfernen?") },
             confirmButton = {
@@ -372,13 +381,17 @@ fun DiveOpsEventsTab(
                         viewModel.deleteDiveEvent(eventToDelete!!.id)
                         eventToDelete = null
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
                 ) {
                     Text("Löschen")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { eventToDelete = null }) { Text("Abbrechen") }
+                TextButton(
+                    onClick = { eventToDelete = null },
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("Abbrechen") }
             }
         )
     }
@@ -422,10 +435,10 @@ fun EventCard(
     }
 
     Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onOpenDossier() }
@@ -442,12 +455,12 @@ fun EventCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = primaryAccentColor.copy(alpha = 0.15f)
                 ) {
                     Text(
                         text = "$typeIcon $typeLabel",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -469,7 +482,7 @@ fun EventCard(
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = Icons.Rounded.Close,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
@@ -503,7 +516,7 @@ fun EventCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.LocationOn,
+                        imageVector = Icons.Rounded.LocationOn,
                         contentDescription = null,
                         tint = OceanPrimary,
                         modifier = Modifier.size(15.dp)
@@ -517,8 +530,8 @@ fun EventCard(
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh
                 ) {
                     Text(
                         text = "Max ${event.maxDepthMeters.toInt()}m • Min: ${event.requiredMinCert}",
@@ -558,7 +571,7 @@ fun EventCard(
                         .fillMaxWidth()
                         .height(6.dp),
                     color = capacityColor,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
             }
 
@@ -571,7 +584,7 @@ fun EventCard(
                 ) {
                     if (event.hasEmergencyPlan) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(8.dp),
                             color = Color(0xFFC53030).copy(alpha = 0.12f)
                         ) {
                             Text(
@@ -585,7 +598,7 @@ fun EventCard(
                     }
                     if (event.hasBriefing) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(8.dp),
                             color = SeaGreen.copy(alpha = 0.12f)
                         ) {
                             Text(
@@ -600,7 +613,7 @@ fun EventCard(
                 }
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
             // Operational Action Buttons
             Row(
@@ -611,7 +624,7 @@ fun EventCard(
                 // Dossier & Briefing Shortcut
                 OutlinedButton(
                     onClick = onOpenDossier,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                     modifier = Modifier.weight(1.1f)
                 ) {
@@ -621,12 +634,12 @@ fun EventCard(
                 // 1-Click Check-in
                 Button(
                     onClick = onCheckIn,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryAccentColor),
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                     modifier = Modifier.weight(1.1f)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(13.dp))
+                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(13.dp))
                     Spacer(modifier = Modifier.width(3.dp))
                     Text(text = "Check-in", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                 }
@@ -634,7 +647,7 @@ fun EventCard(
                 // Buddy-Board shortcut
                 OutlinedButton(
                     onClick = onNavigateToBuddyBoard,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
                     modifier = Modifier.weight(1f)
                 ) {
@@ -644,7 +657,7 @@ fun EventCard(
                 // Manifest shortcut
                 OutlinedButton(
                     onClick = onNavigateToManifest,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
                     modifier = Modifier.weight(1f)
                 ) {
@@ -720,6 +733,8 @@ fun CreateDiveEventDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = { Text(if (isGerman) "➕ Neue Tauchausfahrt planen" else "➕ Plan New Dive Excursion", fontWeight = FontWeight.Bold) },
         text = {
             Column(
@@ -733,6 +748,7 @@ fun CreateDiveEventDialog(
                     onValueChange = { title = it },
                     label = { Text(if (isGerman) "Titel der Ausfahrt *" else "Trip Title *") },
                     placeholder = { Text(if (isGerman) "z.B. Wracktauchen St. Peter" else "e.g. Wreck Dive St. Peter") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -746,21 +762,25 @@ fun CreateDiveEventDialog(
                     FilterChip(
                         selected = eventType == "BOAT_TRIP",
                         onClick = { eventType = "BOAT_TRIP" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isGerman) "🚤 Boot" else "🚤 Boat", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "SHORE_DIVE",
                         onClick = { eventType = "SHORE_DIVE" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isGerman) "🌊 Hausriff" else "🌊 Shore", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "COURSE_TRAINING",
                         onClick = { eventType = "COURSE_TRAINING" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isGerman) "🎓 Kurs" else "🎓 Course", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "CLUB_OUTING",
                         onClick = { eventType = "CLUB_OUTING" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text(if (isGerman) "🏛️ Verein" else "🏛️ Club", fontSize = 10.sp) }
                     )
                 }
@@ -773,6 +793,7 @@ fun CreateDiveEventDialog(
                         value = siteName,
                         onValueChange = { siteName = it },
                         label = { Text("Tauchplatz *") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -780,6 +801,7 @@ fun CreateDiveEventDialog(
                         value = location,
                         onValueChange = { location = it },
                         label = { Text("Ort / Slipstelle") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -793,6 +815,7 @@ fun CreateDiveEventDialog(
                         value = eventDate,
                         onValueChange = { eventDate = it },
                         label = { Text("Datum (YYYY-MM-DD) *") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1.2f)
                     )
@@ -800,6 +823,7 @@ fun CreateDiveEventDialog(
                         value = meetingTime,
                         onValueChange = { meetingTime = it },
                         label = { Text("Treffen") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(0.9f)
                     )
@@ -807,6 +831,7 @@ fun CreateDiveEventDialog(
                         value = departureTime,
                         onValueChange = { departureTime = it },
                         label = { Text("Start") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(0.9f)
                     )
@@ -820,6 +845,7 @@ fun CreateDiveEventDialog(
                         value = maxDepth,
                         onValueChange = { maxDepth = it },
                         label = { Text("Max Tiefe (m)") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -827,6 +853,7 @@ fun CreateDiveEventDialog(
                         value = turnPressureBar,
                         onValueChange = { turnPressureBar = it },
                         label = { Text("Turn (bar)") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -834,6 +861,7 @@ fun CreateDiveEventDialog(
                         value = maxCapacity,
                         onValueChange = { maxCapacity = it },
                         label = { Text("Max Plätze") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -848,6 +876,7 @@ fun CreateDiveEventDialog(
                         onValueChange = { minCert = it },
                         label = { Text("Mindestbrevet") },
                         placeholder = { Text("OWD / CMAS*") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -855,12 +884,13 @@ fun CreateDiveEventDialog(
                         value = leadGuide,
                         onValueChange = { leadGuide = it },
                         label = { Text("Dive Leader / Guide") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                 // Emergency & Chamber Section
                 Text("🏥 Druckkammer & Notfallrettung", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = Color(0xFFC53030))
@@ -877,7 +907,8 @@ fun CreateDiveEventDialog(
                             coastGuardVHF = "Kanal 16 / Wasserschutzpolizei (112)"
                         },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Text("⚡ Bodensee", fontSize = 10.sp)
                     }
@@ -890,7 +921,8 @@ fun CreateDiveEventDialog(
                             coastGuardVHF = "VHF Kanal 16 / DSC CH 70"
                         },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Text("⚡ Sharm", fontSize = 10.sp)
                     }
@@ -903,7 +935,8 @@ fun CreateDiveEventDialog(
                             coastGuardVHF = "VHF Kanal 16 / Leitstelle 112"
                         },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Text("⚡ Berlin", fontSize = 10.sp)
                     }
@@ -913,6 +946,7 @@ fun CreateDiveEventDialog(
                     value = chamberName,
                     onValueChange = { chamberName = it },
                     label = { Text("Nächste Druckkammer") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -925,6 +959,7 @@ fun CreateDiveEventDialog(
                         value = chamberPhone,
                         onValueChange = { chamberPhone = it },
                         label = { Text("Kammer Tel / Notruf") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1.2f)
                     )
@@ -932,6 +967,7 @@ fun CreateDiveEventDialog(
                         value = chamberDistanceTime,
                         onValueChange = { chamberDistanceTime = it },
                         label = { Text("Fahrzeit / Distanz") },
+                        shape = RoundedCornerShape(14.dp),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
@@ -941,6 +977,7 @@ fun CreateDiveEventDialog(
                     value = coastGuardVHF,
                     onValueChange = { coastGuardVHF = it },
                     label = { Text("Seefunk VHF Kanal / Notruf") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -949,6 +986,7 @@ fun CreateDiveEventDialog(
                     value = entryExitInfo,
                     onValueChange = { entryExitInfo = it },
                     label = { Text("Einstieg & Ausstieg") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 2
                 )
@@ -957,6 +995,7 @@ fun CreateDiveEventDialog(
                     value = waterConditions,
                     onValueChange = { waterConditions = it },
                     label = { Text("Sicht, Wassertemperatur & Strömung") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 2
                 )
@@ -984,14 +1023,17 @@ fun CreateDiveEventDialog(
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
             ) {
                 Text("Ausfahrt planen", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }
@@ -1017,9 +1059,16 @@ fun CheckInDiverDialog(
     if (members.isEmpty()) {
         AlertDialog(
             onDismissRequest = onDismiss,
+            shape = RoundedCornerShape(24.dp),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { Text("Keine Personen vorhanden") },
             text = { Text("Bitte lege zuerst Mitglieder oder Gäste im Roster an.") },
-            confirmButton = { Button(onClick = onDismiss) { Text("OK") } }
+            confirmButton = {
+                Button(
+                    onClick = onDismiss,
+                    shape = RoundedCornerShape(12.dp)
+                ) { Text("OK") }
+            }
         )
         return
     }
@@ -1102,6 +1151,8 @@ fun CheckInDiverDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Column {
                 Text(
@@ -1129,11 +1180,12 @@ fun CheckInDiverDialog(
                     members.forEach { m ->
                         val isSelected = m.id == selectedMember.id
                         Card(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                                containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainer
                             ),
-                            border = BorderStroke(1.dp, if (isSelected) OceanPrimary else Color.Transparent),
+                            border = BorderStroke(1.dp, if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { selectedMember = m }
@@ -1141,7 +1193,7 @@ fun CheckInDiverDialog(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp),
+                                    .padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
@@ -1158,14 +1210,14 @@ fun CheckInDiverDialog(
                                     )
                                 }
                                 if (isSelected) {
-                                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(18.dp))
                                 }
                             }
                         }
                     }
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                 // 2. Tank Choice
                 Text("2. Flaschen-Konfiguration:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
@@ -1178,6 +1230,7 @@ fun CheckInDiverDialog(
                         FilterChip(
                             selected = selectedTank == tank,
                             onClick = { selectedTank = tank },
+                            shape = RoundedCornerShape(10.dp),
                             label = { Text(tank, fontSize = 10.sp) }
                         )
                     }
@@ -1199,12 +1252,13 @@ fun CheckInDiverDialog(
                         FilterChip(
                             selected = selectedGas == gas,
                             onClick = { selectedGas = gas },
+                            shape = RoundedCornerShape(10.dp),
                             label = { Text("$gas (MOD $mod)", fontSize = 10.sp) }
                         )
                     }
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                 // 4. Rental Gear Checklist
                 Text(if (isGerman) "4. Benötigte Leih-Ausrüstung:" else "4. Required Rental Gear:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
@@ -1244,12 +1298,13 @@ fun CheckInDiverDialog(
                     onValueChange = { transferNote = it },
                     label = { Text("Transfer / Fahrgemeinschaft") },
                     placeholder = { Text("z.B. Biete 2 Plätze ab Parkplatz") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 // --- 5. Auto-Safety-Gate Live Status Display ---
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(14.dp),
                     color = if (safetyPassed) SeaGreen.copy(alpha = 0.12f) else Color(0xFFE53E3E).copy(alpha = 0.12f),
                     border = BorderStroke(1.dp, if (safetyPassed) SeaGreen else Color(0xFFE53E3E)),
                     modifier = Modifier.fillMaxWidth()
@@ -1257,7 +1312,7 @@ fun CheckInDiverDialog(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp),
+                            .padding(12.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1298,6 +1353,7 @@ fun CheckInDiverDialog(
                 onClick = {
                     onConfirm(selectedMember, selectedTank, selectedGas, selectedRentalGear.toList(), transferNote)
                 },
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (safetyPassed) SeaGreen else Color(0xFFC53030)
                 )
@@ -1306,7 +1362,10 @@ fun CheckInDiverDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Abbrechen") }
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) { Text("Abbrechen") }
         }
     )
 }

@@ -23,10 +23,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -110,6 +110,8 @@ fun EditDiveEventDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text("✏️ Event & Briefing bearbeiten", fontWeight = FontWeight.Bold)
         },
@@ -127,6 +129,7 @@ fun EditDiveEventDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Titel des Events *") },
+                    shape = RoundedCornerShape(14.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -139,21 +142,25 @@ fun EditDiveEventDialog(
                     FilterChip(
                         selected = eventType == "BOAT_TRIP",
                         onClick = { eventType = "BOAT_TRIP" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("🚤 Boot", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "SHORE_DIVE",
                         onClick = { eventType = "SHORE_DIVE" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("🌊 Hausriff", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "COURSE_TRAINING",
                         onClick = { eventType = "COURSE_TRAINING" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("🎓 Kurs", fontSize = 10.sp) }
                     )
                     FilterChip(
                         selected = eventType == "CLUB_OUTING",
                         onClick = { eventType = "CLUB_OUTING" },
+                        shape = RoundedCornerShape(10.dp),
                         label = { Text("🏛️ Verein", fontSize = 10.sp) }
                     )
                 }
@@ -163,6 +170,7 @@ fun EditDiveEventDialog(
                         value = siteName,
                         onValueChange = { siteName = it },
                         label = { Text("Tauchplatz *") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -170,6 +178,7 @@ fun EditDiveEventDialog(
                         value = location,
                         onValueChange = { location = it },
                         label = { Text("Ort / Region") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -180,6 +189,7 @@ fun EditDiveEventDialog(
                         value = eventDate,
                         onValueChange = { eventDate = it },
                         label = { Text("Datum (YYYY-MM-DD)") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1.2f),
                         singleLine = true
                     )
@@ -187,6 +197,7 @@ fun EditDiveEventDialog(
                         value = meetingTime,
                         onValueChange = { meetingTime = it },
                         label = { Text("Treffen") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(0.9f),
                         singleLine = true
                     )
@@ -194,6 +205,7 @@ fun EditDiveEventDialog(
                         value = departureTime,
                         onValueChange = { departureTime = it },
                         label = { Text("Start") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(0.9f),
                         singleLine = true
                     )
@@ -204,6 +216,7 @@ fun EditDiveEventDialog(
                         value = maxDepth,
                         onValueChange = { maxDepth = it },
                         label = { Text("Max. Tiefe (m)") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -211,6 +224,7 @@ fun EditDiveEventDialog(
                         value = turnPressureBar,
                         onValueChange = { turnPressureBar = it },
                         label = { Text("Turn (bar)") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -218,6 +232,7 @@ fun EditDiveEventDialog(
                         value = maxCapacity,
                         onValueChange = { maxCapacity = it },
                         label = { Text("Max. Plätze") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -228,6 +243,7 @@ fun EditDiveEventDialog(
                         value = leadGuide,
                         onValueChange = { leadGuide = it },
                         label = { Text("Guide / TL") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -235,12 +251,13 @@ fun EditDiveEventDialog(
                         value = minCert,
                         onValueChange = { minCert = it },
                         label = { Text("Mindest-Brevet") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
                 }
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                 // 2. Hyperbaric Chamber & Emergency Action Plan
                 Text("🏥 Druckkammer & Notfallrettung (EAP)", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = Color(0xFFC53030))
@@ -258,7 +275,8 @@ fun EditDiveEventDialog(
                             coastGuardVHF = "Kanal 16 / Wasserschutzpolizei (112)"
                         },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Text("⚡ Bodensee", fontSize = 10.sp)
                     }
@@ -271,7 +289,8 @@ fun EditDiveEventDialog(
                             coastGuardVHF = "VHF Kanal 16 / DSC CH 70"
                         },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Text("⚡ Sharm El Sheikh", fontSize = 10.sp)
                     }
@@ -284,7 +303,8 @@ fun EditDiveEventDialog(
                             coastGuardVHF = "VHF Kanal 16 / Leitstelle 112"
                         },
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                     ) {
                         Text("⚡ Berlin", fontSize = 10.sp)
                     }
@@ -294,6 +314,7 @@ fun EditDiveEventDialog(
                     value = chamberName,
                     onValueChange = { chamberName = it },
                     label = { Text("Nächste Druckkammer (Name & Klinik)") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -302,6 +323,7 @@ fun EditDiveEventDialog(
                         value = chamberPhone,
                         onValueChange = { chamberPhone = it },
                         label = { Text("Kammer Notruf / Tel.") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1.2f),
                         singleLine = true
                     )
@@ -309,6 +331,7 @@ fun EditDiveEventDialog(
                         value = chamberDistanceTime,
                         onValueChange = { chamberDistanceTime = it },
                         label = { Text("Fahrzeit / Distanz") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -319,6 +342,7 @@ fun EditDiveEventDialog(
                         value = coastGuardVHF,
                         onValueChange = { coastGuardVHF = it },
                         label = { Text("Seefunk VHF Kanal / Notruf") },
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -328,11 +352,12 @@ fun EditDiveEventDialog(
                     value = emergencyNotes,
                     onValueChange = { emergencyNotes = it },
                     label = { Text("O2-Koffer & Ersthelfer Notizen") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                 // 3. Dive Site Briefing Details
                 Text("📋 Briefing-Daten & Tauchplatz-Details", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = SeaGreen)
@@ -341,6 +366,7 @@ fun EditDiveEventDialog(
                     value = entryExitInfo,
                     onValueChange = { entryExitInfo = it },
                     label = { Text("Einstieg, Ausstieg & Notausstieg") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
@@ -349,6 +375,7 @@ fun EditDiveEventDialog(
                     value = waterConditions,
                     onValueChange = { waterConditions = it },
                     label = { Text("Sicht, Wassertemperatur & Strömung") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 2
                 )
@@ -357,6 +384,7 @@ fun EditDiveEventDialog(
                     value = equipmentRequirements,
                     onValueChange = { equipmentRequirements = it },
                     label = { Text("Ausrüstungs-Anforderungen (z. B. Boje, Kaltwasser)") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 2
                 )
@@ -365,19 +393,22 @@ fun EditDiveEventDialog(
                     value = hazardsAndRules,
                     onValueChange = { hazardsAndRules = it },
                     label = { Text("Besondere Gefahren & Verhaltensregeln") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 2
                 )
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
                 // 4. Dive Site Map & Underwater Topography (Tauchplatzkarte)
                 Text("🗺️ Tauchplatzkarte & Unterwasser-Topografie", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = OceanPrimary)
 
                 if (siteMapImageUri.isNotBlank()) {
                     Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
@@ -388,7 +419,7 @@ fun EditDiveEventDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(160.dp)
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(10.dp))
                             ) {
                                 AsyncImage(
                                     model = siteMapImageUri,
@@ -411,19 +442,21 @@ fun EditDiveEventDialog(
                                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                         )
                                     },
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                                 ) {
-                                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text("Karte ändern", fontSize = 12.sp)
                                 }
 
                                 TextButton(
                                     onClick = { siteMapImageUri = "" },
+                                    shape = RoundedCornerShape(10.dp),
                                     colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFE53E3E))
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text("Entfernen", fontSize = 12.sp)
                                 }
@@ -432,8 +465,10 @@ fun EditDiveEventDialog(
                     }
                 } else {
                     Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
@@ -444,7 +479,7 @@ fun EditDiveEventDialog(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Map,
+                                imageVector = Icons.Rounded.Map,
                                 contentDescription = null,
                                 tint = OceanPrimary,
                                 modifier = Modifier.size(32.dp)
@@ -464,7 +499,7 @@ fun EditDiveEventDialog(
                                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                             ) {
-                                Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Rounded.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text("Karte hochladen", fontSize = 12.sp)
                             }
@@ -477,6 +512,7 @@ fun EditDiveEventDialog(
                     onValueChange = { siteMapImageUri = it },
                     label = { Text("Oder Bild-URL / Drive-Link eingeben") },
                     placeholder = { Text("https://... oder content://...") },
+                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -520,14 +556,17 @@ fun EditDiveEventDialog(
                     onConfirm(updatedEvent)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
             ) {
                 Text("Änderungen speichern", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text("Abbrechen")
             }
         }
