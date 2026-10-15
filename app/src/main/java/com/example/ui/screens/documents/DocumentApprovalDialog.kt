@@ -291,7 +291,7 @@ fun DocumentApprovalDialog(
                 // Document Info Summary Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                     ),
@@ -347,7 +347,7 @@ fun DocumentApprovalDialog(
                 // High-visibility QR Verification Toggle Button
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = if (isScanningQr) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainerLow
                     ),
@@ -525,7 +525,7 @@ fun DocumentApprovalDialog(
                                 1.dp,
                                 if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                             ),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(20.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
                             Row(
@@ -585,7 +585,7 @@ fun DocumentApprovalDialog(
                     // QR Verified Summary Box
                     scannedStamp?.let { stamp ->
                         Surface(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(20.dp),
                             color = MaterialTheme.colorScheme.surfaceContainerLow,
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)),
                             tonalElevation = 0.dp,
@@ -638,7 +638,7 @@ fun DocumentApprovalDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("cancel_doc_approval_btn"),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                         ) {
                             Text(strings.cancel)
@@ -666,7 +666,7 @@ fun DocumentApprovalDialog(
                             modifier = Modifier
                                 .weight(1.5f)
                                 .testTag("confirm_doc_approval_btn"),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
@@ -838,7 +838,7 @@ fun DocumentApprovalDialog(
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                         ),
@@ -871,7 +871,7 @@ fun DocumentApprovalDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .testTag("cancel_doc_approval_btn"),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
                         ) {
@@ -897,7 +897,7 @@ fun DocumentApprovalDialog(
                             modifier = Modifier
                                 .weight(1.5f)
                                 .testTag("confirm_doc_approval_btn"),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

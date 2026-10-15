@@ -333,7 +333,7 @@ fun DocumentDetailDialog(
                     Spacer(modifier = Modifier.height(14.dp))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         ),
@@ -361,7 +361,7 @@ fun DocumentDetailDialog(
                 // Official Verification & Sign-off Section
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = if (isApproved) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainer
                     ),
@@ -517,7 +517,7 @@ fun DocumentDetailDialog(
                                 Button(
                                     onClick = onApproveClick,
                                     modifier = Modifier.testTag("open_sign_approve_btn"),
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
@@ -542,7 +542,7 @@ fun DocumentDetailDialog(
                     OutlinedButton(
                         onClick = onDismiss,
                         modifier = Modifier.testTag("close_dialog_btn"),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp)
                     ) {
                         Text(strings.close, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)

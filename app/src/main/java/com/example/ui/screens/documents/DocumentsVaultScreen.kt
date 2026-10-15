@@ -136,7 +136,7 @@ fun DocumentsVaultScreen(
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.testTag("add_document_fab")
             ) {
                 Row(
@@ -163,7 +163,7 @@ fun DocumentsVaultScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("vault_header_card"),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                     ),
@@ -346,7 +346,7 @@ fun DocumentsVaultScreen(
                             .fillMaxWidth()
                             .padding(vertical = 24.dp)
                             .testTag("empty_docs_card"),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                         ),
@@ -547,7 +547,7 @@ fun DocumentVaultCard(
             .fillMaxWidth()
             .clickable { onOpenDetails() }
             .testTag("doc_card_${document.id}"),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),

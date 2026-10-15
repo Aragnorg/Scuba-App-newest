@@ -289,7 +289,7 @@ fun AddEditDocumentDialog(
                             .menuAnchor()
                             .fillMaxWidth()
                             .testTag("doc_category_picker"),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     ExposedDropdownMenu(
@@ -375,7 +375,7 @@ fun AddEditDocumentDialog(
                         .fillMaxWidth()
                         .testTag("doc_title_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -390,7 +390,7 @@ fun AddEditDocumentDialog(
                         .fillMaxWidth()
                         .testTag("doc_number_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -405,7 +405,7 @@ fun AddEditDocumentDialog(
                         .fillMaxWidth()
                         .testTag("doc_issuer_input"),
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -435,7 +435,7 @@ fun AddEditDocumentDialog(
                                 )
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(14.dp)
                         )
                         Box(
                             modifier = Modifier
@@ -466,7 +466,7 @@ fun AddEditDocumentDialog(
                                 )
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(14.dp)
                         )
                         if (!isLifetime) {
                             Box(
@@ -516,7 +516,7 @@ fun AddEditDocumentDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("paper_scan_upload_section"),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = if (category == "MEDICAL_FORM") SeaGreen.copy(alpha = 0.08f) else OceanPrimary.copy(alpha = 0.06f)
                     ),
@@ -776,7 +776,7 @@ fun AddEditDocumentDialog(
                         .testTag("doc_notes_input"),
                     minLines = 2,
                     maxLines = 4,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(14.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -791,7 +791,7 @@ fun AddEditDocumentDialog(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("cancel_add_doc_btn"),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(strings.cancel)
@@ -817,7 +817,7 @@ fun AddEditDocumentDialog(
                         modifier = Modifier
                             .weight(1.5f)
                             .testTag("save_doc_btn"),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
