@@ -1557,14 +1557,14 @@ private fun GasAndModCalculatorTab(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TacticalTelemetryGauge(
-                            value = if (isImperial) (result.maxOperatingDepthMeters * 3.28084f) else result.maxOperatingDepthMeters.toFloat(),
+                            value = if (isImperial) (result.maxOperatingDepthMeters * 3.28084).toFloat() else result.maxOperatingDepthMeters.toFloat(),
                             maxValue = if (isImperial) 200f else 60f,
                             unit = if (isImperial) "FT" else "M",
                             label = if (isGerman) "MOD" else "MOD",
                             accentColor = if (result.isPlanSafe) BioluminescentEmerald else MaterialTheme.colorScheme.error
                         )
                         TacticalTelemetryGauge(
-                            value = if (isImperial) (result.turnPressureBar * 14.5038f) else result.turnPressureBar.toFloat(),
+                            value = if (isImperial) (result.turnPressureBar * 14.5038).toFloat() else result.turnPressureBar.toFloat(),
                             maxValue = if (isImperial) 3500f else 250f,
                             unit = if (isImperial) "PSI" else "BAR",
                             label = if (isGerman) "Wendedruck" else "Turn Pressure",

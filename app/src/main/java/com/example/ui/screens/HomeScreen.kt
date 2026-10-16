@@ -90,6 +90,7 @@ import com.example.ui.i18n.AppLocalizer
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
+import com.example.ui.theme.CoralAlert
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.OceanSecondary
@@ -286,7 +287,7 @@ fun HomeScreen(
                 item {
                     TacticalMetricChip(
                         label = if (currentLanguage == AppLanguage.DE) "FORTSCHRITT" else "PROGRESS",
-                        value = "${progress?.overallProgressPercentage ?: 0}%",
+                        value = "$readiness%",
                         statusColor = AquaCyan
                     )
                 }

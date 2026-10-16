@@ -572,7 +572,7 @@ fun TacticalTelemetryGauge(
     Column(
         modifier = modifier
             .testTag("tactical_telemetry_gauge_$label"),
-        horizontalAlignment = Alignment.CenterVertically
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier.size(110.dp),
@@ -616,7 +616,7 @@ fun TacticalTelemetryGauge(
             }
 
             // Digital readout
-            Column(horizontalAlignment = Alignment.CenterVertically) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = if (value % 1f == 0f) value.toInt().toString() else String.format("%.1f", value),
                     style = MaterialTheme.typography.titleLarge,
