@@ -45,6 +45,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +58,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiveLogEntity
 import com.example.ui.components.SignaturePreview
+import com.example.ui.components.TacticalDiveProfileView
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
@@ -446,7 +448,7 @@ fun DiveDetailDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // TELEMETRY GRID
+                // TELEMETRY GRID & DIVE PROFILE
                 Text(
                     text = strings.diveTelemetryProfileTitle,
                     style = MaterialTheme.typography.labelLarge,
@@ -454,6 +456,30 @@ fun DiveDetailDialog(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
+                val mockProfile = remember(dive.durationMinutes, dive.maxDepthMeters, dive.avgDepthMeters) {
+                    val duration = dive.durationMinutes.coerceAtLeast(10)
+                    val maxD = dive.maxDepthMeters.coerceAtLeast(5f)
+                    val avgD = dive.avgDepthMeters.coerceIn(1f, maxD)
+                    listOf(
+                        Pair(0, 0f),
+                        Pair((duration * 0.1f).toInt(), maxD * 0.7f),
+                        Pair((duration * 0.25f).toInt(), maxD),
+                        Pair((duration * 0.5f).toInt(), avgD),
+                        Pair((duration * 0.75f).toInt(), avgD * 0.9f),
+                        Pair((duration * 0.88f).toInt(), 5f),
+                        Pair(duration, 0f)
+                    )
+                }
+
+                TacticalDiveProfileView(
+                    depthProfile = mockProfile,
+                    maxDepth = dive.maxDepthMeters.coerceAtLeast(10f),
+                    totalMinutes = dive.durationMinutes.coerceAtLeast(15),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp)
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

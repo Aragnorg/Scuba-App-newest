@@ -116,6 +116,10 @@ import com.example.ui.theme.OceanSecondary
 import com.example.ui.theme.OceanTertiary
 import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
+import com.example.ui.theme.BioluminescentSky
+import com.example.ui.theme.BioluminescentEmerald
+import com.example.ui.theme.BioluminescentAmber
+import com.example.ui.components.TacticalTelemetryGauge
 import com.example.ui.viewmodel.AquaViewModel
 
 @Composable
@@ -1543,6 +1547,30 @@ private fun GasAndModCalculatorTab(
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    // Tactical Cockpit Telemetry HUD Dials
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TacticalTelemetryGauge(
+                            value = if (isImperial) (result.maxOperatingDepthMeters * 3.28084f) else result.maxOperatingDepthMeters.toFloat(),
+                            maxValue = if (isImperial) 200f else 60f,
+                            unit = if (isImperial) "FT" else "M",
+                            label = if (isGerman) "MOD" else "MOD",
+                            accentColor = if (result.isPlanSafe) BioluminescentEmerald else MaterialTheme.colorScheme.error
+                        )
+                        TacticalTelemetryGauge(
+                            value = if (isImperial) (result.turnPressureBar * 14.5038f) else result.turnPressureBar.toFloat(),
+                            maxValue = if (isImperial) 3500f else 250f,
+                            unit = if (isImperial) "PSI" else "BAR",
+                            label = if (isGerman) "Wendedruck" else "Turn Pressure",
+                            accentColor = BioluminescentSky
+                        )
+                    }
 
                     // Key Calculated Results Banner
                     Row(

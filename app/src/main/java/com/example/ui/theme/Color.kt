@@ -3,7 +3,7 @@ package com.example.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // =========================================================================
-// Oceanic Material 3 Color Tokens
+// Oceanic Material 3 Color Tokens & Abyssal Glass Ecosystem
 // =========================================================================
 
 // Primary Oceanic Accents
@@ -37,23 +37,39 @@ val OceanSurfaceContainerLight = Color(0xFFF1F5F9)
 val OceanSurfaceContainerHighLight = Color(0xFFE2E8F0)
 val OceanSurfaceContainerHighestLight = Color(0xFFCBD5E1)
 
-// Dark Theme Surface Hierarchy (Deep Abyssal Ocean)
-val OceanBackgroundDark = Color(0xFF070D18) // Rich Abyssal Deep
-val OceanSurfaceDark = Color(0xFF0F172A) // Midnight Slate (900)
-val OceanSurfaceVariantDark = Color(0xFF1E293B) // Slate 800
-val OceanOutlineDark = Color(0xFF475569) // Slate 600
-val OceanOutlineVariantDark = Color(0xFF1E293B) // Slate 800 subtle
+// =========================================================================
+// Dark Theme Abyssal Glass & Tactical HUD Hierarchy
+// OLED Deep Midnight with Bioluminescent Accents
+// =========================================================================
+val AbyssalOled = Color(0xFF040711) // Pure Deep Midnight Void
+val OceanBackgroundDark = Color(0xFF050813) // Abyssal Oceanic Depth
+val OceanSurfaceDark = Color(0xFF0B1220) // Frosted Midnight Slate
+val OceanSurfaceVariantDark = Color(0xFF131D31) // Sub-surface Slate
+val OceanOutlineDark = Color(0xFF334E68) // Tactical Outline Slate
+val OceanOutlineVariantDark = Color(0x3338BDF8) // Bioluminescent Cyan Hairline Border
 
-val OceanSurfaceContainerLowestDark = Color(0xFF050912)
-val OceanSurfaceContainerLowDark = Color(0xFF0B1322)
-val OceanSurfaceContainerDark = Color(0xFF111C30)
-val OceanSurfaceContainerHighDark = Color(0xFF17253E)
-val OceanSurfaceContainerHighestDark = Color(0xFF1F3150)
+val OceanSurfaceContainerLowestDark = Color(0xFF03050B)
+val OceanSurfaceContainerLowDark = Color(0xFF080E1A)
+val OceanSurfaceContainerDark = Color(0xFF0E1626)
+val OceanSurfaceContainerHighDark = Color(0xFF142036)
+val OceanSurfaceContainerHighestDark = Color(0xFF1D2C4A)
 
-// Special Specialty & Status Highlights
-val AquaCyan = Color(0xFF06B6D4) // Refined Turquoise Cyan
-val CoralAlert = Color(0xFFEF4444) // Clean Modern Red
-val DepthNavy = Color(0xFF0F172A) // Rich Midnight Navy
-val SandGold = Color(0xFFF59E0B) // Warm Amber Gold
-val SeaGreen = Color(0xFF10B981) // Fresh Emerald Green
-val DeepAbyss = Color(0xFF020617)
+// Bioluminescent Glowing Accents (Abyssal Glass Spec)
+val BioluminescentCyan = Color(0xFF00F2FE) // High Intensity Cyan Ray
+val BioluminescentSky = Color(0xFF38BDF8) // Crisp Tactical Sky Cyan
+val BioluminescentEmerald = Color(0xFF34D399) // Safe Deco / Optimal Status Glow
+val BioluminescentCoral = Color(0xFFFB7185) // High Alert / Decompression Warning
+val BioluminescentAmber = Color(0xFFFBBF24) // Caution / Gas Threshold Warm Glow
+
+// Glass & Glow Utilities
+val AbyssalGlassSurface = Color(0xB80E1626) // Semi-transparent glass fill
+val AbyssalGlassBorder = Color(0x3D38BDF8) // Hairline Cyan Edge Glow
+val AbyssalGlowShadow = Color(0x2E00F2FE)
+
+// Preserved Legacy Highlights for Full Backwards Compatibility
+val AquaCyan = Color(0xFF38BDF8)
+val CoralAlert = Color(0xFFFB7185)
+val DepthNavy = Color(0xFF0A1120)
+val SandGold = Color(0xFFFBBF24)
+val SeaGreen = Color(0xFF34D399)
+val DeepAbyss = Color(0xFF040711)

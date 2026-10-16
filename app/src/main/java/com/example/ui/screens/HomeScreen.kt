@@ -84,6 +84,7 @@ import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.ui.components.DocumentExpirationAlertBanner
 import com.example.ui.components.ExamReadinessGauge
+import com.example.ui.components.TacticalMetricChip
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.AppLocalizer
 import com.example.ui.i18n.LocalAppStrings
@@ -263,6 +264,45 @@ fun HomeScreen(
                             )
                         }
                     }
+                }
+            }
+        }
+
+        // Tactical Diver Telemetry HUD Row
+        item {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("diver_telemetry_hud_row"),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    TacticalMetricChip(
+                        label = if (currentLanguage == AppLanguage.DE) "STATUS" else "STATUS",
+                        value = if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE",
+                        statusColor = SeaGreen
+                    )
+                }
+                item {
+                    TacticalMetricChip(
+                        label = if (currentLanguage == AppLanguage.DE) "FORTSCHRITT" else "PROGRESS",
+                        value = "${progress?.overallProgressPercentage ?: 0}%",
+                        statusColor = AquaCyan
+                    )
+                }
+                item {
+                    TacticalMetricChip(
+                        label = if (currentLanguage == AppLanguage.DE) "DOKUMENTE" else "DOCS",
+                        value = if (alertDocuments.isNotEmpty()) (if (currentLanguage == AppLanguage.DE) "WARNUNG" else "ALERT") else (if (currentLanguage == AppLanguage.DE) "GÜLTIG" else "VALID"),
+                        statusColor = if (alertDocuments.isNotEmpty()) CoralAlert else SeaGreen
+                    )
+                }
+                item {
+                    TacticalMetricChip(
+                        label = if (currentLanguage == AppLanguage.DE) "STREAK" else "STREAK",
+                        value = "${progress?.studyStreakDays ?: 1} TAGE",
+                        statusColor = SandGold
+                    )
                 }
             }
         }

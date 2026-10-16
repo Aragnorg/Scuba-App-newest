@@ -63,6 +63,17 @@ import com.example.ui.theme.OceanSecondary
 import com.example.ui.theme.OceanTertiary
 import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
+import com.example.ui.theme.BioluminescentCyan
+import com.example.ui.theme.BioluminescentSky
+import com.example.ui.theme.BioluminescentEmerald
+import com.example.ui.theme.BioluminescentCoral
+import com.example.ui.theme.BioluminescentAmber
+import com.example.ui.theme.AbyssalGlassSurface
+import com.example.ui.theme.AbyssalGlassBorder
+import com.example.ui.theme.AbyssalOled
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 
 @Composable
 fun BoylesLawCalculator(modifier: Modifier = Modifier) {
@@ -531,3 +542,246 @@ fun ExamReadinessGauge(
         }
     }
 }
+
+// =========================================================================
+// Abyssal Glass & Tactical Telemetry Cockpit Components
+// Hybrid Material 3 + Abyssal Dark Mode
+// =========================================================================
+
+/**
+ * Tactical telemetry gauge with glowing arc, digital monospace readout,
+ * and high-contrast alert indicators.
+ */
+@Composable
+fun TacticalTelemetryGauge(
+    value: Float,
+    maxValue: Float,
+    unit: String,
+    label: String,
+    modifier: Modifier = Modifier,
+    accentColor: Color = BioluminescentSky
+) {
+    val isDark = isSystemInDarkTheme()
+    val progress = (value / maxValue.coerceAtLeast(1f)).coerceIn(0f, 1f)
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(700),
+        label = "gauge_progress"
+    )
+
+    Column(
+        modifier = modifier
+            .testTag("tactical_telemetry_gauge_$label"),
+        horizontalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier.size(110.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+                val strokeWidth = 8.dp.toPx()
+                val radius = (size.minDimension - strokeWidth) / 2
+                val center = Offset(size.width / 2, size.height / 2)
+
+                // Background track
+                drawArc(
+                    color = if (isDark) Color(0x2B38BDF8) else Color(0xFFE2E8F0),
+                    startAngle = 140f,
+                    sweepAngle = 260f,
+                    useCenter = false,
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+                    topLeft = Offset(center.x - radius, center.y - radius),
+                    size = Size(radius * 2, radius * 2)
+                )
+
+                // Glowing active arc
+                val activeSweep = 260f * animatedProgress
+                if (activeSweep > 0f) {
+                    val gradientBrush = Brush.sweepGradient(
+                        colors = listOf(
+                            accentColor.copy(alpha = 0.7f),
+                            accentColor
+                        )
+                    )
+                    drawArc(
+                        brush = gradientBrush,
+                        startAngle = 140f,
+                        sweepAngle = activeSweep,
+                        useCenter = false,
+                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+                        topLeft = Offset(center.x - radius, center.y - radius),
+                        size = Size(radius * 2, radius * 2)
+                    )
+                }
+            }
+
+            // Digital readout
+            Column(horizontalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = if (value % 1f == 0f) value.toInt().toString() else String.format("%.1f", value),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace,
+                    color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = unit,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.SemiBold,
+                    color = accentColor
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            letterSpacing = 1.sp
+        )
+    }
+}
+
+/**
+ * Interactive / Rendered Dive Depth Profile Curve with Bioluminescent fill.
+ */
+@Composable
+fun TacticalDiveProfileView(
+    depthProfile: List<Pair<Int, Float>>, // Pair(minute, depthMeters)
+    maxDepth: Float,
+    totalMinutes: Int,
+    modifier: Modifier = Modifier,
+    lineColor: Color = BioluminescentSky
+) {
+    val isDark = isSystemInDarkTheme()
+
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(130.dp)
+            .testTag("tactical_dive_profile_view")
+    ) {
+        val w = size.width
+        val h = size.height
+        if (depthProfile.isEmpty() || maxDepth <= 0f || totalMinutes <= 0) {
+            drawLine(
+                color = if (isDark) Color(0x3338BDF8) else Color(0xFFCBD5E1),
+                start = Offset(0f, h / 2),
+                end = Offset(w, h / 2),
+                strokeWidth = 1.dp.toPx()
+            )
+            return@Canvas
+        }
+
+        // Draw horizontal depth guide lines
+        val depthStep = maxDepth / 3f
+        for (i in 1..3) {
+            val yGuide = (i * depthStep / maxDepth) * (h - 20.dp.toPx())
+            drawLine(
+                color = if (isDark) Color(0x1A38BDF8) else Color(0x1AE2E8F0),
+                start = Offset(0f, yGuide),
+                end = Offset(w, yGuide),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
+
+        val path = Path()
+        val fillPath = Path()
+
+        val firstPt = depthProfile.first()
+        val startX = (firstPt.first.toFloat() / totalMinutes) * w
+        val startY = (firstPt.second / maxDepth) * (h - 16.dp.toPx())
+
+        path.moveTo(startX, startY)
+        fillPath.moveTo(startX, 0f)
+        fillPath.lineTo(startX, startY)
+
+        for (i in 1 until depthProfile.size) {
+            val pt = depthProfile[i]
+            val px = (pt.first.toFloat() / totalMinutes) * w
+            val py = (pt.second / maxDepth) * (h - 16.dp.toPx())
+            path.lineTo(px, py)
+            fillPath.lineTo(px, py)
+        }
+
+        val lastPt = depthProfile.last()
+        val endX = (lastPt.first.toFloat() / totalMinutes) * w
+        fillPath.lineTo(endX, 0f)
+        fillPath.close()
+
+        // Gradient depth water fill
+        val fillBrush = Brush.verticalGradient(
+            colors = if (isDark) {
+                listOf(
+                    lineColor.copy(alpha = 0.04f),
+                    lineColor.copy(alpha = 0.28f)
+                )
+            } else {
+                listOf(
+                    OceanPrimary.copy(alpha = 0.05f),
+                    OceanPrimary.copy(alpha = 0.20f)
+                )
+            }
+        )
+        drawPath(path = fillPath, brush = fillBrush)
+
+        // Glowing profile line
+        drawPath(
+            path = path,
+            color = lineColor,
+            style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
+        )
+    }
+}
+
+/**
+ * Cockpit Tactical Metric Chip (Monospace number with glow border)
+ */
+@Composable
+fun TacticalMetricChip(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    statusColor: Color = BioluminescentSky
+) {
+    val isDark = isSystemInDarkTheme()
+    Surface(
+        modifier = modifier.testTag("tactical_chip_$label"),
+        shape = RoundedCornerShape(12.dp),
+        color = if (isDark) Color(0xB00E1626) else MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isDark) statusColor.copy(alpha = 0.35f) else MaterialTheme.colorScheme.outlineVariant
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(statusColor)
+            )
+            Text(
+                text = label.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                color = if (isDark) Color.White else MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
