@@ -155,7 +155,7 @@ fun HomeScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = SeaGreen.copy(alpha = 0.12f)),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
@@ -183,7 +183,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("diver_header_card"),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 ),
@@ -456,7 +456,7 @@ fun HomeScreen(
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("course_curriculum_wrapper_header"),
-                    shape = RoundedCornerShape(22.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -521,7 +521,7 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("nitrox_curriculum_module"),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -570,7 +570,7 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("deep_curriculum_module"),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -618,7 +618,7 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("wreck_curriculum_module"),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -655,7 +655,7 @@ fun HomeScreen(
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("night_curriculum_module"),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -811,7 +811,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("course_progress_card_${course.id}"),
-                    shape = RoundedCornerShape(22.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -943,7 +943,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("certificate_qualification_card"),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = DepthNavy
                         ),
@@ -1038,7 +1038,7 @@ fun HomeScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("no_exam_attempts_card"),
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1058,7 +1058,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("student_quiz_card_${quiz.id}"),
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(
                             1.dp,
@@ -1133,7 +1133,7 @@ fun HomeScreen(
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerLow,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
                 ) {
@@ -1193,7 +1193,7 @@ fun HomeScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
@@ -1228,7 +1228,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("available_course_card_${course.id}"),
-                        shape = RoundedCornerShape(22.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1326,7 +1326,7 @@ fun HomeScreen(
                                         }
                                     },
                                     modifier = Modifier.testTag("enroll_btn_${course.id}"),
-                                    shape = RoundedCornerShape(16.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 ) {
@@ -1531,7 +1531,7 @@ fun ModuleCard(
             .fillMaxWidth()
             .animateContentSize()
             .testTag("module_card_${module.id}"),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)

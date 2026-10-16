@@ -123,7 +123,7 @@ fun HandSignalsScreen(
                 }
                 .clickable { isFlipped = !isFlipped }
                 .testTag("hand_signal_flashcard"),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (rotation <= 90f)
                     MaterialTheme.colorScheme.surfaceContainerLow
@@ -269,7 +269,7 @@ fun HandSignalsScreen(
                     }
                 },
                 enabled = currentIndex > 0,
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("prev_signal_button")
@@ -285,7 +285,7 @@ fun HandSignalsScreen(
 
             Button(
                 onClick = { isFlipped = !isFlipped },
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -310,7 +310,7 @@ fun HandSignalsScreen(
                     }
                 },
                 enabled = currentIndex < total - 1,
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary

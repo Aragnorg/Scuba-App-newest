@@ -182,7 +182,7 @@ fun PresentationViewerScreen(
                         OutlinedButton(
                             onClick = { viewModel.prevSlide() },
                             enabled = safeIndex > 0,
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             modifier = Modifier.testTag("prev_slide_button")
@@ -222,7 +222,7 @@ fun PresentationViewerScreen(
                                     viewModel.markPresentationComplete()
                                     viewModel.closePresentation()
                                 },
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary,
@@ -237,7 +237,7 @@ fun PresentationViewerScreen(
                         } else {
                             Button(
                                 onClick = { viewModel.nextSlide() },
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary,
@@ -274,7 +274,7 @@ fun PresentationViewerScreen(
             if (!docUri.isNullOrBlank()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerLow,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
@@ -385,7 +385,7 @@ fun PresentationViewerScreen(
             if (currentSlide.keyTakeaway.isNotBlank()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
@@ -422,7 +422,7 @@ fun PresentationViewerScreen(
             if (currentSlide.instructorNotes.isNotBlank()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer
                     ),

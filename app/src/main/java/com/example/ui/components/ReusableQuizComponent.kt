@@ -181,7 +181,7 @@ fun ReusableQuizEngine(
                         isSubmitted = true
                         onQuizCompleted(scorePercentage, isPassed, userAnswers.toMap())
                     },
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -281,7 +281,7 @@ fun ReusableQuizEngine(
                             OutlinedButton(
                                 onClick = { if (currentIndex > 0) currentIndex-- },
                                 enabled = currentIndex > 0,
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                                 modifier = Modifier.testTag("quiz_prev_button")
@@ -298,7 +298,7 @@ fun ReusableQuizEngine(
                             if (safeIndex == totalQuestions - 1) {
                                 Button(
                                     onClick = { showConfirmSubmitDialog = true },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -313,7 +313,7 @@ fun ReusableQuizEngine(
                             } else {
                                 Button(
                                     onClick = { if (currentIndex < totalQuestions - 1) currentIndex++ },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -626,7 +626,7 @@ fun PostSubmissionFeedbackView(
                     ) {
                         OutlinedButton(
                             onClick = onRetake,
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
                             modifier = Modifier
                                 .weight(1f)
@@ -639,7 +639,7 @@ fun PostSubmissionFeedbackView(
 
                         Button(
                             onClick = onExit,
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
@@ -708,7 +708,7 @@ fun PostSubmissionFeedbackView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("review_card_$qIndex"),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                 border = BorderStroke(
                     1.dp,

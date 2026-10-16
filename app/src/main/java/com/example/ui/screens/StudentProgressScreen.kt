@@ -95,7 +95,7 @@ fun StudentProgressScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("student_progress_header_card"),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
@@ -223,7 +223,7 @@ fun StudentProgressScreen(
         item {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
             ) {
@@ -414,7 +414,7 @@ fun StudentProgressScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("certificate_qualification_card"),
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = DepthNavy
                     ),

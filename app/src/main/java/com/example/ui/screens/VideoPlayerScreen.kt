@@ -385,7 +385,7 @@ fun VideoPlayerScreen(
                 if (isDriveUrl || isWebUrl) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                         ),
@@ -425,7 +425,7 @@ fun VideoPlayerScreen(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
                                     ),
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 9.dp)
                                 ) {
                                     Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -443,7 +443,7 @@ fun VideoPlayerScreen(
                 // Description Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -468,7 +468,7 @@ fun VideoPlayerScreen(
                 if (chapters.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -549,7 +549,7 @@ fun VideoPlayerScreen(
                 if (takeaways.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -600,7 +600,7 @@ fun VideoPlayerScreen(
                             viewModel.closeVideo()
                         },
                         modifier = Modifier.testTag("mark_video_completed_button"),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
