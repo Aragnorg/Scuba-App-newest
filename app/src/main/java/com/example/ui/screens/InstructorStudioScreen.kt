@@ -500,7 +500,7 @@ fun VideosList(
                         ) {
                             Surface(
                                 modifier = Modifier.size(46.dp),
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 color = OceanSecondary.copy(alpha = 0.15f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
@@ -679,7 +679,7 @@ fun QuizzesList(
                         ) {
                             Surface(
                                 modifier = Modifier.size(46.dp),
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 color = if (qz.isMockExam) SandGold.copy(alpha = 0.2f) else SeaGreen.copy(alpha = 0.15f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
@@ -880,9 +880,9 @@ fun CreatePresentationDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .clickable { filePicker.launch("*/*") },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainer,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
@@ -1064,7 +1064,7 @@ fun CreatePresentationDialog(
                         finalUri
                     )
                 },
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
                 modifier = Modifier.testTag("save_presentation_button")
@@ -1075,7 +1075,7 @@ fun CreatePresentationDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(strings.cancel)
             }
@@ -1141,13 +1141,13 @@ fun CreateVideoDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .clickable {
                             videoPicker.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
                             )
                         },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainer,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 ) {
@@ -1288,7 +1288,7 @@ fun CreateVideoDialog(
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("save_video_button")
             ) {
@@ -1298,7 +1298,7 @@ fun CreateVideoDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(strings.cancel)
             }
@@ -1485,7 +1485,7 @@ fun CreateQuizDialog(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
@@ -1583,7 +1583,7 @@ fun CreateQuizDialog(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = OceanSecondary)
                         ) {
@@ -1609,7 +1609,7 @@ fun CreateQuizDialog(
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("save_quiz_button")
             ) {
@@ -1619,7 +1619,7 @@ fun CreateQuizDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Abbrechen")
             }

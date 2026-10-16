@@ -330,7 +330,7 @@ fun InstructorDivesScreen(
                 items(approvedDives, key = { it.id }) { dive ->
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                         modifier = Modifier.fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -560,7 +560,7 @@ fun InstructorDivesScreen(
                     items(approvedDocs, key = { it.id }) { doc ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -678,7 +678,7 @@ fun InstructorDivesScreen(
                             Spacer(modifier = Modifier.height(18.dp))
 
                             Surface(
-                                shape = RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(20.dp),
                                 color = MaterialTheme.colorScheme.surfaceContainerLow,
                                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                                 modifier = Modifier.fillMaxWidth()
@@ -728,7 +728,7 @@ fun InstructorDivesScreen(
                                 containerColor = if (isSelected) OceanPrimary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainer
                             ),
                             border = if (isSelected) BorderStroke(1.5.dp, OceanPrimary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(20.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -808,7 +808,7 @@ fun InstructorDivesScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Surface(
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(20.dp),
                         color = Color.White,
                         modifier = Modifier.padding(6.dp)
                     ) {
@@ -823,7 +823,7 @@ fun InstructorDivesScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Surface(
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.surfaceContainer,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                         modifier = Modifier.fillMaxWidth()
@@ -862,7 +862,7 @@ fun InstructorDivesScreen(
                                 diveForQrPresentation = null
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
                         ) {
                             Icon(Icons.Rounded.Verified, contentDescription = null, tint = Color.White)

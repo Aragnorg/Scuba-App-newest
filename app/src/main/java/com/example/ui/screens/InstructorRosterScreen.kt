@@ -132,7 +132,7 @@ fun InstructorRosterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("roster_summary_card"),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
@@ -221,7 +221,7 @@ fun InstructorRosterScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("student_search_input"),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(14.dp)
             )
         }
 
@@ -648,7 +648,7 @@ fun StudentDetailDialog(
             ) {
                 // Readiness Score Card
                 Surface(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainer,
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
                 ) {
@@ -732,7 +732,7 @@ fun StudentDetailDialog(
                     onSaveNotes(notesText.trim())
                     onDismiss()
                 },
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
             ) {
                 Text(strings.saveNotesAndClose)
@@ -741,7 +741,7 @@ fun StudentDetailDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                shape = RoundedCornerShape(14.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(strings.cancel)
             }
