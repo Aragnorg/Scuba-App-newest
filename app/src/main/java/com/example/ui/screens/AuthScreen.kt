@@ -177,7 +177,7 @@ fun AuthScreen(
 
         // Tab Row (Log In vs Register)
         Surface(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(20.dp),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             modifier = Modifier.fillMaxWidth()
@@ -214,7 +214,7 @@ fun AuthScreen(
         if (authError != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = CoralAlert.copy(alpha = 0.12f),
                 border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.4f))
             ) {
@@ -244,7 +244,7 @@ fun AuthScreen(
         if (authSuccess != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = SeaGreen.copy(alpha = 0.12f),
                 border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
             ) {
@@ -308,7 +308,7 @@ fun LoginForm(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -326,7 +326,7 @@ fun LoginForm(
 
             // Quick Demo Switchers
             Surface(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
                 modifier = Modifier.fillMaxWidth()
@@ -424,7 +424,7 @@ fun LoginForm(
                     onClick = { onLogin(email.trim(), password) },
                     enabled = email.isNotBlank() && password.isNotBlank(),
                     colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(horizontal = 40.dp, vertical = 14.dp),
                     modifier = Modifier.fillMaxWidth().testTag("login_submit_button")
                 ) {
@@ -468,7 +468,7 @@ fun RegisterForm(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -578,7 +578,7 @@ fun RegisterForm(
                             .weight(1f)
                             .clickable { selectedRole = "STUDENT" }
                             .testTag("role_student_select"),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         color = if (selectedRole == "STUDENT") OceanPrimary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainerHigh,
                         border = BorderStroke(
                             width = if (selectedRole == "STUDENT") 2.dp else 1.dp,
@@ -615,7 +615,7 @@ fun RegisterForm(
                             .weight(1f)
                             .clickable { selectedRole = "INSTRUCTOR" }
                             .testTag("role_instructor_select"),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         color = if (selectedRole == "INSTRUCTOR") AquaCyan.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHigh,
                         border = BorderStroke(
                             width = if (selectedRole == "INSTRUCTOR") 2.dp else 1.dp,
@@ -696,7 +696,7 @@ fun RegisterForm(
                     onClick = { onRegister(email.trim(), password, fullName, selectedRole) },
                     enabled = email.isNotBlank() && passwordLengthOk && passwordsMatch && agreeMedicalDeclaration,
                     colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(horizontal = 36.dp, vertical = 14.dp),
                     modifier = Modifier.fillMaxWidth().testTag("register_submit_button")
                 ) {
@@ -826,7 +826,7 @@ fun EmailVerificationScreen(
         if (authError != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = CoralAlert.copy(alpha = 0.12f),
                 border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.4f))
             ) {
@@ -850,7 +850,7 @@ fun EmailVerificationScreen(
         if (authSuccess != null) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = SeaGreen.copy(alpha = 0.12f),
                 border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
             ) {
@@ -876,7 +876,7 @@ fun EmailVerificationScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("incoming_email_preview_card"),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.35f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -946,7 +946,7 @@ fun EmailVerificationScreen(
                     // Security Code Highlight
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
                     ) {
@@ -996,7 +996,7 @@ fun EmailVerificationScreen(
                                     },
                                     modifier = Modifier.fillMaxWidth().testTag("instant_activate_button"),
                                     colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
                                 ) {
                                     Icon(Icons.Rounded.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -1041,7 +1041,7 @@ fun EmailVerificationScreen(
         // Code Entry Field
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -1093,7 +1093,7 @@ fun EmailVerificationScreen(
                         onClick = { onVerify(verificationCode) },
                         enabled = verificationCode.length == 6,
                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 36.dp, vertical = 14.dp),
                         modifier = Modifier.fillMaxWidth().testTag("verify_code_submit_button")
                     ) {

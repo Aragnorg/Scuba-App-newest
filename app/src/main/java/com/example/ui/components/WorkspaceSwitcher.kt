@@ -212,7 +212,7 @@ fun WorkspaceSelectionDialog(
 
                 // 1. Personal Diver Mode
                 Card(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = if (currentOrg == null) {
                             OceanPrimary.copy(alpha = 0.12f)
@@ -289,7 +289,7 @@ fun WorkspaceSelectionDialog(
                     val accentColor = if (isClub) SeaGreen else OceanPrimary
 
                     Card(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = if (isSelected) {
                                 accentColor.copy(alpha = 0.12f)
