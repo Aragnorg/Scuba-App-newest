@@ -46,6 +46,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.Flashcard
+import com.example.ui.components.ScubaPrimaryButton
+import com.example.ui.components.ScubaSecondaryButton
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.theme.SeaGreen
 
@@ -253,15 +255,17 @@ fun HandSignalsScreen(
             }
         }
 
-        // Navigation Controls
+        // Navigation Controls - Unified ScubaButtons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(
+            ScubaSecondaryButton(
+                text = strings.previousButton,
+                icon = Icons.AutoMirrored.Rounded.ArrowBack,
                 onClick = {
                     if (currentIndex > 0) {
                         currentIndex--
@@ -269,40 +273,35 @@ fun HandSignalsScreen(
                     }
                 },
                 enabled = currentIndex > 0,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("prev_signal_button"),
+                testTag = "prev_signal_button"
+            )
+
+            Surface(
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f)),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.testTag("prev_signal_button")
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable { isFlipped = !isFlipped }
+                    .testTag("flip_signal_button")
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = strings.previousButton,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(strings.previousButton)
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Rounded.Flip,
+                        contentDescription = strings.flipCardButton,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
 
-            Button(
-                onClick = { isFlipped = !isFlipped },
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.testTag("flip_signal_button")
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Flip,
-                    contentDescription = strings.flipCardButton,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-
-            Button(
+            ScubaPrimaryButton(
+                text = strings.nextButton,
+                icon = Icons.AutoMirrored.Rounded.ArrowForward,
                 onClick = {
                     if (currentIndex < total - 1) {
                         currentIndex++
@@ -310,22 +309,11 @@ fun HandSignalsScreen(
                     }
                 },
                 enabled = currentIndex < total - 1,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.testTag("next_signal_button")
-            ) {
-                Text(strings.nextButton)
-                Spacer(modifier = Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                    contentDescription = strings.nextButton,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("next_signal_button"),
+                testTag = "next_signal_button"
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))

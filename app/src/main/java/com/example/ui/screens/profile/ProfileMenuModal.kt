@@ -93,6 +93,9 @@ import com.example.ui.components.DocumentExpirationAlertBanner
 import com.example.ui.components.EditOrganizationDialog
 import com.example.ui.components.ExamReadinessGauge
 import com.example.ui.components.LanguageSwitchButton
+import com.example.ui.components.ScubaCompactButton
+import com.example.ui.components.ScubaPrimaryButton
+import com.example.ui.components.ScubaSecondaryButton
 import com.example.ui.components.UserAvatarView
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -106,7 +109,7 @@ import com.example.ui.screens.documents.DocumentDetailDialog
 import com.example.ui.screens.documents.DocumentVaultCard
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
-import com.example.ui.theme.OceanPrimary
+// import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.OceanSecondary
 import com.example.ui.theme.OceanTertiary
 import com.example.ui.theme.SandGold
@@ -233,11 +236,11 @@ fun ProfileMenuModal(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Surface(
                                 shape = CircleShape,
-                                color = OceanPrimary.copy(alpha = 0.15f),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                                 modifier = Modifier.size(40.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Rounded.School, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(22.dp))
+                                    Icon(Icons.Rounded.School, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
                                 }
                             }
                             Spacer(modifier = Modifier.width(12.dp))
@@ -326,7 +329,7 @@ fun ProfileMenuModal(
                                                 Icon(
                                                     Icons.Rounded.DriveFileRenameOutline,
                                                     contentDescription = if (currentLanguage == AppLanguage.DE) "Name bearbeiten" else "Edit Name",
-                                                    tint = OceanPrimary,
+                                                    tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(16.dp)
                                                 )
                                             }
@@ -343,8 +346,8 @@ fun ProfileMenuModal(
                                         // Role Badge: Angemeldet als: [Role]
                                         Surface(
                                             shape = RoundedCornerShape(10.dp),
-                                            color = if (isInstructor) OceanPrimary.copy(alpha = 0.12f) else SeaGreen.copy(alpha = 0.12f),
-                                            border = BorderStroke(1.dp, if (isInstructor) OceanPrimary.copy(alpha = 0.45f) else SeaGreen.copy(alpha = 0.45f)),
+                                            color = if (isInstructor) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else SeaGreen.copy(alpha = 0.12f),
+                                            border = BorderStroke(1.dp, if (isInstructor) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f) else SeaGreen.copy(alpha = 0.45f)),
                                             modifier = Modifier.testTag("logged_in_role_badge")
                                         ) {
                                             Row(
@@ -354,19 +357,19 @@ fun ProfileMenuModal(
                                                 Icon(
                                                     imageVector = if (isInstructor) Icons.Rounded.Verified else Icons.Rounded.School,
                                                     contentDescription = null,
-                                                    tint = if (isInstructor) OceanPrimary else SeaGreen,
+                                                    tint = if (isInstructor) MaterialTheme.colorScheme.primary else SeaGreen,
                                                     modifier = Modifier.size(14.dp)
                                                 )
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
                                                     text = if (currentLanguage == AppLanguage.DE) {
-                                                        if (isInstructor) "Angemeldet als: Tauchlehrer / Master Instructor" else "Angemeldet als: Tauchschüler"
+                                                        if (isInstructor) "Angemeldet als: Tauchlehrer / Master Instructor" else "Angemeldet als: TauchschÃ¼ler"
                                                     } else {
                                                         if (isInstructor) "Signed in as: Instructor / Master Instructor" else "Signed in as: Diving Student"
                                                     },
                                                     fontSize = 11.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    color = if (isInstructor) OceanPrimary else SeaGreen
+                                                    color = if (isInstructor) MaterialTheme.colorScheme.primary else SeaGreen
                                                 )
                                             }
                                         }
@@ -386,7 +389,7 @@ fun ProfileMenuModal(
                                             .weight(1f)
                                             .testTag("avatar_take_photo_btn"),
                                         shape = RoundedCornerShape(12.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                     ) {
                                         Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(15.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
@@ -429,7 +432,7 @@ fun ProfileMenuModal(
                                 // Diver Brevet & Credentials Dossier
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Text(
-                                        text = if (currentLanguage == AppLanguage.DE) "Persönliche Taucher-Akte" else "Personal Diver Dossier",
+                                        text = if (currentLanguage == AppLanguage.DE) "PersÃ¶nliche Taucher-Akte" else "Personal Diver Dossier",
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
@@ -455,8 +458,8 @@ fun ProfileMenuModal(
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Surface(
                                             shape = RoundedCornerShape(12.dp),
-                                            color = OceanPrimary.copy(alpha = 0.08f),
-                                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.2f)),
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
@@ -466,10 +469,10 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "$certAgencyDisplay • $certLevelDisplay",
+                                                    text = "$certAgencyDisplay â€¢ $certLevelDisplay",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
-                                                    color = OceanPrimary
+                                                    color = MaterialTheme.colorScheme.primary
                                                 )
                                                 Text(text = "Nr: $licenseNumberDisplay", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
                                             }
@@ -488,7 +491,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "🤿 ${currentUser?.totalLoggedDives ?: if (isInstructor) 340 else 14} Dives",
+                                                    text = "ðŸ¤¿ ${currentUser?.totalLoggedDives ?: if (isInstructor) 340 else 14} Dives",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = SeaGreen
@@ -512,7 +515,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "🩺 $ttuExpiryDisplay",
+                                                    text = "ðŸ©º $ttuExpiryDisplay",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = Color(0xFF2E7D32)
@@ -534,7 +537,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "🛡️ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
+                                                    text = "ðŸ›¡ï¸ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -553,13 +556,13 @@ fun ProfileMenuModal(
                                     ) {
                                         Column(modifier = Modifier.padding(10.dp)) {
                                             Text(
-                                                text = "🚨 Notfallkontakt: $emergencyNameDisplay ($emergencyPhoneDisplay)",
+                                                text = "ðŸš¨ Notfallkontakt: $emergencyNameDisplay ($emergencyPhoneDisplay)",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontSize = 11.sp
                                             )
                                             Spacer(modifier = Modifier.height(2.dp))
                                             Text(
-                                                text = "🎽 Leih-Größen: Anzug ${currentUser?.suitSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "L (52)" else "M"} • Schuhgr. ${currentUser?.shoeSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "43" else "42"} • BCD ${currentUser?.bcdSize?.takeIf { it.isNotBlank() } ?: "M"} • ${currentUser?.preferredTank?.takeIf { it.isNotBlank() } ?: "12L Stahl DIN"}",
+                                                text = "ðŸŽ½ Leih-GrÃ¶ÃŸen: Anzug ${currentUser?.suitSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "L (52)" else "M"} â€¢ Schuhgr. ${currentUser?.shoeSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "43" else "42"} â€¢ BCD ${currentUser?.bcdSize?.takeIf { it.isNotBlank() } ?: "M"} â€¢ ${currentUser?.preferredTank?.takeIf { it.isNotBlank() } ?: "12L Stahl DIN"}",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontSize = 11.sp,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -571,19 +574,19 @@ fun ProfileMenuModal(
                                     if (currentUser?.role == "INSTRUCTOR") {
                                         Surface(
                                             shape = RoundedCornerShape(12.dp),
-                                            color = OceanPrimary.copy(alpha = 0.08f),
-                                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.25f)),
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
                                             modifier = Modifier.fillMaxWidth()
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    Text("🏢", fontSize = 14.sp)
+                                                    Text("ðŸ¢", fontSize = 14.sp)
                                                     Spacer(modifier = Modifier.width(6.dp))
                                                     Text(
                                                         text = "Leitungs- & Ausbilder-Akte",
                                                         style = MaterialTheme.typography.labelMedium,
                                                         fontWeight = FontWeight.Bold,
-                                                        color = OceanPrimary
+                                                        color = MaterialTheme.colorScheme.primary
                                                     )
                                                 }
                                                 Text(
@@ -592,7 +595,7 @@ fun ProfileMenuModal(
                                                     fontWeight = FontWeight.Bold
                                                 )
                                                 Text(
-                                                    text = "Lizenz: ${currentUser?.instructorLicenseNumber ?: "TL2-GER-9921"} • Gültig bis: ${currentUser?.instructorValidUntil ?: "2027-12-31"}",
+                                                    text = "Lizenz: ${currentUser?.instructorLicenseNumber ?: "TL2-GER-9921"} â€¢ GÃ¼ltig bis: ${currentUser?.instructorValidUntil ?: "2027-12-31"}",
                                                     style = MaterialTheme.typography.labelSmall
                                                 )
                                                 Text(
@@ -611,40 +614,27 @@ fun ProfileMenuModal(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Button(
+                                        ScubaSecondaryButton(
+                                            text = if (currentLanguage == AppLanguage.DE) "Profil bearbeiten" else "Edit Profile",
+                                            icon = Icons.Rounded.Edit,
                                             onClick = { showEditFullProfileDialog = true },
-                                            modifier = Modifier.weight(1f).testTag("edit_full_profile_btn"),
-                                            shape = RoundedCornerShape(14.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
-                                        ) {
-                                            Icon(Icons.Rounded.Edit, contentDescription = null, modifier = Modifier.size(15.dp))
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Profil bearbeiten" else "Edit Profile",
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                maxLines = 1
-                                            )
-                                        }
-                                        OutlinedButton(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                                            modifier = Modifier.weight(1f),
+                                            testTag = "edit_full_profile_btn"
+                                        )
+
+                                        ScubaSecondaryButton(
+                                            text = if (currentLanguage == AppLanguage.DE) "Datei anhÃ¤ngen" else "Attach File",
+                                            icon = Icons.Rounded.AttachFile,
                                             onClick = {
                                                 documentToEdit = null
                                                 showAddDocumentDialog = true
                                             },
-                                            modifier = Modifier.weight(1f).testTag("profile_quick_add_doc_btn"),
-                                            shape = RoundedCornerShape(14.dp),
-                                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
-                                        ) {
-                                            Icon(Icons.Rounded.AttachFile, contentDescription = null, modifier = Modifier.size(15.dp), tint = OceanPrimary)
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Datei anhängen" else "Attach File",
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                maxLines = 1
-                                            )
-                                        }
+                                            modifier = Modifier.weight(1f),
+                                            testTag = "profile_quick_add_doc_btn"
+                                        )
                                     }
                                 }
                             }
@@ -661,7 +651,7 @@ fun ProfileMenuModal(
                                 title = strings.totalDocumentsCount,
                                 count = documents.size.toString(),
                                 icon = Icons.Rounded.Description,
-                                color = OceanPrimary,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.weight(1f)
                             )
                             StatMiniCard(
@@ -696,11 +686,11 @@ fun ProfileMenuModal(
                                 .testTag("profile_role_switcher_card"),
                             shape = RoundedCornerShape(24.dp),
                             colors = CardDefaults.cardColors(
-                                containerColor = if (currentUser?.role == "INSTRUCTOR") OceanPrimary.copy(alpha = 0.08f) else SeaGreen.copy(alpha = 0.08f)
+                                containerColor = if (currentUser?.role == "INSTRUCTOR") MaterialTheme.colorScheme.primary.copy(alpha = 0.08f) else SeaGreen.copy(alpha = 0.08f)
                             ),
                             border = BorderStroke(
                                 1.dp,
-                                if (currentUser?.role == "INSTRUCTOR") OceanPrimary.copy(alpha = 0.35f) else SeaGreen.copy(alpha = 0.35f)
+                                if (currentUser?.role == "INSTRUCTOR") MaterialTheme.colorScheme.primary.copy(alpha = 0.35f) else SeaGreen.copy(alpha = 0.35f)
                             ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                         ) {
@@ -721,42 +711,34 @@ fun ProfileMenuModal(
                                             text = if (currentUser?.role == "INSTRUCTOR") strings.instructorLabel else strings.studentLabel,
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.ExtraBold,
-                                            color = if (currentUser?.role == "INSTRUCTOR") OceanPrimary else SeaGreen
+                                            color = if (currentUser?.role == "INSTRUCTOR") MaterialTheme.colorScheme.primary else SeaGreen
                                         )
                                     }
-                                    Button(
+                                    ScubaCompactButton(
+                                        text = if (currentUser?.role == "INSTRUCTOR") {
+                                            if (currentLanguage == AppLanguage.DE) "Zu Taucher wechseln" else "Switch to Diver"
+                                        } else {
+                                            if (currentLanguage == AppLanguage.DE) "Zu Leitung wechseln" else "Switch to Leadership"
+                                        },
                                         onClick = {
                                             val targetRole = if (currentUser?.role == "INSTRUCTOR") "STUDENT" else "INSTRUCTOR"
                                             viewModel.switchUserRole(targetRole)
                                             onDismiss()
                                         },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = if (currentUser?.role == "INSTRUCTOR") SeaGreen else OceanPrimary
-                                        ),
-                                        shape = RoundedCornerShape(12.dp),
-                                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
-                                    ) {
-                                        Text(
-                                            text = if (currentUser?.role == "INSTRUCTOR") {
-                                                if (currentLanguage == AppLanguage.DE) "Zu Taucher wechseln" else "Switch to Diver"
-                                            } else {
-                                                if (currentLanguage == AppLanguage.DE) "Zu Leitung wechseln" else "Switch to Leadership"
-                                            },
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
+                                        containerColor = if (currentUser?.role == "INSTRUCTOR") SeaGreen else MaterialTheme.colorScheme.primary,
+                                        contentColor = Color.White
+                                    )
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = if (currentUser?.role == "INSTRUCTOR") {
                                         if (currentLanguage == AppLanguage.DE)
-                                            "Leitungs- & Vereinsmodus: Voller Zugriff auf Basis- & Vereinsverwaltung (DiveOps), Material, TÜV, Ausfahrten & Schüler."
+                                            "Leitungs- & Vereinsmodus: Voller Zugriff auf Basis- & Vereinsverwaltung (DiveOps), Material, TÃœV, Ausfahrten & SchÃ¼ler."
                                         else
-                                            "Leadership & Club mode: Full access to Dive Center & Club operations (DiveOps), assets, TÜV, trips & students."
+                                            "Leadership & Club mode: Full access to Dive Center & Club operations (DiveOps), assets, TÃœV, trips & students."
                                     } else {
                                         if (currentLanguage == AppLanguage.DE)
-                                            "Standard-Taucherprofil: Fokus auf persönliches Logbuch, eigene Kurse, Brevets und TTU-Akte."
+                                            "Standard-Taucherprofil: Fokus auf persÃ¶nliches Logbuch, eigene Kurse, Brevets und TTU-Akte."
                                         else
                                             "Standard diver profile: Focus on personal logbook, enrolled courses, certifications and medical file."
                                     },
@@ -781,7 +763,7 @@ fun ProfileMenuModal(
                             Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 val currentOrg by viewModel.currentOrganization.collectAsState()
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Rounded.CorporateFare, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(22.dp))
+                                    Icon(Icons.Rounded.CorporateFare, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = if (currentLanguage == AppLanguage.DE) "Tauchorganisation (Verein / Basis)" else "Diving Organization (Club / Center)",
@@ -792,12 +774,12 @@ fun ProfileMenuModal(
                                 Text(
                                     text = if (currentOrg != null) {
                                         if (currentLanguage == AppLanguage.DE)
-                                            "Aktiver Workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Verein" else "Tauchbasis"}) • ${currentOrg!!.activeMembersCount} Personen"
+                                            "Aktiver Workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Verein" else "Tauchbasis"}) â€¢ ${currentOrg!!.activeMembersCount} Personen"
                                         else
                                             "Active workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Club" else "Dive Center"})"
                                     } else {
                                         if (currentLanguage == AppLanguage.DE)
-                                            "Aktuell im persönlichen Tauchermodus. Du kannst jederzeit einen Verein oder eine Tauchbasis anlegen oder verwalten."
+                                            "Aktuell im persÃ¶nlichen Tauchermodus. Du kannst jederzeit einen Verein oder eine Tauchbasis anlegen oder verwalten."
                                         else
                                             "Currently in personal diver mode. You can create or manage a club or dive center anytime."
                                     },
@@ -806,31 +788,21 @@ fun ProfileMenuModal(
                                 )
 
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    OutlinedButton(
+                                    ScubaSecondaryButton(
+                                        text = if (currentLanguage == AppLanguage.DE) "+ Neue Org" else "+ New Org",
                                         onClick = { showCreateOrgDialog = true },
-                                        modifier = Modifier.weight(1f),
-                                        shape = RoundedCornerShape(12.dp)
-                                    ) {
-                                        Text(
-                                            text = if (currentLanguage == AppLanguage.DE) "+ Neue Org anlegen" else "+ Create New Org",
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
+                                        modifier = Modifier.weight(1f)
+                                    )
 
                                     if (currentOrg != null) {
-                                        Button(
+                                        ScubaSecondaryButton(
+                                            text = if (currentLanguage == AppLanguage.DE) "Org bearbeiten" else "Edit Org",
                                             onClick = { showEditOrgDialog = true },
-                                            modifier = Modifier.weight(1f),
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = if (currentOrg!!.isClub) SeaGreen else OceanPrimary)
-                                        ) {
-                                            Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Org bearbeiten" else "Edit Org",
-                                                fontSize = 11.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
+                                            containerColor = if (currentOrg!!.isClub) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = if (currentOrg!!.isClub) SeaGreen else MaterialTheme.colorScheme.primary,
+                                            border = BorderStroke(1.dp, if (currentOrg!!.isClub) SeaGreen.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                                            modifier = Modifier.weight(1f)
+                                        )
                                     }
                                 }
                             }
@@ -847,7 +819,7 @@ fun ProfileMenuModal(
                         ) {
                             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "App-Einstellungen & Präferenzen" else "App Settings & Preferences",
+                                    text = if (currentLanguage == AppLanguage.DE) "App-Einstellungen & PrÃ¤ferenzen" else "App Settings & Preferences",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
@@ -865,7 +837,7 @@ fun ProfileMenuModal(
                                         Icon(
                                             imageVector = Icons.Rounded.DarkMode,
                                             contentDescription = null,
-                                            tint = OceanPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(22.dp)
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
@@ -901,7 +873,7 @@ fun ProfileMenuModal(
                                         Icon(
                                             imageVector = Icons.Rounded.Straighten,
                                             contentDescription = null,
-                                            tint = OceanPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(22.dp)
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
@@ -913,9 +885,9 @@ fun ProfileMenuModal(
                                             )
                                             Text(
                                                 text = if (isImperial) {
-                                                    if (currentLanguage == AppLanguage.DE) "Imperial (ft, PSI, °F, lbs)" else "Imperial (ft, PSI, °F, lbs)"
+                                                    if (currentLanguage == AppLanguage.DE) "Imperial (ft, PSI, Â°F, lbs)" else "Imperial (ft, PSI, Â°F, lbs)"
                                                 } else {
-                                                    if (currentLanguage == AppLanguage.DE) "Metrisch (m, bar, °C, kg)" else "Metric (m, bar, °C, kg)"
+                                                    if (currentLanguage == AppLanguage.DE) "Metrisch (m, bar, Â°C, kg)" else "Metric (m, bar, Â°C, kg)"
                                                 },
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -949,7 +921,7 @@ fun ProfileMenuModal(
                                         Icon(
                                             imageVector = Icons.Rounded.Language,
                                             contentDescription = null,
-                                            tint = OceanPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(22.dp)
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
@@ -985,18 +957,18 @@ fun ProfileMenuModal(
                                         Icon(
                                             imageVector = Icons.Rounded.Wifi,
                                             contentDescription = null,
-                                            tint = OceanPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(22.dp)
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Column {
                                             Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Nur über WLAN laden" else "Wi-Fi Only Downloads",
+                                                text = if (currentLanguage == AppLanguage.DE) "Nur Ã¼ber WLAN laden" else "Wi-Fi Only Downloads",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.SemiBold
                                             )
                                             Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Datenvolumen für Videos & Slides sparen" else "Save mobile data for offline material downloads",
+                                                text = if (currentLanguage == AppLanguage.DE) "Datenvolumen fÃ¼r Videos & Slides sparen" else "Save mobile data for offline material downloads",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -1021,13 +993,13 @@ fun ProfileMenuModal(
                                         Icon(
                                             imageVector = Icons.Rounded.Notifications,
                                             contentDescription = null,
-                                            tint = OceanPrimary,
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(22.dp)
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Column {
                                             Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Tägliche Lerneinstufung" else "Daily Study Reminder",
+                                                text = if (currentLanguage == AppLanguage.DE) "TÃ¤gliche Lerneinstufung" else "Daily Study Reminder",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.SemiBold
                                             )
@@ -1072,24 +1044,17 @@ fun ProfileMenuModal(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
-                                Button(
+                                ScubaCompactButton(
+                                    text = strings.addDocumentButton,
+                                    icon = Icons.Rounded.Add,
                                     onClick = {
                                         documentToEdit = null
                                         showAddDocumentDialog = true
                                     },
-                                    modifier = Modifier.testTag("profile_add_doc_btn"),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
-                                ) {
-                                    Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = strings.addDocumentButton,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    testTag = "profile_add_doc_btn"
+                                )
                             }
                         }
                     }
@@ -1118,7 +1083,7 @@ fun ProfileMenuModal(
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setDocumentSearchQuery("") }) {
-                                        Icon(Icons.Rounded.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "Löschen" else "Clear")
+                                        Icon(Icons.Rounded.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "LÃ¶schen" else "Clear")
                                     }
                                 }
                             },
@@ -1142,7 +1107,7 @@ fun ProfileMenuModal(
                             if (alertDocuments.isNotEmpty()) {
                                 item {
                                     ProfileFilterChip(
-                                        title = "⚠️ ${strings.filterAlertsOnly} (${alertDocuments.size})",
+                                        title = "âš ï¸ ${strings.filterAlertsOnly} (${alertDocuments.size})",
                                         isSelected = categoryFilter == "ALERTS",
                                         onClick = { viewModel.setDocumentCategoryFilter("ALERTS") }
                                     )
@@ -1150,28 +1115,28 @@ fun ProfileMenuModal(
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "📜 ${strings.filterCerts}",
+                                    title = "ðŸ“œ ${strings.filterCerts}",
                                     isSelected = categoryFilter == "CERTIFICATION",
                                     onClick = { viewModel.setDocumentCategoryFilter("CERTIFICATION") }
                                 )
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "🩺 ${strings.filterMedical}",
+                                    title = "ðŸ©º ${strings.filterMedical}",
                                     isSelected = categoryFilter == "MEDICAL_FORM",
                                     onClick = { viewModel.setDocumentCategoryFilter("MEDICAL_FORM") }
                                 )
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "🛡️ ${strings.filterInsurance}",
+                                    title = "ðŸ›¡ï¸ ${strings.filterInsurance}",
                                     isSelected = categoryFilter == "INSURANCE",
                                     onClick = { viewModel.setDocumentCategoryFilter("INSURANCE") }
                                 )
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "📋 ${strings.filterWaivers}",
+                                    title = "ðŸ“‹ ${strings.filterWaivers}",
                                     isSelected = categoryFilter == "LIABILITY_WAIVER",
                                     onClick = { viewModel.setDocumentCategoryFilter("LIABILITY_WAIVER") }
                                 )
@@ -1197,7 +1162,7 @@ fun ProfileMenuModal(
                                         .padding(28.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(text = "🗂️", fontSize = 36.sp)
+                                    Text(text = "ðŸ—‚ï¸", fontSize = 36.sp)
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Text(
                                         text = strings.noDocumentsFound,
@@ -1235,22 +1200,15 @@ fun ProfileMenuModal(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center
                         ) {
-                            OutlinedButton(
+                            ScubaSecondaryButton(
+                                text = if (currentLanguage == AppLanguage.DE) "Abmelden" else strings.signOut,
+                                icon = Icons.AutoMirrored.Rounded.Logout,
                                 onClick = { showLogoutConfirmDialog = true },
-                                modifier = Modifier.testTag("profile_logout_btn"),
-                                shape = RoundedCornerShape(16.dp),
-                                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
-                                border = BorderStroke(1.2.dp, Color(0xFFE53E3E).copy(alpha = 0.6f))
-                            ) {
-                                Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "Abmelden" else strings.signOut,
-                                    color = Color(0xFFE53E3E),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                )
-                            }
+                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
+                                contentColor = MaterialTheme.colorScheme.error,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f)),
+                                modifier = Modifier.testTag("profile_logout_btn")
+                            )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -1341,20 +1299,22 @@ fun ProfileMenuModal(
             title = { Text(strings.delete) },
             text = { Text("${strings.deleteDocumentConfirm}\n\n\"${doc.title}\" (#${doc.documentNumber})") },
             confirmButton = {
-                Button(
+                ScubaSecondaryButton(
+                    text = strings.delete,
                     onClick = {
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
                     },
-                    modifier = Modifier.height(50.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
-                ) {
-                    Text(strings.delete)
-                }
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                    border = null
+                )
             },
             dismissButton = {
-                TextButton(onClick = { documentToDelete = null }) {
+                TextButton(
+                    onClick = { documentToDelete = null },
+                    modifier = Modifier.height(44.dp)
+                ) {
                     Text(strings.cancel)
                 }
             }
@@ -1380,7 +1340,8 @@ fun ProfileMenuModal(
                 )
             },
             confirmButton = {
-                Button(
+                ScubaPrimaryButton(
+                    text = strings.save,
                     onClick = {
                         if (editNameText.isNotBlank()) {
                             val newName = editNameText.trim()
@@ -1393,14 +1354,14 @@ fun ProfileMenuModal(
                         }
                         showEditNameDialog = false
                     },
-                    modifier = Modifier.height(50.dp),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Text(strings.save)
-                }
+                    modifier = Modifier.width(120.dp)
+                )
             },
             dismissButton = {
-                TextButton(onClick = { showEditNameDialog = false }) {
+                TextButton(
+                    onClick = { showEditNameDialog = false },
+                    modifier = Modifier.height(44.dp)
+                ) {
                     Text(strings.cancel)
                 }
             }
@@ -1463,7 +1424,7 @@ fun ProfileMenuModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (currentLanguage == AppLanguage.DE) "Abmelden bestätigen" else "Confirm Sign Out",
+                        text = if (currentLanguage == AppLanguage.DE) "Abmelden bestÃ¤tigen" else "Confirm Sign Out",
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -1471,35 +1432,32 @@ fun ProfileMenuModal(
             text = {
                 Text(
                     text = if (currentLanguage == AppLanguage.DE)
-                        "Möchtest du dich wirklich abmelden? Deine aktive Sitzung wird beendet und du wirst zur Anmeldeseite weitergeleitet."
+                        "MÃ¶chtest du dich wirklich abmelden? Deine aktive Sitzung wird beendet und du wirst zur Anmeldeseite weitergeleitet."
                     else
                         "Are you sure you want to sign out? Your session will end and you will be returned to the sign-in screen.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
             confirmButton = {
-                Button(
+                ScubaSecondaryButton(
+                    text = if (currentLanguage == AppLanguage.DE) "Abmelden" else strings.signOut,
                     onClick = {
                         showLogoutConfirmDialog = false
                         onDismiss()
                         viewModel.logout()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E)),
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier
-                        .height(50.dp)
-                        .testTag("confirm_logout_btn")
-                ) {
-                    Text(
-                        text = if (currentLanguage == AppLanguage.DE) "Abmelden" else strings.signOut,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                    border = null,
+                    modifier = Modifier.testTag("confirm_logout_btn")
+                )
             },
             dismissButton = {
                 TextButton(
                     onClick = { showLogoutConfirmDialog = false },
-                    modifier = Modifier.testTag("cancel_logout_btn")
+                    modifier = Modifier
+                        .height(44.dp)
+                        .testTag("cancel_logout_btn")
                 ) {
                     Text(strings.cancel)
                 }
@@ -1564,8 +1522,8 @@ private fun ProfileFilterChip(
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceContainerHigh,
-        border = BorderStroke(1.dp, if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
+        border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
         contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
     ) {
         Text(
@@ -1619,7 +1577,7 @@ fun EditFullProfileDialog(
         title = {
             Column {
                 Text(
-                    text = "Vollständiges Profil bearbeiten",
+                    text = "VollstÃ¤ndiges Profil bearbeiten",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -1641,16 +1599,16 @@ fun EditFullProfileDialog(
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (selectedTab == 0) OceanPrimary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainerHighest,
-                        border = BorderStroke(1.dp, if (selectedTab == 0) OceanPrimary else Color.Transparent),
+                        color = if (selectedTab == 0) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceContainerHighest,
+                        border = BorderStroke(1.dp, if (selectedTab == 0) MaterialTheme.colorScheme.primary else Color.Transparent),
                         modifier = Modifier.weight(1f).clickable { selectedTab = 0 }
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 10.dp)) {
                             Text(
-                                text = "👤 Taucher-Profil",
+                                text = "ðŸ‘¤ Taucher-Profil",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (selectedTab == 0) OceanPrimary else MaterialTheme.colorScheme.onSurface
+                                color = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -1663,7 +1621,7 @@ fun EditFullProfileDialog(
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 10.dp)) {
                             Text(
-                                text = "🤿 Leitung & TL",
+                                text = "ðŸ¤¿ Leitung & TL",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = if (selectedTab == 1) SeaGreen else MaterialTheme.colorScheme.onSurface
@@ -1717,13 +1675,13 @@ fun EditFullProfileDialog(
                         shape = RoundedCornerShape(20.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        Text("⚡ Mit Test-Taucherdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = OceanPrimary)
+                        Text("âš¡ Mit Test-Taucherdaten befÃ¼llen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                     }
 
                     OutlinedTextField(
                         value = fullName,
                         onValueChange = { fullName = it },
-                        label = { Text("Vollständiger Name *") },
+                        label = { Text("VollstÃ¤ndiger Name *") },
                         modifier = Modifier.fillMaxWidth().testTag("edit_profile_name_field"),
                         singleLine = true
                     )
@@ -1774,7 +1732,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = totalLoggedDives,
                         onValueChange = { totalLoggedDives = it },
-                        label = { Text("Geloggte Tauchgänge") },
+                        label = { Text("Geloggte TauchgÃ¤nge") },
                         modifier = Modifier.fillMaxWidth().testTag("edit_profile_dives_field"),
                         singleLine = true
                     )
@@ -1782,7 +1740,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = ttuExpiryDate,
                         onValueChange = { ttuExpiryDate = it },
-                        label = { Text("TTU Gültig bis (JJJJ-MM-TT)") },
+                        label = { Text("TTU GÃ¼ltig bis (JJJJ-MM-TT)") },
                         placeholder = { Text("2027-06-30") },
                         modifier = Modifier.fillMaxWidth().testTag("edit_profile_ttu_expiry_field"),
                         singleLine = true
@@ -1831,7 +1789,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = suitSize,
                         onValueChange = { suitSize = it },
-                        label = { Text("Anzuggröße (z.B. M, L, XL)") },
+                        label = { Text("AnzuggrÃ¶ÃŸe (z.B. M, L, XL)") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -1839,7 +1797,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = shoeSize,
                         onValueChange = { shoeSize = it },
-                        label = { Text("Schuhgröße (z.B. 43)") },
+                        label = { Text("SchuhgrÃ¶ÃŸe (z.B. 43)") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -1847,7 +1805,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = bcdSize,
                         onValueChange = { bcdSize = it },
-                        label = { Text("Tarierweste / BCD Größe") },
+                        label = { Text("Tarierweste / BCD GrÃ¶ÃŸe") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -1875,7 +1833,7 @@ fun EditFullProfileDialog(
                         shape = RoundedCornerShape(20.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        Text("⚡ Mit Test-Tauchlehrerdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = SeaGreen)
+                        Text("âš¡ Mit Test-Tauchlehrerdaten befÃ¼llen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = SeaGreen)
                     }
 
                     OutlinedTextField(
@@ -1908,7 +1866,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = instructorValidUntil,
                         onValueChange = { instructorValidUntil = it },
-                        label = { Text("Lizenz gültig bis (JJJJ-MM-TT)") },
+                        label = { Text("Lizenz gÃ¼ltig bis (JJJJ-MM-TT)") },
                         placeholder = { Text("2027-12-31") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
@@ -1934,7 +1892,8 @@ fun EditFullProfileDialog(
             }
         },
         confirmButton = {
-            Button(
+            ScubaPrimaryButton(
+                text = "Speichern",
                 onClick = {
                     val updated = user.copy(
                         fullName = fullName.trim(),
@@ -1964,17 +1923,15 @@ fun EditFullProfileDialog(
                     onSave(updated)
                     onDismiss()
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier
-                    .height(50.dp)
-                    .testTag("save_edit_profile_btn")
-            ) {
-                Text("Speichern", fontWeight = FontWeight.Bold)
-            }
+                modifier = Modifier.width(130.dp),
+                testTag = "save_edit_profile_btn"
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.height(44.dp)
+            ) {
                 Text("Abbrechen")
             }
         }

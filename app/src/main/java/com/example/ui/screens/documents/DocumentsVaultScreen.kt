@@ -68,6 +68,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.DiverDocumentEntity
+import com.example.ui.components.ScubaCompactButton
+import com.example.ui.components.ScubaSecondaryButton
 import com.example.ui.components.DocumentExpirationAlertBanner
 import com.example.ui.components.DocumentExpirationBadge
 import com.example.ui.i18n.AppLanguage
@@ -294,7 +296,7 @@ fun DocumentsVaultScreen(
                     if (alertDocuments.isNotEmpty()) {
                         item {
                             FilterChip(
-                                title = "⚠️ ${strings.filterAlertsOnly} (${alertDocuments.size})",
+                                title = "âš ï¸ ${strings.filterAlertsOnly} (${alertDocuments.size})",
                                 isSelected = categoryFilter == "ALERTS",
                                 onClick = { viewModel.setDocumentCategoryFilter("ALERTS") }
                             )
@@ -302,35 +304,35 @@ fun DocumentsVaultScreen(
                     }
                     item {
                         FilterChip(
-                            title = "📜 ${strings.filterCerts}",
+                            title = "ðŸ“œ ${strings.filterCerts}",
                             isSelected = categoryFilter == "CERTIFICATION",
                             onClick = { viewModel.setDocumentCategoryFilter("CERTIFICATION") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "🩺 ${strings.filterMedical}",
+                            title = "ðŸ©º ${strings.filterMedical}",
                             isSelected = categoryFilter == "MEDICAL_FORM",
                             onClick = { viewModel.setDocumentCategoryFilter("MEDICAL_FORM") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "🛡️ ${strings.filterInsurance}",
+                            title = "ðŸ›¡ï¸ ${strings.filterInsurance}",
                             isSelected = categoryFilter == "INSURANCE",
                             onClick = { viewModel.setDocumentCategoryFilter("INSURANCE") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "📝 ${strings.filterWaivers}",
+                            title = "ðŸ“ ${strings.filterWaivers}",
                             isSelected = categoryFilter == "LIABILITY_WAIVER",
                             onClick = { viewModel.setDocumentCategoryFilter("LIABILITY_WAIVER") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "🤿 ${strings.filterEquipment}",
+                            title = "ðŸ¤¿ ${strings.filterEquipment}",
                             isSelected = categoryFilter == "EQUIPMENT_RECORD",
                             onClick = { viewModel.setDocumentCategoryFilter("EQUIPMENT_RECORD") }
                         )
@@ -358,7 +360,7 @@ fun DocumentsVaultScreen(
                                 .padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "📂", fontSize = 42.sp)
+                            Text(text = "ðŸ“‚", fontSize = 42.sp)
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = strings.noDocumentsFound,
@@ -477,38 +479,32 @@ fun DocumentsVaultScreen(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { 
                 Text(
-                    text = if (currentLanguage == AppLanguage.DE) "Dokument löschen" else "Delete Document",
+                    text = if (currentLanguage == AppLanguage.DE) "Dokument lÃ¶schen" else "Delete Document",
                     fontWeight = FontWeight.Bold
                 ) 
             },
             text = { 
                 Text(
-                    if (currentLanguage == AppLanguage.DE) "Möchtest du das Dokument '${doc.title}' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+                    if (currentLanguage == AppLanguage.DE) "MÃ¶chtest du das Dokument '${doc.title}' wirklich lÃ¶schen? Diese Aktion kann nicht rÃ¼ckgÃ¤ngig gemacht werden."
                     else "Do you really want to delete '${doc.title}'? This action cannot be undone."
                 ) 
             },
             confirmButton = {
-                Button(
+                ScubaSecondaryButton(
+                    text = if (currentLanguage == AppLanguage.DE) "LÃ¶schen" else "Delete",
                     onClick = {
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
                     },
-                    modifier = Modifier.height(50.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
-                ) {
-                    Text(if (currentLanguage == AppLanguage.DE) "Löschen" else "Delete", fontWeight = FontWeight.Bold)
-                }
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                    border = null
+                )
             },
             dismissButton = {
                 TextButton(
                     onClick = { documentToDelete = null },
-                    modifier = Modifier.height(50.dp),
-                    shape = RoundedCornerShape(14.dp)
+                    modifier = Modifier.height(44.dp)
                 ) {
                     Text(if (currentLanguage == AppLanguage.DE) "Abbrechen" else "Cancel")
                 }
@@ -663,7 +659,7 @@ fun DocumentVaultCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = if (isGerman) "Gültig bis: ${document.expiryDate}" else "Expiry: ${document.expiryDate}",
+                        text = if (isGerman) "GÃ¼ltig bis: ${document.expiryDate}" else "Expiry: ${document.expiryDate}",
                         style = MaterialTheme.typography.labelSmall,
                         color = if (isExpired) Color(0xFFE53E3E) else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = if (isExpired) FontWeight.Bold else FontWeight.Normal
@@ -683,7 +679,7 @@ fun DocumentVaultCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (isExpired) "⛔" else "⚠️",
+                                text = if (isExpired) "â›”" else "âš ï¸",
                                 fontSize = 12.sp
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -742,13 +738,13 @@ fun DocumentVaultCard(
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = if (isApproved) SeaGreen else SandGold,
-                                maxLines = 1
+                                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
                         }
 
                         if (!isApproved) {
                             Text(
-                                text = if (isGerman) "Jetzt prüfen" else "Review now",
+                                text = if (isGerman) "Jetzt prÃ¼fen" else "Review now",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
@@ -760,43 +756,33 @@ fun DocumentVaultCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Bottom Action Buttons
+                // Bottom Action Buttons - Canonical ScubaCompactButton (36dp, 10dp radius)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    OutlinedButton(
+                    ScubaCompactButton(
+                        text = if (isGerman) "Details" else "Details",
+                        icon = Icons.Rounded.Description,
                         onClick = onOpenDetails,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(36.dp)
-                            .testTag("doc_details_btn_${document.id}"),
-                        shape = RoundedCornerShape(10.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
-                    ) {
-                        Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(15.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(if (isGerman) "Details" else "Details", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    }
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.weight(1f),
+                        testTag = "doc_details_btn_${document.id}"
+                    )
 
                     if (!isApproved) {
-                        Button(
+                        ScubaCompactButton(
+                            text = if (isGerman) "Freigeben" else "Approve",
+                            icon = Icons.Rounded.Verified,
                             onClick = onOpenApproval,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(36.dp)
-                                .testTag("doc_approve_btn_${document.id}"),
-                            shape = RoundedCornerShape(10.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(15.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(if (isGerman) "Freigeben" else "Approve", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        }
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            borderColor = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.weight(1f),
+                            testTag = "doc_approve_btn_${document.id}"
+                        )
                     }
                 }
             }
@@ -834,7 +820,7 @@ private fun StatCounterCard(
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
+                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }

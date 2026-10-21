@@ -96,9 +96,9 @@ import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.AppLocalizer
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
-import com.example.ui.theme.AquaCyan
+// import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
-import com.example.ui.theme.OceanPrimary
+// import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.OceanSecondary
 import com.example.ui.theme.OceanTertiary
 import com.example.ui.theme.SandGold
@@ -218,7 +218,7 @@ fun HomeScreen(
                     cert.contains("OWD", ignoreCase = true) -> "OWD Taucher"
                     cert.isNotBlank() -> cert.take(12)
                     readiness >= 80 -> "AOWD Kandidat"
-                    else -> "OWD Schüler"
+                    else -> "OWD SchÃƒÂ¼ler"
                 }
             }
 
@@ -315,7 +315,7 @@ fun HomeScreen(
                             )
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(text = "🤿", fontSize = 24.sp)
+                                Text(text = "Ã°Å¸Â¤Â¿", fontSize = 24.sp)
                             }
                         }
 
@@ -350,7 +350,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(2.dp))
 
                             Text(
-                                text = "${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit} gelernt • $readiness% Prüfungsreife",
+                                text = "${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit} gelernt Ã¢â‚¬Â¢ $readiness% PrÃƒÂ¼fungsreife",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 12.sp
@@ -422,7 +422,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "NÄCHSTE LERNEINHEIT" else "NEXT STUDY UNIT",
+                                    text = if (currentLanguage == AppLanguage.DE) "NÃƒâ€žCHSTE LERNEINHEIT" else "NEXT STUDY UNIT",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
@@ -435,7 +435,7 @@ fun HomeScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface,
-                                    maxLines = 1
+                                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -443,7 +443,7 @@ fun HomeScreen(
 
                     // ONE Prominent Full-Width 52dp Primary Button
                     ScubaPrimaryButton(
-                        text = if (currentLanguage == AppLanguage.DE) "Lerneinheit starten ▶" else "Start Study Unit ▶",
+                        text = if (currentLanguage == AppLanguage.DE) "Lerneinheit starten Ã¢â€“Â¶" else "Start Study Unit Ã¢â€“Â¶",
                         onClick = {
                             val unit = nextStudyUnit
                             if (unit != null) {
@@ -564,7 +564,7 @@ fun HomeScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "Einträge" else "Entries",
+                                    text = if (currentLanguage == AppLanguage.DE) "EintrÃƒÂ¤ge" else "Entries",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -739,7 +739,7 @@ fun HomeScreen(
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                     color = tabTextColor,
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                    maxLines = 1
+                                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -798,7 +798,7 @@ fun HomeScreen(
                                             text = course.title,
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
-                                            maxLines = 1,
+                                            maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                             color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier.weight(1f, fill = false)
                                         )
@@ -807,7 +807,7 @@ fun HomeScreen(
                                             style = MaterialTheme.typography.labelSmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             fontSize = 10.sp,
-                                            maxLines = 1
+                                            maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                         )
                                     }
                                 }
@@ -822,7 +822,7 @@ fun HomeScreen(
                                         color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else SeaGreen.copy(alpha = 0.12f)
                                     ) {
                                         Text(
-                                            text = if (isSelected) (if (currentLanguage == AppLanguage.DE) "AUSGEWÄHLT" else "SELECTED") else (if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE"),
+                                            text = if (isSelected) (if (currentLanguage == AppLanguage.DE) "AUSGEWÃƒâ€žHLT" else "SELECTED") else (if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE"),
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.Black,
                                             color = if (isSelected) MaterialTheme.colorScheme.primary else SeaGreen,
@@ -830,7 +830,7 @@ fun HomeScreen(
                                         )
                                     }
                                     Text(
-                                        text = "${course.lessonsCount} ${if (currentLanguage == AppLanguage.DE) "Einheiten" else "lessons"} • ${course.duration}",
+                                        text = "${course.lessonsCount} ${if (currentLanguage == AppLanguage.DE) "Einheiten" else "lessons"} Ã¢â‚¬Â¢ ${course.duration}",
                                         fontSize = 10.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -903,7 +903,7 @@ fun HomeScreen(
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(text = selectedCourse?.iconEmoji ?: "🤿", fontSize = 22.sp)
+                                Text(text = selectedCourse?.iconEmoji ?: "Ã°Å¸Â¤Â¿", fontSize = 22.sp)
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -991,7 +991,7 @@ fun HomeScreen(
                                         }
                                     }
                                     Text(
-                                        text = if (isGerman) "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
+                                        text = if (isGerman) "Theorie und Sicherheitsverfahren fÃƒÂ¼r das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -1015,7 +1015,7 @@ fun HomeScreen(
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
+                                                text = if (isGerman) "Ã¢Å“â€œ BESTANDEN" else "Ã¢Å“â€œ PASSED",
                                                 fontSize = 9.sp,
                                                 fontWeight = FontWeight.Black,
                                                 color = SeaGreen
@@ -1026,7 +1026,7 @@ fun HomeScreen(
                             }
                             ModuleItemRow(
                                 title = if (isGerman) "Nitrox-Gasanalyse & Maximaltiefen-Berechnung (MOD)" else "Nitrox Gas Analysis & Max Depth (MOD) calculations",
-                                type = if (isGerman) "Präsentation (2 Folien)" else "Slide Deck (2 Slides)",
+                                type = if (isGerman) "PrÃƒÂ¤sentation (2 Folien)" else "Slide Deck (2 Slides)",
                                 icon = Icons.Rounded.Slideshow,
                                 isDone = nitroxPres?.isCompleted == true,
                                 onClick = {
@@ -1037,8 +1037,8 @@ fun HomeScreen(
                                 }
                             )
                             ModuleItemRow(
-                                title = if (isGerman) "Enriched Air Sicherheit & Sauerstofftoxizität" else "Enriched Air Safety & Oxygen Toxicity Exams",
-                                type = if (isGerman) "Übungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
+                                title = if (isGerman) "Enriched Air Sicherheit & SauerstofftoxizitÃƒÂ¤t" else "Enriched Air Safety & Oxygen Toxicity Exams",
+                                type = if (isGerman) "ÃƒÅ“bungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
                                 icon = Icons.Rounded.Quiz,
                                 isDone = nitroxQuiz?.isPassed == true,
                                 onClick = {
@@ -1117,7 +1117,7 @@ fun HomeScreen(
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
+                                                text = if (isGerman) "Ã¢Å“â€œ BESTANDEN" else "Ã¢Å“â€œ PASSED",
                                                 fontSize = 9.sp,
                                                 fontWeight = FontWeight.Black,
                                                 color = SeaGreen
@@ -1128,7 +1128,7 @@ fun HomeScreen(
                             }
                             ModuleItemRow(
                                 title = if (isGerman) "Dekompressionssicherheit & redundante Gassysteme" else "Decompression Safety & Redundant Gas Systems",
-                                type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
+                                type = if (isGerman) "PrÃƒÂ¤sentation (1 Folie)" else "Slide Deck (1 Slide)",
                                 icon = Icons.Rounded.Slideshow,
                                 isDone = deepPres?.isCompleted == true,
                                 onClick = {
@@ -1140,7 +1140,7 @@ fun HomeScreen(
                             )
                             ModuleItemRow(
                                 title = if (isGerman) "Tiefenrausch-Symptome & Sicherheitsprotokoll" else "Narcosis Symptoms & Safety Protocol Quiz",
-                                type = if (isGerman) "Übungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
+                                type = if (isGerman) "ÃƒÅ“bungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
                                 icon = Icons.Rounded.Quiz,
                                 isDone = deepQuiz?.isPassed == true,
                                 onClick = {
@@ -1165,7 +1165,7 @@ fun HomeScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                text = if (isGerman) "Spezialkurs: Wrackvermessung & Führungsleinen" else "Specialty Unit: Wreck Surveying & Line Laying",
+                                text = if (isGerman) "Spezialkurs: Wrackvermessung & FÃƒÂ¼hrungsleinen" else "Specialty Unit: Wreck Surveying & Line Laying",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -1177,7 +1177,7 @@ fun HomeScreen(
                             )
                             ModuleItemRow(
                                 title = if (isGerman) "Wrackgefahren, Navigation & Penetrationsleinen" else "Wreck Hazards, Navigation & Penetration Lines",
-                                type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
+                                type = if (isGerman) "PrÃƒÂ¤sentation (1 Folie)" else "Slide Deck (1 Slide)",
                                 icon = Icons.Rounded.Slideshow,
                                 isDone = wreckPres?.isCompleted == true,
                                 onClick = {
@@ -1215,7 +1215,7 @@ fun HomeScreen(
                             )
                             ModuleItemRow(
                                 title = if (isGerman) "Nachtaktive Meeresbewohner & Lampen-Management" else "Nocturnal Wildlife & Dive Torch Management",
-                                type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
+                                type = if (isGerman) "PrÃƒÂ¤sentation (1 Folie)" else "Slide Deck (1 Slide)",
                                 icon = Icons.Rounded.Slideshow,
                                 isDone = nightPres?.isCompleted == true,
                                 onClick = {
@@ -1543,7 +1543,7 @@ fun HomeScreen(
                                     text = strings.diverAcademyLabel,
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = AquaCyan,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.SemiBold
                                 )
                             }
@@ -1563,7 +1563,7 @@ fun HomeScreen(
                     )
                     Text(
                         text = if (currentLanguage == AppLanguage.DE) 
-                            "Nur vergangene Prüfungen. Um eine neue Prüfung abzulegen, gehe bitte in den Klassenzimmer-Bereich." 
+                            "Nur vergangene PrÃƒÂ¼fungen. Um eine neue PrÃƒÂ¼fung abzulegen, gehe bitte in den Klassenzimmer-Bereich." 
                         else 
                             "Past exams only. To take or retake an exam, please visit the Classroom section.",
                         style = MaterialTheme.typography.bodySmall,
@@ -1585,7 +1585,7 @@ fun HomeScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Text(
-                            text = if (currentLanguage == AppLanguage.DE) "Noch keine Prüfungsversuche. Absolviere deine erste Prüfung im Klassenzimmer!" else "No exam attempts yet. Take your first exam in the Classroom section!",
+                            text = if (currentLanguage == AppLanguage.DE) "Noch keine PrÃƒÂ¼fungsversuche. Absolviere deine erste PrÃƒÂ¼fung im Klassenzimmer!" else "No exam attempts yet. Take your first exam in the Classroom section!",
                             modifier = Modifier.padding(20.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1638,7 +1638,7 @@ fun HomeScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (quiz.isMockExam) "${strings.finalExamPrefix} • ${strings.passReqPrefix}: ${quiz.passScorePercentage}%" else "${strings.passReqPrefix}: ${quiz.passScorePercentage}%",
+                                    text = if (quiz.isMockExam) "${strings.finalExamPrefix} Ã¢â‚¬Â¢ ${strings.passReqPrefix}: ${quiz.passScorePercentage}%" else "${strings.passReqPrefix}: ${quiz.passScorePercentage}%",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -1715,7 +1715,7 @@ fun HomeScreen(
         if (activeSubTab == 2) {
             item {
                 Text(
-                    text = if (currentLanguage == AppLanguage.DE) "Verfügbare Spezialkurse" else "Available Specialty Courses",
+                    text = if (currentLanguage == AppLanguage.DE) "VerfÃƒÂ¼gbare Spezialkurse" else "Available Specialty Courses",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -1744,7 +1744,7 @@ fun HomeScreen(
                                 .padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "🎓🎉", fontSize = 48.sp)
+                            Text(text = "Ã°Å¸Å½â€œÃ°Å¸Å½â€°", fontSize = 48.sp)
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = if (currentLanguage == AppLanguage.DE) "Sie sind in alle Kurse eingeschrieben!" else "You are Enrolled in All Available Courses!",
@@ -1906,7 +1906,7 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "👌", fontSize = 24.sp)
+                            Text(text = "Ã°Å¸â€˜Å’", fontSize = 24.sp)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(
@@ -2030,13 +2030,13 @@ fun QuickActionTile(
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
         }
@@ -2080,7 +2080,7 @@ fun ModuleCard(
         border = BorderStroke(
             1.dp,
             if (isModulePassed) SeaGreen.copy(alpha = 0.65f)
-            else if (progressFraction > 0f) AquaCyan.copy(alpha = 0.45f)
+            else if (progressFraction > 0f) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
             else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -2179,7 +2179,7 @@ fun ModuleCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
+                                    text = if (isGerman) "Ã¢Å“â€œ BESTANDEN" else "Ã¢Å“â€œ PASSED",
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Black,
                                     color = SeaGreen
@@ -2189,8 +2189,8 @@ fun ModuleCard(
                     } else if (progressFraction > 0f) {
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = AquaCyan.copy(alpha = 0.15f),
-                            border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.6f))
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -2199,14 +2199,14 @@ fun ModuleCard(
                                 Box(
                                     modifier = Modifier
                                         .size(6.dp)
-                                        .background(AquaCyan, CircleShape)
+                                        .background(MaterialTheme.colorScheme.primary, CircleShape)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "${if (isGerman) "IN BEARBEITUNG" else "IN PROGRESS"} ${(progressFraction * 100).toInt()}%",
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Black,
-                                    color = AquaCyan
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -2298,7 +2298,7 @@ fun ModuleCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "✈️ " + strings.offlineReadyNotice,
+                        text = "Ã¢Å“Ë†Ã¯Â¸Â " + strings.offlineReadyNotice,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(10.dp),
                         color = SeaGreen
@@ -2324,7 +2324,7 @@ fun ModuleCard(
                                 if (progressFraction >= 1f) {
                                     Brush.horizontalGradient(listOf(SeaGreen, Color(0xFF34D399)))
                                 } else {
-                                    Brush.horizontalGradient(listOf(OceanPrimary, AquaCyan))
+                                    Brush.horizontalGradient(listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primary))
                                 }
                             )
                     )
@@ -2343,7 +2343,7 @@ fun ModuleCard(
                     )
                     if (progressFraction >= 1f) {
                         Text(
-                            text = "✨ " + strings.moduleMastered,
+                            text = "Ã¢Å“Â¨ " + strings.moduleMastered,
                             style = MaterialTheme.typography.labelSmall,
                             color = SeaGreen,
                             fontWeight = FontWeight.Bold,
@@ -2425,7 +2425,7 @@ fun ModuleItemRow(
                 color = if (isDone) SeaGreen.copy(alpha = 0.14f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                 border = BorderStroke(
                     1.dp,
-                    if (isDone) SeaGreen.copy(alpha = 0.4f) else AquaCyan.copy(alpha = 0.3f)
+                    if (isDone) SeaGreen.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                 )
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -2444,7 +2444,7 @@ fun ModuleItemRow(
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -2456,13 +2456,13 @@ fun ModuleItemRow(
                     // Tag distinguishing General Material vs Instructor Deployed Material
                     Surface(
                         shape = RoundedCornerShape(6.dp),
-                        color = if (isInstructorUploaded) AquaCyan.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHigh
+                        color = if (isInstructorUploaded) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceContainerHigh
                     ) {
                         Text(
                             text = if (isInstructorUploaded) strings.instructorDeployedTag else strings.generalMaterialTag,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (isInstructorUploaded) OceanPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = if (isInstructorUploaded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                         )
                     }
@@ -2492,7 +2492,7 @@ private fun SpecPill(label: String) {
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            maxLines = 1
+            maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
         )
     }
 }

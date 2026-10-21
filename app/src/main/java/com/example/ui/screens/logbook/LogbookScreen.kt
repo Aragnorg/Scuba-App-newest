@@ -90,9 +90,9 @@ import com.example.ui.components.SignaturePreview
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
-import com.example.ui.theme.AquaCyan
+// import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.DepthNavy
-import com.example.ui.theme.OceanPrimary
+// import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
 import com.example.ui.viewmodel.AquaViewModel
@@ -102,9 +102,9 @@ import com.example.ui.viewmodel.AquaViewModel
  */
 enum class DiveSortOption(val labelEn: String, val labelDe: String) {
     DATE_DESC("Newest First", "Neueste zuerst"),
-    DATE_ASC("Oldest First", "Älteste zuerst"),
+    DATE_ASC("Oldest First", "Ãƒâ€žlteste zuerst"),
     DEPTH_DESC("Deepest First", "Tiefste zuerst"),
-    DURATION_DESC("Longest First", "Längste zuerst")
+    DURATION_DESC("Longest First", "LÃƒÂ¤ngste zuerst")
 }
 
 /**
@@ -306,7 +306,7 @@ fun LogbookScreen(
                                     Icon(
                                         imageVector = Icons.Rounded.Search,
                                         contentDescription = "Search",
-                                        tint = AquaCyan,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 },
@@ -327,7 +327,7 @@ fun LogbookScreen(
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                                    focusedBorderColor = AquaCyan,
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
                                     unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
                                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
                                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -379,7 +379,7 @@ fun LogbookScreen(
                             ) {
                                 Text(
                                     text = if (isGerman) {
-                                        "${filteredAndSortedDives.size} von ${dives.size} Tauchgängen"
+                                        "${filteredAndSortedDives.size} von ${dives.size} TauchgÃƒÂ¤ngen"
                                     } else {
                                         "Showing ${filteredAndSortedDives.size} of ${dives.size} dives"
                                     },
@@ -388,12 +388,12 @@ fun LogbookScreen(
                                 )
                                 Surface(
                                     shape = RoundedCornerShape(6.dp),
-                                    color = AquaCyan.copy(alpha = 0.12f)
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                 ) {
                                     Text(
                                         text = if (isGerman) selectedSortOption.labelDe else selectedSortOption.labelEn,
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = AquaCyan,
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -440,7 +440,7 @@ fun LogbookScreen(
                                 Spacer(modifier = Modifier.height(14.dp))
                                 Text(
                                     text = if (searchQuery.isNotBlank()) {
-                                        if (isGerman) "Keine Tauchgänge gefunden" else "No matching dives found"
+                                        if (isGerman) "Keine TauchgÃƒÂ¤nge gefunden" else "No matching dives found"
                                     } else strings.noDivesFound,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
@@ -449,7 +449,7 @@ fun LogbookScreen(
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = if (searchQuery.isNotBlank()) {
-                                        if (isGerman) "Keine Treffer für \"$searchQuery\". Bitte Suchbegriff anpassen."
+                                        if (isGerman) "Keine Treffer fÃƒÂ¼r \"$searchQuery\". Bitte Suchbegriff anpassen."
                                         else "No dives match \"$searchQuery\". Try adjusting your search query or filter."
                                     } else strings.noDivesFoundDesc,
                                     style = MaterialTheme.typography.bodySmall,
@@ -612,8 +612,8 @@ private fun LogbookHeaderHero(
             1.5.dp,
             Brush.horizontalGradient(
                 listOf(
-                    AquaCyan.copy(alpha = 0.7f),
-                    OceanPrimary.copy(alpha = 0.6f),
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                     SeaGreen.copy(alpha = 0.5f)
                 )
             )
@@ -645,7 +645,7 @@ private fun LogbookHeaderHero(
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp,
-                            color = AquaCyan
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Spacer(modifier = Modifier.height(2.dp))
@@ -713,7 +713,7 @@ private fun LogbookHeaderHero(
                         value = maxDepthStr,
                         subLabel = "DEEPEST RECORD",
                         icon = Icons.Rounded.Speed,
-                        accentColor = AquaCyan
+                        accentColor = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -758,7 +758,7 @@ private fun LogbookHeaderHero(
                         Icon(
                             Icons.Rounded.Security,
                             contentDescription = null,
-                            tint = AquaCyan,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -852,10 +852,10 @@ private fun LogbookAnalyticsBreakdownCard(
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Black,
                             letterSpacing = 0.8.sp,
-                            color = AquaCyan
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = if (isGerman) "Durchschnitte & Top-Tauchplätze" else "Fleet Averages & Dive Records",
+                            text = if (isGerman) "Durchschnitte & Top-TauchplÃƒÂ¤tze" else "Fleet Averages & Dive Records",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -886,15 +886,15 @@ private fun LogbookAnalyticsBreakdownCard(
                     ) {
                         AnalyticsMetricTile(
                             modifier = Modifier.weight(1f),
-                            title = if (isGerman) "Ø Tauchtiefe" else "Avg Depth",
+                            title = if (isGerman) "ÃƒËœ Tauchtiefe" else "Avg Depth",
                             value = avgDepthStr,
                             subLabel = if (isGerman) "Durchschnitt aller Logs" else "All dives mean",
                             icon = Icons.Rounded.Speed,
-                            accentColor = AquaCyan
+                            accentColor = MaterialTheme.colorScheme.primary
                         )
                         AnalyticsMetricTile(
                             modifier = Modifier.weight(1f),
-                            title = if (isGerman) "Ø Grundzeit" else "Avg Bottom Time",
+                            title = if (isGerman) "ÃƒËœ Grundzeit" else "Avg Bottom Time",
                             value = "$avgDuration min",
                             subLabel = if (isGerman) "Pro Tauchgang" else "Per dive average",
                             icon = Icons.Rounded.Timer,
@@ -910,7 +910,7 @@ private fun LogbookAnalyticsBreakdownCard(
                             modifier = Modifier.weight(1f),
                             title = if (isGerman) "Gesamte Tauchzeit" else "Total Dive Time",
                             value = "${totalHours}h ${totalMinutes}m",
-                            subLabel = if (isGerman) "$totalDives Tauchgänge geloggt" else "$totalDives dives logged",
+                            subLabel = if (isGerman) "$totalDives TauchgÃƒÂ¤nge geloggt" else "$totalDives dives logged",
                             icon = Icons.Rounded.Water,
                             accentColor = MaterialTheme.colorScheme.primary
                         )
@@ -918,7 +918,7 @@ private fun LogbookAnalyticsBreakdownCard(
                             modifier = Modifier.weight(1f),
                             title = if (isGerman) "Top Tauchplatz" else "Favorite Site",
                             value = favoriteSiteName,
-                            subLabel = if (isGerman) "$favoriteSiteCount Tauchgänge" else "$favoriteSiteCount dives logged",
+                            subLabel = if (isGerman) "$favoriteSiteCount TauchgÃƒÂ¤nge" else "$favoriteSiteCount dives logged",
                             icon = Icons.Rounded.Place,
                             accentColor = SandGold
                         )
@@ -934,18 +934,18 @@ private fun LogbookAnalyticsBreakdownCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Ø $avgDepthStr • Ø $avgDuration min • $favoriteSiteName ($favoriteSiteCount)",
+                        text = "ÃƒËœ $avgDepthStr Ã¢â‚¬Â¢ ÃƒËœ $avgDuration min Ã¢â‚¬Â¢ $favoriteSiteName ($favoriteSiteCount)",
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
-                        maxLines = 1
+                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                     Text(
-                        text = if (isGerman) "Tippen zum Öffnen" else "Tap to expand",
+                        text = if (isGerman) "Tippen zum Ãƒâ€“ffnen" else "Tap to expand",
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
-                        color = AquaCyan
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -982,7 +982,7 @@ private fun AnalyticsMetricTile(
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 Icon(
                     imageVector = icon,
@@ -996,7 +996,7 @@ private fun AnalyticsMetricTile(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Black,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1
+                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
             Text(
                 text = subLabel,
@@ -1004,7 +1004,7 @@ private fun AnalyticsMetricTile(
                 fontSize = 8.sp,
                 fontWeight = FontWeight.Bold,
                 color = accentColor,
-                maxLines = 1
+                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }
@@ -1058,7 +1058,7 @@ private fun HeroStatItem(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1
+                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1070,7 +1070,7 @@ private fun HeroStatItem(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 10.sp,
-                    maxLines = 1
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 Text(
                     text = subLabel,
@@ -1078,7 +1078,7 @@ private fun HeroStatItem(
                     color = accentColor,
                     fontSize = 8.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
         }
@@ -1172,9 +1172,9 @@ fun DiveLogCard(
         "${dive.avgDepthMeters}m"
     }
     val waterTempStr = if (isImperial) {
-        "${kotlin.math.round(dive.waterTempCelsius * 1.8f + 32f).toInt()}°F"
+        "${kotlin.math.round(dive.waterTempCelsius * 1.8f + 32f).toInt()}Ã‚Â°F"
     } else {
-        "${dive.waterTempCelsius}°C"
+        "${dive.waterTempCelsius}Ã‚Â°C"
     }
     val pressureUsedStr = if (isImperial) {
         "${kotlin.math.round((dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0) * 14.5038f).toInt()} PSI"
@@ -1231,7 +1231,7 @@ fun DiveLogCard(
                         )
                     }
                     Text(
-                        text = "${dive.date} • ${dive.timeIn}",
+                        text = "${dive.date} Ã¢â‚¬Â¢ ${dive.timeIn}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1242,7 +1242,7 @@ fun DiveLogCard(
                     color = MaterialTheme.colorScheme.surfaceContainerHigh
                 ) {
                     Text(
-                        text = "${dive.entryType} • ${dive.bodyOfWater}",
+                        text = "${dive.entryType} Ã¢â‚¬Â¢ ${dive.bodyOfWater}",
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1264,7 +1264,7 @@ fun DiveLogCard(
                     Icon(
                         imageVector = Icons.Rounded.Place,
                         contentDescription = null,
-                        tint = OceanPrimary,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -1272,7 +1272,7 @@ fun DiveLogCard(
                         text = dive.location,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
+                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                 }
             }
@@ -1294,7 +1294,7 @@ fun DiveLogCard(
                             Icon(
                                 Icons.Rounded.Speed,
                                 contentDescription = null,
-                                tint = AquaCyan,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(14.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
@@ -1303,12 +1303,12 @@ fun DiveLogCard(
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Black,
-                                color = AquaCyan,
+                                color = MaterialTheme.colorScheme.primary,
                                 letterSpacing = 0.5.sp
                             )
                         }
                         Text(
-                            text = "MAX: $maxDepthStr • AVG: $avgDepthStr",
+                            text = "MAX: $maxDepthStr Ã¢â‚¬Â¢ AVG: $avgDepthStr",
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
@@ -1331,8 +1331,8 @@ fun DiveLogCard(
                                 .background(
                                     Brush.horizontalGradient(
                                         listOf(
-                                            AquaCyan,
-                                            OceanPrimary,
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.colorScheme.primary,
                                             DepthNavy
                                         )
                                     )
@@ -1375,8 +1375,8 @@ fun DiveLogCard(
                 } else {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = OceanPrimary.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.4f))
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -1385,15 +1385,15 @@ fun DiveLogCard(
                             Icon(
                                 Icons.Rounded.Air,
                                 contentDescription = null,
-                                tint = OceanPrimary,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(12.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "AIR (21% O₂)",
+                                text = "AIR (21% OÃ¢â€šâ€š)",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 10.sp,
-                                color = OceanPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -1433,7 +1433,7 @@ fun DiveLogCard(
                     MiniPill(
                         icon = Icons.Rounded.Air,
                         label = "SAC: $sacRateStr",
-                        accentColor = AquaCyan
+                        accentColor = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -1482,7 +1482,7 @@ fun DiveLogCard(
                                         letterSpacing = 0.5.sp
                                     )
                                     Text(
-                                        text = "${dive.instructorName.ifBlank { "Adrian Scheid" }} • ${dive.instructorLicense.ifBlank { "CMAS / VDST TL2" }}",
+                                        text = "${dive.instructorName.ifBlank { "Adrian Scheid" }} Ã¢â‚¬Â¢ ${dive.instructorLicense.ifBlank { "CMAS / VDST TL2" }}",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,
@@ -1511,8 +1511,8 @@ fun DiveLogCard(
                 "APPROVED_BY_BUDDY_SIGNATURE" -> {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = AquaCyan.copy(alpha = 0.12f),
-                        border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.6f)),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                        border = BorderStroke(1.2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
@@ -1521,15 +1521,15 @@ fun DiveLogCard(
                         ) {
                             Surface(
                                 shape = CircleShape,
-                                color = AquaCyan.copy(alpha = 0.2f),
-                                border = BorderStroke(1.dp, AquaCyan),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                                 modifier = Modifier.size(34.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
                                         Icons.Rounded.Draw,
                                         contentDescription = null,
-                                        tint = AquaCyan,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -1540,7 +1540,7 @@ fun DiveLogCard(
                                     text = "OFFICIAL BUDDY SIGNATURE SEAL",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Black,
-                                    color = AquaCyan,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 10.sp
                                 )
                                 Text(
@@ -1669,7 +1669,7 @@ fun DiveLogCard(
                     icon = Icons.Rounded.Info,
                     onClick = { onClick() },
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = AquaCyan,
+                    contentColor = MaterialTheme.colorScheme.primary,
                     borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                     modifier = Modifier.weight(1f),
                     testTag = "card_details_dive_${dive.diveNumber}"
@@ -1693,7 +1693,7 @@ fun DiveLogCard(
 private fun MiniPill(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
-    accentColor: Color = AquaCyan
+    accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Surface(
         shape = RoundedCornerShape(8.dp),
