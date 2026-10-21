@@ -1143,6 +1143,8 @@ private fun InteractiveDiveSiteCanvasMap(
     spot: DiveSpot,
     modifier: Modifier = Modifier
 ) {
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     BoxWithConstraints(
         modifier = modifier
             .background(
@@ -1170,14 +1172,14 @@ private fun InteractiveDiveSiteCanvasMap(
                 cubicTo(w * 0.25f, h * 0.75f, w * 0.75f, h * 0.95f, w, h * 0.88f)
             }
 
-            drawPath(contour1, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), style = Stroke(width = 2f))
-            drawPath(contour2, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f), style = Stroke(width = 2f))
+            drawPath(contour1, color = primaryColor.copy(alpha = 0.35f), style = Stroke(width = 2f))
+            drawPath(contour2, color = primaryColor.copy(alpha = 0.45f), style = Stroke(width = 2f))
             drawPath(contour3, color = Color(0xFF0A2540).copy(alpha = 0.6f), style = Stroke(width = 2f))
 
             // 2. Draw Compass Rose in top right
             val cx = w - 40f
             val cy = 40f
-            drawCircle(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), radius = 22f, center = Offset(cx, cy))
+            drawCircle(color = primaryColor.copy(alpha = 0.2f), radius = 22f, center = Offset(cx, cy))
             drawLine(color = Color.White.copy(alpha = 0.8f), start = Offset(cx, cy + 18f), end = Offset(cx, cy - 18f), strokeWidth = 2f)
             drawLine(color = Color.White.copy(alpha = 0.4f), start = Offset(cx - 18f, cy), end = Offset(cx + 18f, cy), strokeWidth = 2f)
 
@@ -1205,7 +1207,7 @@ private fun InteractiveDiveSiteCanvasMap(
 
                 val pinColor = when (annotation.type) {
                     "ENTRY", "EXIT" -> SeaGreen
-                    "MOORING" -> MaterialTheme.colorScheme.primary
+                    "MOORING" -> primaryColor
                     "WRECK" -> SandGold
                     "SAFETY_STOP" -> OceanTertiary
                     "HAZARD" -> Color(0xFFE53E3E)
