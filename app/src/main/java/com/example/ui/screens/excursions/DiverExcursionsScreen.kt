@@ -62,6 +62,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -75,6 +76,10 @@ import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.screens.diveops.DiveEventDossierDialog
 import com.example.ui.screens.diveops.DiverEventRegistrationDialog
+import com.example.ui.theme.AquaCyan
+import com.example.ui.theme.CoralAlert
+import com.example.ui.theme.OceanPrimary
+import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
 import com.example.ui.viewmodel.AquaViewModel
 
@@ -535,21 +540,24 @@ private fun UpcomingEventsTab(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 items(filteredEvents, key = { it.id }) { event ->
                     val org = orgMap[event.orgId]
                     val isRegistered = activeRegisteredEventIds.contains(event.id)
                     val freeSlots = (event.maxCapacity - event.registeredCount).coerceAtLeast(0)
+                    val isFull = freeSlots <= 0
+                    val capacityFraction = (event.registeredCount.toFloat() / event.maxCapacity.toFloat()).coerceIn(0f, 1f)
+                    val countdownLabel = formatDepartureCountdown(event.eventDate, event.departureTime, isGerman)
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(22.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                         border = BorderStroke(
-                            1.dp,
-                            if (isRegistered) SeaGreen.copy(alpha = 0.6f)
+                            1.5.dp,
+                            if (isRegistered) SeaGreen.copy(alpha = 0.7f)
                             else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
                         )
                     ) {
@@ -608,10 +616,12 @@ private fun UpcomingEventsTab(
                                     }
                                 }
 
+                                // Clear Registration Status Badges
                                 if (isRegistered) {
                                     Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = SeaGreen.copy(alpha = 0.15f)
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = SeaGreen.copy(alpha = 0.16f),
+                                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f))
                                     ) {
                                         Row(
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -625,28 +635,31 @@ private fun UpcomingEventsTab(
                                                 modifier = Modifier.size(14.dp)
                                             )
                                             Text(
-                                                text = if (isGerman) "Angemeldet" else "Booked",
+                                                text = if (isGerman) "✓ Angemeldet" else "✓ Booked",
                                                 style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = FontWeight.Bold,
+                                                fontWeight = FontWeight.Black,
                                                 color = SeaGreen
                                             )
                                         }
                                     }
                                 } else {
-                                    val isFull = freeSlots <= 0
                                     Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = if (isFull) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = if (isFull) CoralAlert.copy(alpha = 0.14f) else AquaCyan.copy(alpha = 0.12f),
+                                        border = BorderStroke(
+                                            1.dp,
+                                            if (isFull) CoralAlert.copy(alpha = 0.45f) else AquaCyan.copy(alpha = 0.4f)
+                                        )
                                     ) {
                                         Text(
                                             text = if (isFull)
                                                 (if (isGerman) "Ausgebucht" else "Fully booked")
                                             else
-                                                (if (isGerman) "$freeSlots Plätze frei" else "$freeSlots spots left"),
+                                                (if (isGerman) "🟢 $freeSlots frei" else "🟢 $freeSlots left"),
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (isFull) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer
+                                            color = if (isFull) CoralAlert else AquaCyan
                                         )
                                     }
                                 }
@@ -677,25 +690,102 @@ private fun UpcomingEventsTab(
                                 }
                             }
 
-                            // Date & Parameter Badges
+                            // Departure Countdown Pill & Logistics Row
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                // Modern Departure Countdown Pill
                                 Surface(
-                                    shape = RoundedCornerShape(8.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = SandGold.copy(alpha = 0.14f),
+                                    border = BorderStroke(1.dp, SandGold.copy(alpha = 0.45f))
+                                ) {
+                                    Text(
+                                        text = countdownLabel,
+                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = SandGold
+                                    )
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
                                     color = MaterialTheme.colorScheme.surfaceContainerHigh
                                 ) {
                                     Text(
-                                        text = "📅 ${event.eventDate} • ⏰ ${event.meetingTime}",
+                                        text = "⏰ ${if (isGerman) "Treffen:" else "Meet:"} ${event.meetingTime} ➔ ${event.departureTime}",
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
+                            }
 
+                            // Boat Trip Details Banner (when event is boat trip or has vessel info)
+                            if (event.isBoatTrip || event.eventType == "BOAT_TRIP") {
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f),
+                                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.25f))
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(10.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(
+                                                    Icons.Rounded.DirectionsBoat,
+                                                    contentDescription = null,
+                                                    tint = OceanPrimary,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = if (isGerman) "Boot: RIB Zodiac / Ausfahrts-Kutter" else "Vessel: RIB Zodiac / Dive Boat",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+
+                                            if (event.leadGuideName.isNotBlank()) {
+                                                Text(
+                                                    text = "Skipper: ${event.leadGuideName}",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    fontSize = 10.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+
+                                        if (event.entryExitInfo.isNotBlank()) {
+                                            Text(
+                                                text = "⚓ ${if (isGerman) "Einstieg:" else "Entry:"} ${event.entryExitInfo}",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                fontSize = 10.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Dive Parameters & Capacity Gauge
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
                                     color = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -720,6 +810,44 @@ private fun UpcomingEventsTab(
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
+                                }
+
+                                // Visual Capacity Fraction Pill
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "${event.registeredCount}/${event.maxCapacity} 🤿",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        // Mini capacity bar
+                                        Surface(
+                                            modifier = Modifier
+                                                .width(44.dp)
+                                                .height(5.dp),
+                                            shape = RoundedCornerShape(2.5.dp),
+                                            color = MaterialTheme.colorScheme.surfaceVariant
+                                        ) {
+                                            Box(modifier = Modifier.fillMaxSize()) {
+                                                Surface(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(capacityFraction)
+                                                        .height(5.dp),
+                                                    shape = RoundedCornerShape(2.5.dp),
+                                                    color = if (isFull) CoralAlert else OceanPrimary
+                                                ) {}
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -1198,12 +1326,31 @@ private fun MyRegistrationsTab(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = "📅 ${event.eventDate} • ⏰ ${if (isGerman) "Treffen:" else "Meeting:"} ${event.meetingTime} | ${if (isGerman) "Start:" else "Departure:"} ${event.departureTime}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                // Departure Countdown Pill
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = SandGold.copy(alpha = 0.14f),
+                                        border = BorderStroke(1.dp, SandGold.copy(alpha = 0.45f))
+                                    ) {
+                                        Text(
+                                            text = formatDepartureCountdown(event.eventDate, event.departureTime, isGerman),
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SandGold
+                                        )
+                                    }
+                                    Text(
+                                        text = "⏰ ${event.meetingTime} ➔ ${event.departureTime}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
 
@@ -1292,5 +1439,46 @@ private fun MyRegistrationsTab(
                 }
             }
         }
+    }
+}
+
+/**
+ * Calculates a friendly departure countdown string for dive excursions.
+ */
+private fun formatDepartureCountdown(eventDate: String, departureTime: String, isGerman: Boolean): String {
+    return try {
+        val parts = eventDate.split("-")
+        if (parts.size == 3) {
+            val year = parts[0].toInt()
+            val month = parts[1].toInt()
+            val day = parts[2].toInt()
+
+            val cal = java.util.Calendar.getInstance()
+            val todayYear = cal.get(java.util.Calendar.YEAR)
+            val todayMonth = cal.get(java.util.Calendar.MONTH) + 1
+            val todayDay = cal.get(java.util.Calendar.DAY_OF_MONTH)
+
+            val eventCal = java.util.Calendar.getInstance().apply {
+                set(year, month - 1, day, 0, 0, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            val todayCal = java.util.Calendar.getInstance().apply {
+                set(todayYear, todayMonth - 1, todayDay, 0, 0, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+
+            val diffDays = ((eventCal.timeInMillis - todayCal.timeInMillis) / (1000 * 60 * 60 * 24)).toInt()
+            when {
+                diffDays < 0 -> if (isGerman) "⏱️ Vorbei ($eventDate)" else "⏱️ Past ($eventDate)"
+                diffDays == 0 -> if (isGerman) "⏰ Heute • $departureTime" else "⏰ Today • $departureTime"
+                diffDays == 1 -> if (isGerman) "⏰ Morgen • $departureTime" else "⏰ Tomorrow • $departureTime"
+                diffDays in 2..7 -> if (isGerman) "⏱️ In $diffDays Tagen ($departureTime)" else "⏱️ In $diffDays days ($departureTime)"
+                else -> if (isGerman) "📅 $eventDate • $departureTime" else "📅 $eventDate • $departureTime"
+            }
+        } else {
+            "⏰ $eventDate • $departureTime"
+        }
+    } catch (_: Exception) {
+        "⏰ $eventDate • $departureTime"
     }
 }

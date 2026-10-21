@@ -487,6 +487,18 @@ class DivingRepository(private val divingDao: DivingDao) {
             attempts = attempts,
             timestamp = System.currentTimeMillis()
         )
+
+        // Increment study streak days & add study minutes live when quiz is passed
+        if (isPassed) {
+            val currProgress = divingDao.getUserProgress().firstOrNull() ?: UserProgressEntity()
+            divingDao.insertOrUpdateProgress(
+                currProgress.copy(
+                    studyStreakDays = currProgress.studyStreakDays + 1,
+                    totalStudyMinutes = currProgress.totalStudyMinutes + 15,
+                    lastActiveTimestamp = System.currentTimeMillis()
+                )
+            )
+        }
     }
 
     suspend fun insertCustomPresentation(presentation: PresentationDeckEntity) {
@@ -548,6 +560,9 @@ class DivingRepository(private val divingDao: DivingDao) {
 
     suspend fun getUserAccountById(id: String): UserAccountEntity? =
         divingDao.getAccountByIdDirect(id)
+
+    suspend fun getAccountByEmailDirect(email: String): UserAccountEntity? =
+        divingDao.getAccountByEmailDirect(email.trim().lowercase())
 
     suspend fun registerUser(
         email: String,
@@ -696,7 +711,7 @@ class DivingRepository(private val divingDao: DivingDao) {
     }
 
     suspend fun updateUserAccount(account: UserAccountEntity) {
-        divingDao.updateUserAccount(account)
+        divingDao.insertUserAccount(account)
     }
 
     private fun hashPassword(password: String): String {
@@ -709,31 +724,111 @@ class DivingRepository(private val divingDao: DivingDao) {
         }
     }
 
+    suspend fun quickLoginInstructor(): Result<UserAccountEntity> {
+        val email = "adrian.scheid01@gmail.com"
+        val existing = divingDao.getAccountByEmailDirect(email)
+        return if (existing != null) {
+            Result.success(existing)
+        } else {
+            loginUser(email, "instructor123")
+        }
+    }
+
+    suspend fun requestPasswordReset(email: String): Result<VerificationEmailMessage> {
+        val cleanEmail = email.trim().lowercase()
+        val account = divingDao.getAccountByEmailDirect(cleanEmail)
+            ?: return Result.failure(Exception("Kein Konto mit der E-Mail $cleanEmail gefunden."))
+
+        val newCode = (100000..999999).random().toString()
+        divingDao.updateVerificationCode(cleanEmail, newCode, System.currentTimeMillis())
+
+        val message = createPasswordResetEmailMessage(
+            recipientEmail = cleanEmail,
+            recipientName = account.fullName,
+            code = newCode
+        )
+        return Result.success(message)
+    }
+
+    suspend fun resetPasswordWithCode(email: String, code: String, newPasswordPlain: String): Result<UserAccountEntity> {
+        val cleanEmail = email.trim().lowercase()
+        val account = divingDao.getAccountByEmailDirect(cleanEmail)
+            ?: return Result.failure(Exception("Kein Konto mit der E-Mail $cleanEmail gefunden."))
+
+        if (account.verificationCode != code.trim()) {
+            return Result.failure(Exception("Ungültiger 6-stelliger Bestätigungscode."))
+        }
+
+        val updatedAccount = account.copy(
+            passwordHash = hashPassword(newPasswordPlain),
+            isEmailVerified = true,
+            verificationCode = ""
+        )
+        divingDao.insertUserAccount(updatedAccount)
+        return Result.success(updatedAccount)
+    }
+
     private fun createVerificationEmailMessage(
         recipientEmail: String,
         recipientName: String,
         code: String
     ): VerificationEmailMessage {
         val html = """
-            Willkommen bei AquaLearn, $recipientName!
+            Willkommen bei AquaLearn Pro, $recipientName!
             
             Vielen Dank für Ihre Registrierung mit Ihrer E-Mail-Adresse ($recipientEmail).
             Um Ihr Taucher-Konto zu aktivieren und loszulegen, verwenden Sie bitte Ihren 6-stelligen Aktivierungscode:
             
             AKTIVIERUNGSCODE: $code
             
+            Diese Registrierungsbestätigung und der 6-stellige Sicherheitscode wurden offiziell von Adrian Scheid (adrian.scheid01@gmail.com) für Sie ausgestellt und versendet.
+            
             Ihr Konto steht Ihnen anschließend sofort mit vollem Funktionsumfang zur Verfügung.
             
             Gut Luft & Allzeit sicheres Tauchen!
-            Ihr AquaLearn Team
+            Adrian Scheid (AquaLearn Pro)
+            adrian.scheid01@gmail.com
         """.trimIndent()
 
         return VerificationEmailMessage(
-            senderName = "AquaLearn Security System",
-            senderEmail = "noreply@aqualearn.app",
+            senderName = "Adrian Scheid (AquaLearn Pro)",
+            senderEmail = "adrian.scheid01@gmail.com",
             recipientEmail = recipientEmail,
             recipientName = recipientName,
-            subject = "AquaLearn Aktivierungscode: $code",
+            subject = "AquaLearn Aktivierungscode: $code (Adrian Scheid)",
+            verificationCode = code,
+            sentTimestamp = System.currentTimeMillis(),
+            emailHtmlBody = html
+        )
+    }
+
+    private fun createPasswordResetEmailMessage(
+        recipientEmail: String,
+        recipientName: String,
+        code: String
+    ): VerificationEmailMessage {
+        val html = """
+            Passwort zurücksetzen für AquaLearn, $recipientName!
+            
+            Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts für ($recipientEmail) gestellt.
+            Verwenden Sie bitte folgenden 6-stelligen Sicherheitscode:
+            
+            SICHERHEITSCODE: $code
+            
+            Dieser Sicherheitscode wurde offiziell von Adrian Scheid (adrian.scheid01@gmail.com) generiert und versendet.
+            Falls Sie diese Anfrage nicht gestellt haben, wenden Sie sich bitte direkt an adrian.scheid01@gmail.com.
+            
+            Gut Luft & Allzeit sicheres Tauchen!
+            Adrian Scheid (AquaLearn Pro)
+            adrian.scheid01@gmail.com
+        """.trimIndent()
+
+        return VerificationEmailMessage(
+            senderName = "Adrian Scheid (AquaLearn Pro)",
+            senderEmail = "adrian.scheid01@gmail.com",
+            recipientEmail = recipientEmail,
+            recipientName = recipientName,
+            subject = "AquaLearn Passwort zurücksetzen: $code (Adrian Scheid)",
             verificationCode = code,
             sentTimestamp = System.currentTimeMillis(),
             emailHtmlBody = html

@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.DriveFileRenameOutline
 import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.Movie
@@ -44,6 +45,8 @@ import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Signpost
 import androidx.compose.material.icons.rounded.Slideshow
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -84,13 +87,14 @@ import com.example.data.model.PresentationDeckEntity
 import com.example.data.model.QuizEntity
 import com.example.ui.components.DocumentExpirationAlertBanner
 import com.example.ui.components.ExamReadinessGauge
-import com.example.ui.components.TacticalMetricChip
+import com.example.ui.components.ScubaCompactButton
+import com.example.ui.components.ScubaPrimaryButton
+import com.example.ui.components.ScubaSecondaryButton
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.AppLocalizer
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
-import com.example.ui.theme.CoralAlert
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.OceanSecondary
@@ -136,10 +140,32 @@ fun HomeScreen(
     var enrollmentSuccessMessage by remember { mutableStateOf<String?>(null) }
     val enrolledCourses = remember(courses) { courses.filter { it.isEnrolled } }
 
+    val nextStudyUnit = remember(modules, presentations, videos, quizzes) {
+        for (module in modules) {
+            val modPres = presentations.filter { it.moduleId == module.id }
+            val uncompletedPres = modPres.find { !it.isCompleted }
+            if (uncompletedPres != null) {
+                return@remember Triple("pres", uncompletedPres.title, uncompletedPres)
+            }
+            val modVids = videos.filter { it.moduleId == module.id }
+            val uncompletedVid = modVids.find { !it.isCompleted }
+            if (uncompletedVid != null) {
+                return@remember Triple("vid", uncompletedVid.title, uncompletedVid)
+            }
+            val modQuizzes = quizzes.filter { it.moduleId == module.id }
+            val unpassedQuiz = modQuizzes.find { !it.isPassed }
+            if (unpassedQuiz != null) {
+                return@remember Triple("quiz", unpassedQuiz.title, unpassedQuiz)
+            }
+        }
+        val firstPres = presentations.firstOrNull()
+        if (firstPres != null) Triple("pres", firstPres.title, firstPres) else null
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         // Expiration Alert Banner for near expiration / expired documents
         if (alertDocuments.isNotEmpty()) {
@@ -179,180 +205,336 @@ fun HomeScreen(
             }
         }
 
-        // Unified Environment Header
+        // Active Lesson / Next Dive Mission Hero Cockpit Card
         item {
+            val diverRank = remember(currentUser, readiness) {
+                val cert = currentUser?.certLevel ?: ""
+                when {
+                    cert.contains("AOWD", ignoreCase = true) -> "AOWD"
+                    cert.contains("OWD", ignoreCase = true) -> "OWD"
+                    cert.isNotBlank() -> cert.take(8).uppercase()
+                    readiness >= 80 -> "AOWD CADET"
+                    else -> "OWD CADET"
+                }
+            }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("diver_header_card"),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(22.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    Surface(
-                        modifier = Modifier.size(54.dp),
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                    // Top Telemetry Bar: Status Badge & Streak Pill
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(text = "🤿", fontSize = 28.sp)
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = studentName,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            IconButton(
-                                onClick = {
-                                    editNameText = studentName
-                                    showEditNameDialog = true
-                                },
-                                modifier = Modifier.size(28.dp)
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = SeaGreen.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                Icon(
-                                    Icons.Rounded.DriveFileRenameOutline,
-                                    contentDescription = strings.updateStudentName,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(18.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .background(SeaGreen, CircleShape)
+                                )
+                                Text(
+                                    text = "MISSION // DIVER ONLINE",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.sp,
+                                    color = AquaCyan
                                 )
                             }
                         }
-                        Text(
-                            text = strings.studentEnvironmentCandidate,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.secondary,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
 
-                    // Streak Badge
-                    Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f))
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                        // Glowing Study Streak Flame Badge
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = SandGold.copy(alpha = 0.14f),
+                            border = BorderStroke(1.dp, SandGold.copy(alpha = 0.5f))
                         ) {
-                            Icon(
-                                Icons.Rounded.LocalFireDepartment,
-                                contentDescription = "Streak",
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "${progress?.studyStreakDays ?: 1}d",
-                                fontWeight = FontWeight.Black,
-                                color = MaterialTheme.colorScheme.tertiary,
-                                style = MaterialTheme.typography.labelMedium
-                            )
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Rounded.LocalFireDepartment,
+                                    contentDescription = strings.studyStreak,
+                                    tint = SandGold,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${progress?.studyStreakDays ?: 1}d ${strings.studyStreak.uppercase()}",
+                                    fontWeight = FontWeight.Bold,
+                                    color = SandGold,
+                                    fontSize = 10.sp
+                                )
+                            }
                         }
                     }
-                }
-            }
-        }
 
-        // Tactical Diver Telemetry HUD Row
-        item {
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("diver_telemetry_hud_row"),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    TacticalMetricChip(
-                        label = if (currentLanguage == AppLanguage.DE) "STATUS" else "STATUS",
-                        value = if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE",
-                        statusColor = SeaGreen
-                    )
-                }
-                item {
-                    TacticalMetricChip(
-                        label = if (currentLanguage == AppLanguage.DE) "FORTSCHRITT" else "PROGRESS",
-                        value = "$readiness%",
-                        statusColor = AquaCyan
-                    )
-                }
-                item {
-                    TacticalMetricChip(
-                        label = if (currentLanguage == AppLanguage.DE) "DOKUMENTE" else "DOCS",
-                        value = if (alertDocuments.isNotEmpty()) (if (currentLanguage == AppLanguage.DE) "WARNUNG" else "ALERT") else (if (currentLanguage == AppLanguage.DE) "GÜLTIG" else "VALID"),
-                        statusColor = if (alertDocuments.isNotEmpty()) CoralAlert else SeaGreen
-                    )
-                }
-                item {
-                    TacticalMetricChip(
-                        label = if (currentLanguage == AppLanguage.DE) "STREAK" else "STREAK",
-                        value = "${progress?.studyStreakDays ?: 1} TAGE",
-                        statusColor = SandGold
-                    )
-                }
-            }
-        }
-
-        // Premium Segmented Sub-Tab Switcher
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
-                    .padding(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                val tabsList = listOf(
-                    if (currentLanguage == AppLanguage.DE) "Klassenzimmer" else "Classroom",
-                    if (currentLanguage == AppLanguage.DE) "Mein Fortschritt" else "My Progress",
-                    if (currentLanguage == AppLanguage.DE) "Kurskatalog" else "Browse Specialties"
-                )
-                tabsList.forEachIndexed { index, label ->
-                    val isSelected = activeSubTab == index
-                    val tabBgColor by animateColorAsState(
-                        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                        animationSpec = tween(200),
-                        label = "tab_bg_$index"
-                    )
-                    val tabTextColor by animateColorAsState(
-                        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        animationSpec = tween(200),
-                        label = "tab_text_$index"
-                    )
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = tabBgColor,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { activeSubTab = index }
-                            .testTag("student_sub_tab_$index")
+                    // Diver Pilot Profile Row (Clean, tap-to-edit name)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = label,
-                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 2.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 11.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = tabTextColor,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                            maxLines = 1
+                        Surface(
+                            modifier = Modifier.size(50.dp),
+                            shape = CircleShape,
+                            color = DepthNavy,
+                            border = BorderStroke(
+                                2.dp,
+                                Brush.sweepGradient(listOf(AquaCyan, OceanPrimary, SeaGreen, AquaCyan))
+                            )
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(text = "🤿", fontSize = 26.sp)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    editNameText = studentName
+                                    showEditNameDialog = true
+                                }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = studentName,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Black,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Icon(
+                                    Icons.Rounded.DriveFileRenameOutline,
+                                    contentDescription = strings.updateStudentName,
+                                    tint = AquaCyan.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = AquaCyan.copy(alpha = 0.15f),
+                                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Shield,
+                                            contentDescription = null,
+                                            tint = AquaCyan,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(3.dp))
+                                        Text(
+                                            text = diverRank,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Black,
+                                            color = AquaCyan
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = strings.studentEnvironmentCandidate,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                    }
+
+                    // Active Lesson / Next Dive Mission Briefing Box
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(38.dp),
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primaryContainer
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.School,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "NÄCHSTE MISSION // AKTIVE EINHEIT" else "NEXT MISSION // ACTIVE UNIT",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.8.sp,
+                                    color = AquaCyan
+                                )
+                                Text(
+                                    text = nextStudyUnit?.second?.let { AppLocalizer.localizePresentationTitle(it, currentLanguage == AppLanguage.DE) }
+                                        ?: (if (currentLanguage == AppLanguage.DE) "Tauchgangsplanung & Sicherheitsgrenzen" else "Dive Planning & Safety Limits"),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1
+                                )
+                                Text(
+                                    text = "${progress?.totalStudyMinutes ?: 35}m ${strings.minsUnit} absolviert • $readiness% ${if (currentLanguage == AppLanguage.DE) "Prüfungsreife" else "Readiness"}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    // ONE Prominent Full-Width 52dp Primary Button
+                    ScubaPrimaryButton(
+                        text = if (currentLanguage == AppLanguage.DE) "Nächste Lerneinheit starten ▶" else "Start Next Study Unit ▶",
+                        onClick = {
+                            val unit = nextStudyUnit
+                            if (unit != null) {
+                                when (unit.first) {
+                                    "pres" -> {
+                                        val pres = unit.third as PresentationDeckEntity
+                                        viewModel.markPresentationProgress(pres.id, true)
+                                        viewModel.openPresentation(pres)
+                                    }
+                                    "vid" -> viewModel.openVideo(unit.third as LearningVideoEntity)
+                                    "quiz" -> viewModel.openQuiz(unit.third as QuizEntity)
+                                }
+                            } else {
+                                val mockExam = quizzes.find { it.isMockExam } ?: quizzes.firstOrNull()
+                                if (mockExam != null) viewModel.openQuiz(mockExam)
+                            }
+                        },
+                        testTag = "start_next_lesson_hero_btn"
+                    )
+                }
+            }
+        }
+
+        // Modern Clean Pill Bar Sub-Tab Switcher
+        item {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
+                shape = RoundedCornerShape(22.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    val tabsList = listOf(
+                        Triple(if (currentLanguage == AppLanguage.DE) "Klassenzimmer" else "Classroom", Icons.Rounded.School, 0),
+                        Triple(if (currentLanguage == AppLanguage.DE) "Mein Fortschritt" else "My Progress", Icons.Rounded.Speed, 1),
+                        Triple(if (currentLanguage == AppLanguage.DE) "Kurskatalog" else "Course Catalog", Icons.Rounded.Explore, 2)
+                    )
+                    tabsList.forEach { (label, icon, index) ->
+                        val isSelected = activeSubTab == index
+                        val tabBgColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            animationSpec = tween(200),
+                            label = "tab_bg_$index"
                         )
+                        val tabTextColor by animateColorAsState(
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            animationSpec = tween(200),
+                            label = "tab_text_$index"
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(19.dp),
+                            color = tabBgColor,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(19.dp))
+                                .clickable { activeSubTab = index }
+                                .testTag("student_sub_tab_$index")
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 4.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(15.dp),
+                                    tint = tabTextColor
+                                )
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = tabTextColor,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    maxLines = 1
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -550,7 +732,10 @@ fun HomeScreen(
                         downloadProgress = downloadingModules[module.id],
                         onDownloadClick = { viewModel.downloadModule(module.id) },
                         onRemoveClick = { viewModel.removeDownloadedModule(module.id) },
-                        onOpenPresentation = { viewModel.openPresentation(it) },
+                        onOpenPresentation = {
+                            viewModel.markPresentationProgress(it.id, true)
+                            viewModel.openPresentation(it)
+                        },
                         onOpenVideo = { viewModel.openVideo(it) },
                         onOpenQuiz = { viewModel.openQuiz(it) }
                     )
@@ -559,26 +744,78 @@ fun HomeScreen(
                 item {
                     val nitroxPres = presentations.find { it.id == "pres_nitrox" }
                     val nitroxQuiz = quizzes.find { it.id == "quiz_nitrox" }
+                    val isNitroxPassed = nitroxQuiz?.isPassed == true
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("nitrox_curriculum_module"),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isNitroxPassed) SeaGreen.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                        border = BorderStroke(
+                            if (isNitroxPassed) 2.dp else 1.dp,
+                            if (isNitroxPassed) SeaGreen.copy(alpha = 0.65f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                text = if (isGerman) "Spezialkurs: Sauerstoffanalyse & Gasmischung" else "Specialty Unit: Oxygen Analysis & Gas Mixing",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = if (isGerman) "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = if (isGerman) "Spezialkurs: Sauerstoffanalyse & Gasmischung" else "Specialty Unit: Oxygen Analysis & Gas Mixing",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        if (isNitroxPassed) {
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Icon(
+                                                imageVector = Icons.Rounded.CheckCircle,
+                                                contentDescription = "Passed",
+                                                tint = SeaGreen,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = if (isGerman) "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                if (isNitroxPassed) {
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = SeaGreen.copy(alpha = 0.15f),
+                                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f))
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.CheckCircle,
+                                                contentDescription = null,
+                                                tint = SeaGreen,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Black,
+                                                color = SeaGreen
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                             ModuleItemRow(
                                 title = if (isGerman) "Nitrox-Gasanalyse & Maximaltiefen-Berechnung (MOD)" else "Nitrox Gas Analysis & Max Depth (MOD) calculations",
                                 type = if (isGerman) "Präsentation (2 Folien)" else "Slide Deck (2 Slides)",
@@ -586,6 +823,7 @@ fun HomeScreen(
                                 isDone = nitroxPres?.isCompleted == true,
                                 onClick = {
                                     if (nitroxPres != null) {
+                                        viewModel.markPresentationProgress(nitroxPres.id, true)
                                         viewModel.openPresentation(nitroxPres)
                                     }
                                 }
@@ -608,26 +846,78 @@ fun HomeScreen(
                 item {
                     val deepPres = presentations.find { it.id == "pres_deep" }
                     val deepQuiz = quizzes.find { it.id == "quiz_deep" }
+                    val isDeepPassed = deepQuiz?.isPassed == true
                     val isGerman = currentLanguage == AppLanguage.DE
                     Card(
                         modifier = Modifier.fillMaxWidth().testTag("deep_curriculum_module"),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDeepPassed) SeaGreen.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surfaceContainerLow
+                        ),
+                        border = BorderStroke(
+                            if (isDeepPassed) 2.dp else 1.dp,
+                            if (isDeepPassed) SeaGreen.copy(alpha = 0.65f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                text = if (isGerman) "Spezialkurs: Tieftauchgrenzen & Tiefenrausch" else "Specialty Unit: Deep Diving Limits & Narcosis Safety",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = if (isGerman) "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management bis 40m Tiefe." else "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving to 40m/130ft.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = if (isGerman) "Spezialkurs: Tieftauchgrenzen & Tiefenrausch" else "Specialty Unit: Deep Diving Limits & Narcosis Safety",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        if (isDeepPassed) {
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Icon(
+                                                imageVector = Icons.Rounded.CheckCircle,
+                                                contentDescription = "Passed",
+                                                tint = SeaGreen,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = if (isGerman) "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management bis 40m Tiefe." else "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving to 40m/130ft.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                if (isDeepPassed) {
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = SeaGreen.copy(alpha = 0.15f),
+                                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f))
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.CheckCircle,
+                                                contentDescription = null,
+                                                tint = SeaGreen,
+                                                modifier = Modifier.size(12.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Black,
+                                                color = SeaGreen
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                             ModuleItemRow(
                                 title = if (isGerman) "Dekompressionssicherheit & redundante Gassysteme" else "Decompression Safety & Redundant Gas Systems",
                                 type = if (isGerman) "Präsentation (1 Folie)" else "Slide Deck (1 Slide)",
@@ -635,6 +925,7 @@ fun HomeScreen(
                                 isDone = deepPres?.isCompleted == true,
                                 onClick = {
                                     if (deepPres != null) {
+                                        viewModel.markPresentationProgress(deepPres.id, true)
                                         viewModel.openPresentation(deepPres)
                                     }
                                 }
@@ -683,6 +974,7 @@ fun HomeScreen(
                                 isDone = wreckPres?.isCompleted == true,
                                 onClick = {
                                     if (wreckPres != null) {
+                                        viewModel.markPresentationProgress(wreckPres.id, true)
                                         viewModel.openPresentation(wreckPres)
                                     }
                                 }
@@ -1357,7 +1649,9 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                Button(
+                                ScubaSecondaryButton(
+                                    text = if (currentLanguage == AppLanguage.DE) "Einschreiben" else "Enroll",
+                                    icon = Icons.Rounded.School,
                                     onClick = {
                                         viewModel.enrollInCourse(course.id)
                                         enrollmentSuccessMessage = if (currentLanguage == AppLanguage.DE) {
@@ -1366,19 +1660,11 @@ fun HomeScreen(
                                             "Enrolled in specialty course '${course.title}' successfully!"
                                         }
                                     },
-                                    modifier = Modifier.testTag("enroll_btn_${course.id}"),
-                                    shape = RoundedCornerShape(12.dp),
-                                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                ) {
-                                    Icon(Icons.Rounded.School, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = if (currentLanguage == AppLanguage.DE) "Einschreiben" else "Enroll",
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 12.sp
-                                    )
-                                }
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    border = null,
+                                    testTag = "enroll_btn_${course.id}"
+                                )
                             }
                         }
                     }
@@ -1475,13 +1761,18 @@ fun HomeScreen(
                         }
                         showEditNameDialog = false
                     },
+                    modifier = Modifier.height(44.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(strings.save)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showEditNameDialog = false }) {
+                TextButton(
+                    onClick = { showEditNameDialog = false },
+                    modifier = Modifier.height(44.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text(strings.cancel)
                 }
             }
@@ -1565,6 +1856,8 @@ fun ModuleCard(
     val completedItems = presentations.count { it.isCompleted } +
             videos.count { it.isCompleted } +
             quizzes.count { it.isPassed }
+    val isQuizPassed = quizzes.isNotEmpty() && quizzes.all { it.isPassed }
+    val isModulePassed = isQuizPassed || (totalItems > 0 && completedItems >= totalItems)
     val progressFraction = if (totalItems > 0) completedItems.toFloat() / totalItems.toFloat() else 0f
 
     Card(
@@ -1573,27 +1866,79 @@ fun ModuleCard(
             .animateContentSize()
             .testTag("module_card_${module.id}"),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isModulePassed) SeaGreen.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        border = BorderStroke(
+            1.dp,
+            if (isModulePassed) SeaGreen.copy(alpha = 0.65f)
+            else if (progressFraction > 0f) AquaCyan.copy(alpha = 0.45f)
+            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Module Header
+            // Module Header & Status Chip
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "${strings.tabCurriculum.take(6)} ${module.orderIndex}: ${AppLocalizer.localizeModuleTitle(module.title, isGerman)}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = if (isModulePassed) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                        ) {
+                            Text(
+                                text = "UNIT 0${module.orderIndex}",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Black,
+                                color = if (isModulePassed) SeaGreen else MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                        if (isModulePassed) {
+                            Icon(
+                                imageVector = Icons.Rounded.CheckCircle,
+                                contentDescription = if (isGerman) "Bestanden" else "Passed",
+                                tint = SeaGreen,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Text(
+                            text = "~${module.estimatedMin}m",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 10.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = AppLocalizer.localizeModuleTitle(module.title, isGerman),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        if (isModulePassed) {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Icon(
+                                imageVector = Icons.Rounded.CheckCircle,
+                                contentDescription = "Passed",
+                                tint = SeaGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                     Text(
                         text = AppLocalizer.localizeModuleSubtitle(module.subtitle, isGerman),
                         style = MaterialTheme.typography.bodySmall,
@@ -1601,96 +1946,132 @@ fun ModuleCard(
                     )
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh
-                    ) {
-                        Text(
-                            text = "~${module.estimatedMin}m",
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                Spacer(modifier = Modifier.width(8.dp))
 
-                    // Download State Management UI
-                    if (downloadProgress != null) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Glowing Status Chip
+                    if (isModulePassed) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = SeaGreen.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f))
                         ) {
-                            androidx.compose.material3.CircularProgressIndicator(
-                                progress = { downloadProgress },
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp,
-                                color = OceanSecondary
-                            )
-                            Text(
-                                text = String.format(strings.downloadingLabel, (downloadProgress * 100).toInt()),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontSize = 9.sp,
-                                color = OceanSecondary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    } else if (isDownloaded) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = SeaGreen.copy(alpha = 0.15f),
-                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.4f))
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.CheckCircle,
-                                        contentDescription = strings.downloadedOfflineLabel,
-                                        tint = SeaGreen,
-                                        modifier = Modifier.size(12.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(3.dp))
-                                    Text(
-                                        text = strings.downloadedOfflineLabel,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 9.sp,
-                                        color = SeaGreen,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                            IconButton(
-                                onClick = onRemoveClick,
-                                modifier = Modifier.size(24.dp)
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Delete,
-                                    contentDescription = strings.deleteOfflineLabel,
-                                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
-                                    modifier = Modifier.size(16.dp)
+                                    imageVector = Icons.Rounded.CheckCircle,
+                                    contentDescription = null,
+                                    tint = SeaGreen,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = SeaGreen
+                                )
+                            }
+                        }
+                    } else if (progressFraction > 0f) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = AquaCyan.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.6f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .background(AquaCyan, CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${if (isGerman) "IN BEARBEITUNG" else "IN PROGRESS"} ${(progressFraction * 100).toInt()}%",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = AquaCyan
                                 )
                             }
                         }
                     } else {
-                        IconButton(
-                            onClick = onDownloadClick,
-                            modifier = Modifier.size(28.dp)
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Download,
-                                contentDescription = strings.downloadOfflineLabel,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.PlayArrow,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = if (isGerman) "STARTBEREIT" else "READY",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
+                    }
+
+                    // Download State Management UI
+                    if (downloadProgress != null) {
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            modifier = Modifier.height(36.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                androidx.compose.material3.CircularProgressIndicator(
+                                    progress = { downloadProgress },
+                                    modifier = Modifier.size(14.dp),
+                                    strokeWidth = 2.dp,
+                                    color = OceanSecondary
+                                )
+                                Text(
+                                    text = "${(downloadProgress * 100).toInt()}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 10.sp,
+                                    color = OceanSecondary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    } else if (isDownloaded) {
+                        ScubaCompactButton(
+                            text = strings.downloadedOfflineLabel,
+                            icon = Icons.Rounded.CheckCircle,
+                            isDone = true,
+                            onClick = onRemoveClick,
+                            testTag = "module_downloaded_${module.id}"
+                        )
+                    } else {
+                        ScubaCompactButton(
+                            text = if (isGerman) "Offline laden" else "Download",
+                            icon = Icons.Rounded.Download,
+                            isDone = false,
+                            onClick = onDownloadClick,
+                            testTag = "module_download_${module.id}"
+                        )
                     }
                 }
             }
@@ -1717,29 +2098,48 @@ fun ModuleCard(
                 }
             }
 
-            // Progress bar
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                LinearProgressIndicator(
-                    progress = { progressFraction },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = if (progressFraction >= 1f) SeaGreen else MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                )
+            // Neon Progress Bar & Metrics
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = progressFraction.coerceIn(0f, 1f))
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(
+                                if (progressFraction >= 1f) {
+                                    Brush.horizontalGradient(listOf(SeaGreen, Color(0xFF34D399)))
+                                } else {
+                                    Brush.horizontalGradient(listOf(OceanPrimary, AquaCyan))
+                                }
+                            )
+                    )
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "$completedItems ${strings.completedOfTotal} $totalItems ${strings.completedItemsSuffix}",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp
                     )
                     if (progressFraction >= 1f) {
                         Text(
-                            text = strings.moduleMastered,
+                            text = "✨ " + strings.moduleMastered,
                             style = MaterialTheme.typography.labelSmall,
                             color = SeaGreen,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp
                         )
                     }
                 }
@@ -1801,16 +2201,24 @@ fun ModuleItemRow(
             .clickable { onClick() },
         shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        border = BorderStroke(
+            1.dp,
+            if (isDone) SeaGreen.copy(alpha = 0.35f)
+            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)
+        )
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(38.dp),
                 shape = CircleShape,
-                color = if (isDone) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                color = if (isDone) SeaGreen.copy(alpha = 0.14f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                border = BorderStroke(
+                    1.dp,
+                    if (isDone) SeaGreen.copy(alpha = 0.4f) else AquaCyan.copy(alpha = 0.3f)
+                )
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -1853,21 +2261,12 @@ fun ModuleItemRow(
                 }
             }
             Spacer(modifier = Modifier.width(8.dp))
-            if (isDone) {
-                Icon(
-                    imageVector = Icons.Rounded.CheckCircle,
-                    contentDescription = strings.completedBadge,
-                    tint = SeaGreen,
-                    modifier = Modifier.size(20.dp)
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                    contentDescription = strings.startButton,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
+            ScubaCompactButton(
+                text = if (isDone) (if (LocalCurrentLanguage.current == AppLanguage.DE) "Fertig" else "Done") else strings.startButton,
+                icon = if (isDone) Icons.Rounded.CheckCircle else Icons.AutoMirrored.Rounded.ArrowForward,
+                isDone = isDone,
+                onClick = onClick
+            )
         }
     }
 }

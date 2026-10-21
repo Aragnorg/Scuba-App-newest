@@ -31,13 +31,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Directions
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.HealthAndSafety
 import androidx.compose.material.icons.rounded.Info
@@ -47,9 +50,11 @@ import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Navigation
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.Radio
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SafetyCheck
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Button
@@ -75,6 +80,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -105,21 +111,21 @@ import com.example.data.model.DiveSpot
 import com.example.data.model.DiveSpotMapAnnotation
 import com.example.data.model.EmergencyInfo
 import com.example.data.model.GasPlanResult
+import com.example.data.model.PlannedDiveDraft
 import com.example.data.repository.DiveSpotsData
+import com.example.ui.components.DaltonsLawBestMixCard
+import com.example.ui.components.SacRateCalculatorCard
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
+import com.example.ui.theme.CoralAlert
 import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
 import com.example.ui.theme.OceanSecondary
 import com.example.ui.theme.OceanTertiary
 import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
-import com.example.ui.theme.BioluminescentSky
-import com.example.ui.theme.BioluminescentEmerald
-import com.example.ui.theme.BioluminescentAmber
-import com.example.ui.components.TacticalTelemetryGauge
 import com.example.ui.viewmodel.AquaViewModel
 
 @Composable
@@ -140,10 +146,13 @@ fun DivePlanningScreen(
 
     var spotForDetails by remember { mutableStateOf<DiveSpot?>(null) }
     var spotForEmergencyModal by remember { mutableStateOf<DiveSpot?>(null) }
+    var showAddCustomSpotDialog by remember { mutableStateOf(false) }
+    var draftToSaveAsLog by remember { mutableStateOf<PlannedDiveDraft?>(null) }
+    var logSuccessNotice by remember { mutableStateOf<String?>(null) }
 
-    val allSpots = remember { DiveSpotsData.allDiveSpots }
+    val allSpots by viewModel.allDiveSpots.collectAsState()
 
-    val filteredSpots = remember(searchQuery, selectedDifficultyFilter, selectedCountryFilter) {
+    val filteredSpots = remember(allSpots, searchQuery, selectedDifficultyFilter, selectedCountryFilter) {
         allSpots.filter { spot ->
             val matchesSearch = searchQuery.isBlank() ||
                     spot.name.contains(searchQuery, ignoreCase = true) ||
@@ -158,157 +167,180 @@ fun DivePlanningScreen(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        // Top Header
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            tonalElevation = 0.dp
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 0.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = strings.divePlanningTitle,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = strings.divePlanningSubtitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(42.dp)
+            // Top Header
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 0.dp
+            ) {
+                Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 0.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.Rounded.Explore,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(22.dp)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = strings.divePlanningTitle,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = strings.divePlanningSubtitle,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                    }
-                }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Sub-Tabs for Dive Planning
-                TabRow(
-                    selectedTabIndex = selectedSubTab,
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            Modifier.tabIndicatorOffset(tabPositions[selectedSubTab]),
-                            color = MaterialTheme.colorScheme.primary,
-                            height = 3.dp
-                        )
-                    },
-                    divider = {
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Rounded.Explore,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
                     }
-                ) {
-                    Tab(
-                        selected = selectedSubTab == 0,
-                        onClick = { selectedSubTab = 0 },
-                        selectedContentColor = MaterialTheme.colorScheme.primary,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        text = {
-                            Text(
-                                strings.subTabDiveSpots,
-                                fontWeight = if (selectedSubTab == 0) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.sp
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Sub-Tabs for Dive Planning (Segmented Pill Style)
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(44.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(3.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            val planningTabs = listOf(
+                                Triple(0, strings.subTabDiveSpots, Icons.Rounded.LocationOn to "tab_planning_spots"),
+                                Triple(1, strings.subTabEmergencyInfo, Icons.Rounded.HealthAndSafety to "tab_planning_emergency"),
+                                Triple(2, strings.subTabGasPlanner, Icons.Rounded.Calculate to "tab_planning_calculator"),
+                                Triple(3, strings.subTabPreDiveChecklist, Icons.Rounded.SafetyCheck to "tab_planning_checklist")
                             )
-                        },
-                        icon = { Icon(Icons.Rounded.LocationOn, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                        modifier = Modifier.testTag("tab_planning_spots")
-                    )
-                    Tab(
-                        selected = selectedSubTab == 1,
-                        onClick = { selectedSubTab = 1 },
-                        selectedContentColor = MaterialTheme.colorScheme.primary,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        text = {
-                            Text(
-                                strings.subTabEmergencyInfo,
-                                fontWeight = if (selectedSubTab == 1) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.sp
-                            )
-                        },
-                        icon = { Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                        modifier = Modifier.testTag("tab_planning_emergency")
-                    )
-                    Tab(
-                        selected = selectedSubTab == 2,
-                        onClick = { selectedSubTab = 2 },
-                        selectedContentColor = MaterialTheme.colorScheme.primary,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        text = {
-                            Text(
-                                strings.subTabGasPlanner,
-                                fontWeight = if (selectedSubTab == 2) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.sp
-                            )
-                        },
-                        icon = { Icon(Icons.Rounded.Calculate, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                        modifier = Modifier.testTag("tab_planning_calculator")
-                    )
-                    Tab(
-                        selected = selectedSubTab == 3,
-                        onClick = { selectedSubTab = 3 },
-                        selectedContentColor = MaterialTheme.colorScheme.primary,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        text = {
-                            Text(
-                                strings.subTabPreDiveChecklist,
-                                fontWeight = if (selectedSubTab == 3) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.sp
-                            )
-                        },
-                        icon = { Icon(Icons.Rounded.SafetyCheck, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                        modifier = Modifier.testTag("tab_planning_checklist")
-                    )
+                            planningTabs.forEach { (index, title, iconAndTag) ->
+                                val (icon, tag) = iconAndTag
+                                val isSelected = selectedSubTab == index
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .clip(RoundedCornerShape(11.dp))
+                                        .clickable { selectedSubTab = index }
+                                        .testTag(tag),
+                                    shape = RoundedCornerShape(11.dp),
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                    border = if (isSelected) BorderStroke(1.dp, AquaCyan.copy(alpha = 0.5f)) else null
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 4.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = icon,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(15.dp),
+                                            tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = title,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 10.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
+            }
+
+            // Sub-Tab Content Switcher
+            when (selectedSubTab) {
+                0 -> DiveSpotsListTab(
+                    spots = filteredSpots,
+                    searchQuery = searchQuery,
+                    onSearchChange = { searchQuery = it },
+                    selectedDifficulty = selectedDifficultyFilter,
+                    onDifficultyChange = { selectedDifficultyFilter = it },
+                    isImperial = isImperial,
+                    onSelectSpot = { spotForDetails = it },
+                    onEmergencyClick = { spotForEmergencyModal = it },
+                    onAddCustomSpotClick = { showAddCustomSpotDialog = true }
+                )
+                1 -> EmergencyInfoDossierTab(
+                    spots = allSpots,
+                    onSelectSpotEmergency = { spotForEmergencyModal = it }
+                )
+                2 -> GasAndModCalculatorTab(
+                    isImperial = isImperial,
+                    allSpots = allSpots,
+                    onSaveAsPlannedDraft = { draft ->
+                        draftToSaveAsLog = draft
+                    }
+                )
+                3 -> PreDiveBuddyChecklistTab()
             }
         }
 
-        // Sub-Tab Content Switcher
-        when (selectedSubTab) {
-            0 -> DiveSpotsListTab(
-                spots = filteredSpots,
-                searchQuery = searchQuery,
-                onSearchChange = { searchQuery = it },
-                selectedDifficulty = selectedDifficultyFilter,
-                onDifficultyChange = { selectedDifficultyFilter = it },
-                isImperial = isImperial,
-                onSelectSpot = { spotForDetails = it },
-                onEmergencyClick = { spotForEmergencyModal = it }
-            )
-            1 -> EmergencyInfoDossierTab(
-                spots = allSpots,
-                onSelectSpotEmergency = { spotForEmergencyModal = it }
-            )
-            2 -> GasAndModCalculatorTab(
-                isImperial = isImperial
-            )
-            3 -> PreDiveBuddyChecklistTab()
+        // Notification Banner if dive logged
+        logSuccessNotice?.let { notice ->
+            LaunchedEffect(notice) {
+                kotlinx.coroutines.delay(4000)
+                logSuccessNotice = null
+            }
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = SeaGreen,
+                contentColor = Color.White,
+                shadowElevation = 8.dp,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp, start = 16.dp, end = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = notice,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 
@@ -331,6 +363,48 @@ fun DivePlanningScreen(
             onDismiss = { spotForEmergencyModal = null }
         )
     }
+
+    // Modal: Add Custom Dive Spot Dialog
+    if (showAddCustomSpotDialog) {
+        AddCustomDiveSpotDialog(
+            onDismiss = { showAddCustomSpotDialog = false },
+            onSave = { name, region, country, minDepth, maxDepth, difficulty, entryType, waterType, notes, emergencyContact, lat, lng ->
+                viewModel.addCustomDiveSpot(
+                    name = name,
+                    region = region,
+                    country = country,
+                    minDepthMeters = minDepth,
+                    maxDepthMeters = maxDepth,
+                    difficulty = difficulty,
+                    entryType = entryType,
+                    waterType = waterType,
+                    notes = notes,
+                    emergencyContact = emergencyContact,
+                    latitude = lat,
+                    longitude = lng
+                )
+                showAddCustomSpotDialog = false
+            }
+        )
+    }
+
+    // Modal: Convert Plan to Dive Log Dialog
+    draftToSaveAsLog?.let { draft ->
+        SaveDraftDiveLogDialog(
+            draft = draft,
+            allSpots = allSpots,
+            onDismiss = { draftToSaveAsLog = null },
+            onConfirmSave = { siteName, location, notes ->
+                viewModel.savePlannedDiveAsLog(draft, siteName, location, notes)
+                logSuccessNotice = if (isGerman) {
+                    "Plan als Entwurf im Logbuch gesichert! ($siteName)"
+                } else {
+                    "Plan saved to Logbook as draft! ($siteName)"
+                }
+                draftToSaveAsLog = null
+            }
+        )
+    }
 }
 
 @Composable
@@ -342,7 +416,8 @@ private fun DiveSpotsListTab(
     onDifficultyChange: (String) -> Unit,
     isImperial: Boolean,
     onSelectSpot: (DiveSpot) -> Unit,
-    onEmergencyClick: (DiveSpot) -> Unit
+    onEmergencyClick: (DiveSpot) -> Unit,
+    onAddCustomSpotClick: () -> Unit
 ) {
     val strings = LocalAppStrings.current
     val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
@@ -352,26 +427,66 @@ private fun DiveSpotsListTab(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // Search bar
+        // Search bar & Add Custom Spot Action Header
         item {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onSearchChange,
-                placeholder = { Text(strings.searchSpotsPlaceholder, fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = strings.searchSpotsPlaceholder) },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { onSearchChange("") }) {
-                            Icon(Icons.Rounded.Clear, contentDescription = if (isGerman) "Löschen" else "Clear")
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onSearchChange,
+                    placeholder = { Text(strings.searchSpotsPlaceholder, fontSize = 13.sp) },
+                    leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = strings.searchSpotsPlaceholder) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onSearchChange("") }) {
+                                Icon(Icons.Rounded.Clear, contentDescription = if (isGerman) "Löschen" else "Clear")
+                            }
                         }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("spot_search_input")
+                )
+
+                // Quick Add Custom Spot row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isGerman) "${spots.size} Tauchplätze verfügbar" else "${spots.size} Dive spots available",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Button(
+                        onClick = onAddCustomSpotClick,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AquaCyan.copy(alpha = 0.15f),
+                            contentColor = OceanPrimary
+                        ),
+                        border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.5f)),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        modifier = Modifier
+                            .height(36.dp)
+                            .testTag("btn_add_custom_spot")
+                    ) {
+                        Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp), tint = OceanPrimary)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isGerman) "+ Eigener Spot" else "+ Add Custom Spot",
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = OceanPrimary
+                        )
                     }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("spot_search_input")
-            )
+                }
+            }
         }
 
         // Filter chips (Difficulty)
@@ -446,10 +561,21 @@ private fun DiveSpotsListTab(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = if (isGerman) "Suchfilter zurücksetzen oder 'Alle Erfahrungsstufen' wählen" else "Try clearing search filters or selecting All Levels",
+                            text = if (isGerman) "Suchfilter anpassen oder eigenen Tauchplatz erstellen" else "Try clearing filters or add your own custom dive site",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Button(
+                            onClick = onAddCustomSpotClick,
+                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier.height(46.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary)
+                        ) {
+                            Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(if (isGerman) "Jetzt eigenen Spot anlegen" else "Add Custom Spot Now", fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
@@ -473,6 +599,7 @@ private fun DiveSpotSummaryCard(
     onClick: () -> Unit,
     onEmergencyClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val strings = LocalAppStrings.current
     val currentLanguage = LocalCurrentLanguage.current
     val isGerman = currentLanguage == AppLanguage.DE
@@ -490,11 +617,26 @@ private fun DiveSpotSummaryCard(
         "${spot.avgVisibilityMeters} m"
     }
 
-    val difficultyColor = when (spot.difficulty) {
-        "BEGINNER" -> SeaGreen
-        "INTERMEDIATE" -> OceanPrimary
-        "ADVANCED" -> Color(0xFFD97706)
-        else -> Color(0xFFC53030)
+    val (difficultyColor, difficultyLabel) = when (spot.difficulty.uppercase()) {
+        "BEGINNER" -> Pair(SeaGreen, if (isGerman) "🟢 EINSTEIGER" else "🟢 BEGINNER")
+        "INTERMEDIATE" -> Pair(OceanPrimary, if (isGerman) "🔵 FORTGESCHRITTEN" else "🔵 INTERMEDIATE")
+        "ADVANCED" -> Pair(SandGold, if (isGerman) "🟡 ERFAHREN" else "🟡 ADVANCED")
+        else -> Pair(CoralAlert, if (isGerman) "🔴 TECHNISCH / EXPERTE" else "🔴 TECHNICAL / EXPERT")
+    }
+
+    val entryTypeIcon = when {
+        spot.entryType.contains("BOAT", ignoreCase = true) -> "🚤"
+        spot.entryType.contains("SHORE", ignoreCase = true) || spot.entryType.contains("BEACH", ignoreCase = true) -> "🏖️"
+        spot.entryType.contains("DRIFT", ignoreCase = true) -> "🌊"
+        else -> "🤿"
+    }
+
+    val spotTypeIcon = when {
+        spot.spotType.contains("WRECK", ignoreCase = true) -> "⚓"
+        spot.spotType.contains("REEF", ignoreCase = true) -> "🪸"
+        spot.spotType.contains("CAVE", ignoreCase = true) || spot.spotType.contains("CAVERN", ignoreCase = true) -> "🕳️"
+        spot.spotType.contains("WALL", ignoreCase = true) -> "🧱"
+        else -> "📍"
     }
 
     Card(
@@ -504,48 +646,91 @@ private fun DiveSpotSummaryCard(
             .testTag("spot_card_${spot.id}"),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Top Row: Difficulty Badge + Entry Type + Mini Map Visual Button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Difficulty & Tags Row
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = difficultyColor.copy(alpha = 0.15f),
-                            border = BorderStroke(1.dp, difficultyColor.copy(alpha = 0.3f))
+                            color = difficultyColor.copy(alpha = 0.14f),
+                            border = BorderStroke(1.dp, difficultyColor.copy(alpha = 0.45f))
                         ) {
                             Text(
-                                text = spot.difficulty,
+                                text = difficultyLabel,
                                 style = MaterialTheme.typography.labelSmall,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp,
                                 color = difficultyColor,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.width(6.dp))
+
+                        // Custom Spot Tag
+                        if (spot.isCustom) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = SandGold.copy(alpha = 0.18f),
+                                border = BorderStroke(1.dp, SandGold.copy(alpha = 0.6f))
+                            ) {
+                                Text(
+                                    text = "⭐ " + if (isGerman) "EIGENER SPOT" else "CUSTOM SPOT",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.5.sp,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 0.5.sp,
+                                    color = SandGold,
+                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                                )
+                            }
+                        }
+
+                        // Entry Type Tag
                         Surface(
                             shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)
+                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
                         ) {
                             Text(
-                                text = "${spot.spotType} • ${spot.entryType}",
+                                text = "$entryTypeIcon ${spot.entryType}",
                                 style = MaterialTheme.typography.labelSmall,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                            )
+                        }
+
+                        // Spot Type Tag
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = AquaCyan.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.3f))
+                        ) {
+                            Text(
+                                text = "$spotTypeIcon ${spot.spotType}",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = AquaCyan,
+                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = spot.name,
@@ -560,28 +745,71 @@ private fun DiveSpotSummaryCard(
                     )
                 }
 
-                // Mini Map Visual Badge
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Mini Map Visual Badge / Quick Map launcher
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                    modifier = Modifier.size(52.dp)
+                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f)),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clickable { openExternalMap(context, spot.latitude, spot.longitude, spot.name) }
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Rounded.Map, contentDescription = "View Map", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(26.dp))
+                        Icon(
+                            Icons.Rounded.Navigation,
+                            contentDescription = "Open in Maps",
+                            tint = OceanPrimary,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Key Quick Stats
+            // Depth Range Pill & Metric Indicators
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SpotMetricPill(title = if (isGerman) "Tiefe" else "Depth", value = depthLabel, modifier = Modifier.weight(1f))
-                SpotMetricPill(title = if (isGerman) "Sicht" else "Visibility", value = visibilityLabel, modifier = Modifier.weight(1f))
+                // Polished Depth Range Pill
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    color = OceanPrimary.copy(alpha = 0.10f),
+                    border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.35f))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = if (isGerman) "TIEFENBEREICH" else "DEPTH RANGE",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = OceanPrimary
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "⬇ $depthLabel",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+
+                // Visibility Metric
+                SpotMetricPill(
+                    title = if (isGerman) "Sicht" else "Visibility",
+                    value = visibilityLabel,
+                    modifier = Modifier.weight(1f)
+                )
+
+                // Current Metric
                 val currentText = if (isGerman) when (spot.currentStrength.uppercase()) {
                     "STRONG" -> "Stark"
                     "MODERATE" -> "Mäßig"
@@ -589,7 +817,11 @@ private fun DiveSpotSummaryCard(
                     "NONE" -> "Keine"
                     else -> spot.currentStrength
                 } else spot.currentStrength
-                SpotMetricPill(title = if (isGerman) "Strömung" else "Current", value = currentText, modifier = Modifier.weight(1f))
+                SpotMetricPill(
+                    title = if (isGerman) "Strömung" else "Current",
+                    value = currentText,
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -609,37 +841,95 @@ private fun DiveSpotSummaryCard(
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
+            // Emergency Quick-Action, Open in Maps & Briefing Button Row (Uniform 36dp action chips)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Emergency info fast access
-                TextButton(
+                // Emergency Quick-Action Button
+                OutlinedButton(
                     onClick = onEmergencyClick,
-                    modifier = Modifier.testTag("spot_emergency_btn_${spot.id}"),
-                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(36.dp)
+                        .testTag("spot_emergency_btn_${spot.id}"),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = CoralAlert.copy(alpha = 0.08f),
+                        contentColor = CoralAlert
+                    ),
+                    border = BorderStroke(1.2.dp, CoralAlert.copy(alpha = 0.65f)),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
                 ) {
-                    Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", color = Color(0xFFE53E3E), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Icon(
+                        Icons.Rounded.HealthAndSafety,
+                        contentDescription = null,
+                        tint = CoralAlert,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = if (isGerman) "🚨 SOS" else "🚨 SOS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = CoralAlert
+                    )
                 }
 
+                // Open in Maps Action Button (geo: URI navigation)
+                OutlinedButton(
+                    onClick = { openExternalMap(context, spot.latitude, spot.longitude, spot.name) },
+                    modifier = Modifier
+                        .weight(1.1f)
+                        .height(36.dp)
+                        .testTag("spot_open_maps_btn_${spot.id}"),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = AquaCyan.copy(alpha = 0.10f),
+                        contentColor = OceanPrimary
+                    ),
+                    border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.5f)),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Navigation,
+                        contentDescription = "Maps",
+                        tint = OceanPrimary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = if (isGerman) "In Maps" else "In Maps",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = OceanPrimary
+                    )
+                }
+
+                // Briefing & Map Button
                 Button(
                     onClick = onClick,
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .weight(1.3f)
+                        .height(36.dp)
+                        .testTag("spot_view_map_btn_${spot.id}"),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        containerColor = OceanPrimary,
+                        contentColor = Color.White
                     ),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                    modifier = Modifier.testTag("spot_view_map_btn_${spot.id}")
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
                 ) {
                     Icon(Icons.Rounded.Map, contentDescription = null, modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(if (isGerman) "Briefing & Karte" else "Briefing & Map", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = if (isGerman) "Briefing & Karte" else "Briefing & Map",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -696,7 +986,7 @@ private fun DiveSpotDetailDialog(
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 16.dp)
                 .testTag("spot_detail_dialog"),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(22.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             tonalElevation = 0.dp
@@ -769,13 +1059,15 @@ private fun DiveSpotDetailDialog(
                             onClick = {
                                 openExternalMap(context, spot.latitude, spot.longitude, spot.name)
                             },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                            modifier = Modifier.testTag("open_external_map_btn")
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                            modifier = Modifier
+                                .height(36.dp)
+                                .testTag("open_external_map_btn")
                         ) {
                             Icon(Icons.Rounded.Navigation, contentDescription = null, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
@@ -888,31 +1180,33 @@ private fun DiveSpotDetailDialog(
                 ) {
                     Button(
                         onClick = onEmergencyClick,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onError
                         ),
                         modifier = Modifier
                             .weight(1f)
+                            .height(52.dp)
                             .testTag("spot_detail_emergency_btn")
                     ) {
                         Icon(Icons.Rounded.HealthAndSafety, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Text(if (isGerman) "Notfalldossier" else "Emergency Dossier", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     }
 
                     OutlinedButton(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                         modifier = Modifier
                             .weight(1f)
+                            .height(46.dp)
                             .testTag("spot_detail_close_btn")
                     ) {
-                        Text(strings.close)
+                        Text(strings.close, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1076,7 +1370,7 @@ private fun SpotEmergencyDossierDialog(
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 16.dp)
                 .testTag("spot_emergency_dossier_dialog"),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(22.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             tonalElevation = 0.dp
@@ -1168,9 +1462,12 @@ private fun SpotEmergencyDossierDialog(
                                 containerColor = MaterialTheme.colorScheme.error,
                                 contentColor = MaterialTheme.colorScheme.onError
                             ),
-                            shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
-                            modifier = Modifier.testTag("call_chamber_btn")
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(46.dp)
+                                .testTag("call_chamber_btn")
                         ) {
                             Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
@@ -1260,15 +1557,18 @@ private fun SpotEmergencyDossierDialog(
                 ) {
                     Button(
                         onClick = onDismiss,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
-                        modifier = Modifier.testTag("close_emergency_modal_btn")
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .testTag("close_emergency_modal_btn")
                     ) {
-                        Text(if (isGerman) "Dossier schließen" else "Close Dossier", fontWeight = FontWeight.Bold)
+                        Text(if (isGerman) "Dossier schließen" else "Close Dossier", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     }
                 }
             }
@@ -1372,13 +1672,15 @@ private fun EmergencyInfoDossierTab(
                                 containerColor = MaterialTheme.colorScheme.error,
                                 contentColor = MaterialTheme.colorScheme.onError
                             ),
-                            shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                            modifier = Modifier.weight(1f)
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(46.dp)
                         ) {
                             Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("DAN America", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("DAN America", fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
                         }
 
                         Button(
@@ -1387,13 +1689,15 @@ private fun EmergencyInfoDossierTab(
                                 containerColor = MaterialTheme.colorScheme.error,
                                 contentColor = MaterialTheme.colorScheme.onError
                             ),
-                            shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                            modifier = Modifier.weight(1f)
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(46.dp)
                         ) {
                             Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("DAN Europe", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text("DAN Europe", fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -1478,14 +1782,17 @@ private fun EmergencyInfoDossierTab(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onError
                         ),
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(36.dp)
                     ) {
                         Icon(Icons.Rounded.Call, contentDescription = null, modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${if (isGerman) "Anrufen" else "Call"}: ${emergency.chamberPhone}",
-                            fontSize = 11.sp,
+                            fontSize = 11.5.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -1497,10 +1804,13 @@ private fun EmergencyInfoDossierTab(
 
 @Composable
 private fun GasAndModCalculatorTab(
-    isImperial: Boolean
+    isImperial: Boolean,
+    allSpots: List<DiveSpot> = emptyList(),
+    onSaveAsPlannedDraft: (PlannedDiveDraft) -> Unit
 ) {
     val strings = LocalAppStrings.current
     val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+    var activeCalculatorIndex by remember { mutableIntStateOf(0) } // 0: MOD Computer, 1: SAC Rate & RMV, 2: Dalton's Best Mix
     var o2Percent by remember { mutableIntStateOf(32) } // Standard EAN32
     var ppo2Limit by remember { mutableDoubleStateOf(1.4) } // Standard 1.4 bar bottom limit
     var plannedDepth by remember { mutableDoubleStateOf(28.0) } // 28m
@@ -1510,12 +1820,36 @@ private fun GasAndModCalculatorTab(
 
     val result = remember(o2Percent, ppo2Limit, plannedDepth, plannedBottomTime, tankVolume, tankStartPressure) {
         DiveSpotsData.calculateGasPlan(
-            o2Percent = o2Percent,
-            ppo2Limit = ppo2Limit,
-            plannedDepthMeters = plannedDepth,
-            plannedBottomTimeMin = plannedBottomTime,
-            tankStartPressureBar = tankStartPressure,
-            tankVolumeLiters = tankVolume
+            o2Percent = o2Percent.coerceIn(21, 100),
+            ppo2Limit = ppo2Limit.coerceAtLeast(0.5),
+            plannedDepthMeters = plannedDepth.coerceAtLeast(0.0),
+            plannedBottomTimeMin = plannedBottomTime.coerceAtLeast(1),
+            tankStartPressureBar = tankStartPressure.coerceAtLeast(10),
+            tankVolumeLiters = tankVolume.coerceAtLeast(1)
+        )
+    }
+
+    // Actual PO2 at planned depth: PO2 = (Depth/10 + 1) * (O2% / 100)
+    val actualPO2 = remember(o2Percent, plannedDepth) {
+        val ambientPressure = ((plannedDepth.coerceAtLeast(0.0) / 10.0) + 1.0).coerceAtLeast(1.0)
+        ambientPressure * (o2Percent.coerceIn(21, 100) / 100.0)
+    }
+
+    val (po2Color, po2BadgeText, po2StatusAlert) = when {
+        actualPO2 <= 1.40 -> Triple(
+            SeaGreen,
+            if (isGerman) "SICHER (SPORTTAUCHEN < 1.4)" else "SAFE (RECREATIONAL < 1.4)",
+            false
+        )
+        actualPO2 <= 1.60 -> Triple(
+            SandGold,
+            if (isGerman) "WARNUNG (DEKO-MAX 1.4 - 1.6)" else "CAUTION (DECO MAX 1.4 - 1.6)",
+            false
+        )
+        else -> Triple(
+            CoralAlert,
+            if (isGerman) "🚨 RED ALERT: SAUERSTOFF-TOXIZITÄT (> 1.6)" else "🚨 RED ALERT: CNS TOXICITY (> 1.6)",
+            true
         )
     }
 
@@ -1524,125 +1858,371 @@ private fun GasAndModCalculatorTab(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Calculator Hero Card
+        // 3-Way Tactical Calculator Tool Switcher (Uniform 44dp height)
         item {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .testTag("calculator_tool_switcher"),
+                shape = RoundedCornerShape(14.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    val calcOptions = listOf(
+                        Triple(0, if (isGerman) "MOD Computer" else "MOD Computer", Icons.Rounded.Calculate),
+                        Triple(1, if (isGerman) "SAC & RMV" else "SAC & RMV", Icons.Rounded.Air),
+                        Triple(2, if (isGerman) "Beste Mischung" else "Best Mix", Icons.Rounded.Water)
+                    )
+
+                    calcOptions.forEach { (index, title, icon) ->
+                        val isSelected = activeCalculatorIndex == index
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(11.dp))
+                                .clickable { activeCalculatorIndex = index }
+                                .testTag("calc_mode_$index"),
+                            shape = RoundedCornerShape(11.dp),
+                            color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                            border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)) else null
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 4.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = null,
+                                    tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 10.5.sp,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+                                    fontSize = 11.sp,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        when (activeCalculatorIndex) {
+            0 -> {
+                // Technical Dive Computer HUD Card
+                item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                border = BorderStroke(1.5.dp, Brush.linearGradient(listOf(AquaCyan.copy(alpha = 0.5f), OceanPrimary.copy(alpha = 0.25f), Color(0x15FFFFFF)))),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
-                    Text(
-                        text = strings.gasPlannerTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Text(
-                        text = strings.gasPlannerSubtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    // Computer Header
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = CircleShape,
+                                color = AquaCyan.copy(alpha = 0.15f),
+                                border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f)),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.Calculate,
+                                        contentDescription = null,
+                                        tint = AquaCyan,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = if (isGerman) "PRO DIVE COMPUTER HUD" else "PRO DIVE COMPUTER HUD",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 0.5.sp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = if (isGerman) "Live Gas- & MOD-Telemetrie" else "Live Gas & MOD Telemetry",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        // Current Mix Badge
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = OceanPrimary.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.35f))
+                        ) {
+                            Text(
+                                text = if (o2Percent == 21) "AIR 21%" else "EAN$o2Percent",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Black,
+                                color = OceanPrimary
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Tactical Cockpit Telemetry HUD Dials
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TacticalTelemetryGauge(
-                            value = if (isImperial) (result.maxOperatingDepthMeters * 3.28084).toFloat() else result.maxOperatingDepthMeters.toFloat(),
-                            maxValue = if (isImperial) 200f else 60f,
-                            unit = if (isImperial) "FT" else "M",
-                            label = if (isGerman) "MOD" else "MOD",
-                            accentColor = if (result.isPlanSafe) BioluminescentEmerald else MaterialTheme.colorScheme.error
-                        )
-                        TacticalTelemetryGauge(
-                            value = if (isImperial) (result.turnPressureBar * 14.5038).toFloat() else result.turnPressureBar.toFloat(),
-                            maxValue = if (isImperial) 3500f else 250f,
-                            unit = if (isImperial) "PSI" else "BAR",
-                            label = if (isGerman) "Wendedruck" else "Turn Pressure",
-                            accentColor = BioluminescentSky
-                        )
-                    }
-
-                    // Key Calculated Results Banner
+                    // Key Calculated Results Banner (Instant MOD & Turn Pressure)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        // Instant MOD Readout
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(16.dp),
-                            color = if (result.isPlanSafe) MaterialTheme.colorScheme.surfaceContainerLow else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.35f),
-                            border = BorderStroke(1.dp, if (result.isPlanSafe) SeaGreen.copy(alpha = 0.6f) else MaterialTheme.colorScheme.error)
+                            shape = RoundedCornerShape(18.dp),
+                            color = if (result.isPlanSafe && !po2StatusAlert) MaterialTheme.colorScheme.surfaceContainerLow else CoralAlert.copy(alpha = 0.12f),
+                            border = BorderStroke(
+                                1.5.dp,
+                                if (result.isPlanSafe && !po2StatusAlert) AquaCyan.copy(alpha = 0.7f) else CoralAlert
+                            )
                         ) {
-                            Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(
+                                modifier = Modifier.padding(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 Text(
-                                    text = if (isGerman) "MAXIMALE EINSATZTIEFE (MOD)" else "MAX OPERATING DEPTH (MOD)",
+                                    text = if (isGerman) "MAX. EINSATZTIEFE (MOD)" else "MAX OPERATING DEPTH (MOD)",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = if (isImperial) "${(result.maxOperatingDepthMeters * 3.28084).toInt()} ft" else "${result.maxOperatingDepthMeters.toInt()} m",
-                                    style = MaterialTheme.typography.titleLarge,
+                                    text = if (isImperial) "${(result.maxOperatingDepthMeters * 3.28084).toInt()} ft" else "${String.format("%.1f", result.maxOperatingDepthMeters)} m",
+                                    style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Black,
-                                    color = if (result.isPlanSafe) SeaGreen else MaterialTheme.colorScheme.error
+                                    color = if (result.isPlanSafe && !po2StatusAlert) AquaCyan else CoralAlert
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Contingency (1.6): ${if (isImperial) "${(result.contingencyDepthMeters * 3.28084).toInt()} ft" else "${result.contingencyDepthMeters.toInt()}m"}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.5.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
 
+                        // Turn Pressure (1/3 Rule) Readout
                         Surface(
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(18.dp),
                             color = MaterialTheme.colorScheme.surfaceContainerLow,
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                         ) {
-                            Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(
+                                modifier = Modifier.padding(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 Text(
                                     text = if (isGerman) "WENDEDRUCK (1/3-REGEL)" else "TURN PRESSURE (1/3 RULE)",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = if (isImperial) "${(result.turnPressureBar * 14.5038).toInt()} PSI" else "${result.turnPressureBar} bar",
-                                    style = MaterialTheme.typography.titleLarge,
+                                    style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Black,
                                     color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Reserve: ${if (isImperial) "${(result.reservePressureBar * 14.5038).toInt()} PSI" else "${result.reservePressureBar} bar"}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.5.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                     }
 
-                    if (result.warningMessage != null) {
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Color-Coded PO2 Safety Gauge
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        border = BorderStroke(1.2.dp, po2Color.copy(alpha = 0.6f))
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        text = if (isGerman) "SAUERSTOFFPARTIALDRUCK (PO2)" else "OXYGEN PARTIAL PRESSURE (PO2)",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Row(verticalAlignment = Alignment.Bottom) {
+                                        Text(
+                                            text = "${String.format("%.2f", actualPO2)} ",
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            fontWeight = FontWeight.Black,
+                                            color = po2Color
+                                        )
+                                        Text(
+                                            text = "bar @ ${if (isImperial) "${(plannedDepth * 3.28084).toInt()} ft" else "${plannedDepth.toInt()}m"}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.padding(bottom = 3.dp)
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = po2Color.copy(alpha = 0.15f),
+                                    border = BorderStroke(1.dp, po2Color.copy(alpha = 0.4f))
+                                ) {
+                                    Text(
+                                        text = po2BadgeText,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = po2Color
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Segmented PO2 Safety Bar Gauge (10 blocks: 0.2 to 2.0 bar)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                for (segment in 1..10) {
+                                    val segmentPO2Threshold = segment * 0.2 // 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0
+                                    val isActive = actualPO2 >= segmentPO2Threshold - 0.1
+
+                                    val blockColor = when {
+                                        segmentPO2Threshold <= 1.4 -> SeaGreen
+                                        segmentPO2Threshold <= 1.6 -> SandGold
+                                        else -> CoralAlert
+                                    }
+
+                                    Surface(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(8.dp),
+                                        shape = RoundedCornerShape(3.dp),
+                                        color = if (isActive) blockColor else blockColor.copy(alpha = 0.15f),
+                                        border = if (isActive) BorderStroke(0.5.dp, blockColor) else null
+                                    ) {}
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            // Scale Markers
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "0.21 (Air)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = "1.4 bar (Rec Safe)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SeaGreen
+                                )
+                                Text(
+                                    text = "1.6 bar (Deco)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SandGold
+                                )
+                                Text(
+                                    text = "2.0 bar (Danger)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = CoralAlert
+                                )
+                            }
+                        }
+                    }
+
+                    if (result.warningMessage != null || po2StatusAlert) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.errorContainer,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.4f))
+                            color = CoralAlert.copy(alpha = 0.14f),
+                            border = BorderStroke(1.dp, CoralAlert.copy(alpha = 0.5f))
                         ) {
                             Row(
                                 modifier = Modifier.padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Rounded.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                Icon(
+                                    Icons.Rounded.Warning,
+                                    contentDescription = null,
+                                    tint = CoralAlert,
+                                    modifier = Modifier.size(18.dp)
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = result.warningMessage,
+                                    text = result.warningMessage ?: (if (isGerman) "Achtung: Geplante Tiefe überschreitet MOD-Sicherheitsgrenze!" else "Warning: Planned depth exceeds safe MOD limit!"),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    color = CoralAlert,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 11.sp
                                 )
@@ -1663,10 +2243,18 @@ private fun GasAndModCalculatorTab(
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    // 1. Oxygen Percentage
+                    // 1. Interactive Nitrox O2% Slider & Quick Presets
                     Column {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(strings.nitroxO2Fraction, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = strings.nitroxO2Fraction,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold
+                            )
                             Text(
                                 text = if (o2Percent == 21) {
                                     if (isGerman) "21% (Standardluft)" else "21% (Standard Air)"
@@ -1675,17 +2263,53 @@ private fun GasAndModCalculatorTab(
                                 },
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = AquaCyan
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        // Quick Mix Presets
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            listOf(21, 28, 32, 36, 40).forEach { mix ->
+                                val isSelected = o2Percent == mix
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { o2Percent = mix },
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    border = BorderStroke(
+                                        1.dp,
+                                        if (isSelected) AquaCyan else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                                    )
+                                ) {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier.padding(vertical = 5.dp)
+                                    ) {
+                                        Text(
+                                            text = if (mix == 21) "AIR" else "EAN$mix",
+                                            fontSize = 10.sp,
+                                            fontWeight = if (isSelected) FontWeight.Black else FontWeight.Bold,
+                                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                         Slider(
                             value = o2Percent.toFloat(),
                             onValueChange = { o2Percent = it.toInt() },
                             valueRange = 21f..40f,
                             steps = 18,
                             colors = SliderDefaults.colors(
-                                thumbColor = MaterialTheme.colorScheme.primary,
-                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                thumbColor = AquaCyan,
+                                activeTrackColor = AquaCyan,
                                 inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
                             ),
                             modifier = Modifier.testTag("slider_o2_percent")
@@ -1700,7 +2324,7 @@ private fun GasAndModCalculatorTab(
                                 text = "${String.format("%.1f", ppo2Limit)} bar ${if (ppo2Limit == 1.4) (if (isGerman) "(Sporttauchen)" else "(Recreational)") else if (ppo2Limit == 1.6) (if (isGerman) "(Deko-Max)" else "(Deco Max)") else ""}",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (ppo2Limit > 1.4) Color(0xFFD97706) else SeaGreen
+                                color = if (ppo2Limit > 1.4) SandGold else SeaGreen
                             )
                         }
                         Slider(
@@ -1752,7 +2376,7 @@ private fun GasAndModCalculatorTab(
                                 text = "$plannedBottomTime min",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = OceanTertiary
                             )
                         }
                         Slider(
@@ -1771,6 +2395,142 @@ private fun GasAndModCalculatorTab(
                 }
             }
         }
+
+        // 5. Convert Plan to Dive Log Action Card
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("card_save_plan_to_log"),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.5f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = AquaCyan.copy(alpha = 0.15f),
+                            modifier = Modifier.size(38.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Rounded.BookmarkAdd,
+                                    contentDescription = null,
+                                    tint = AquaCyan,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isGerman) "Plan in Logbuch übertragen" else "Convert Plan to Dive Log",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = if (isGerman) {
+                                    "Tiefe (${plannedDepth.toInt()}m), Nitrox (${if (o2Percent == 21) "Air 21%" else "EAN$o2Percent"}) & ${plannedBottomTime} min Grundzeit direkt als Logbuchentwurf anlegen"
+                                } else {
+                                    "Save planned depth (${plannedDepth.toInt()}m), mix (${if (o2Percent == 21) "Air 21%" else "EAN$o2Percent"}) & ${plannedBottomTime} min duration as draft dive log"
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                o2Percent = 32
+                                ppo2Limit = 1.4
+                                plannedDepth = 28.0
+                                plannedBottomTime = 35
+                                tankVolume = 12
+                                tankStartPressure = 200
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(46.dp)
+                                .testTag("btn_reset_calculator_defaults"),
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Icon(Icons.Rounded.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(if (isGerman) "Reset" else "Reset", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+
+                        Button(
+                            onClick = {
+                                val gasMix = if (o2Percent == 21) "Air 21%" else "EAN$o2Percent"
+                                val defaultSpot = allSpots.firstOrNull()
+                                val draft = PlannedDiveDraft(
+                                    maxDepthMeters = plannedDepth.toFloat(),
+                                    gasType = gasMix,
+                                    plannedBottomTimeMin = plannedBottomTime,
+                                    turnPressureBar = result.turnPressureBar,
+                                    tankStartPressureBar = tankStartPressure,
+                                    siteName = defaultSpot?.name ?: "Planned Nitrox Dive",
+                                    location = defaultSpot?.let { "${it.region}, ${it.country}" } ?: "Open Water",
+                                    notes = "Planned with Nitrox ($gasMix). Calculated MOD: ${String.format("%.1f", result.maxOperatingDepthMeters)}m, Turn Pressure: ${result.turnPressureBar} bar."
+                                )
+                                onSaveAsPlannedDraft(draft)
+                            },
+                            modifier = Modifier
+                                .weight(2.2f)
+                                .height(52.dp)
+                                .testTag("btn_save_planned_dive_log"),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = OceanPrimary,
+                                contentColor = Color.White
+                            ),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            Icon(Icons.Rounded.BookmarkAdd, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isGerman) "Als Entwurf speichern" else "Save as Draft Log",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+    1 -> {
+        item {
+            SacRateCalculatorCard(
+                isImperial = isImperial
+            )
+        }
+    }
+    2 -> {
+        item {
+            DaltonsLawBestMixCard(
+                isImperial = isImperial
+            )
+        }
+    }
+}
     }
 }
 
@@ -1811,24 +2571,28 @@ private fun PreDiveBuddyChecklistTab() {
 
     val completedCount = checklistItems.count { it.isChecked }
     val isAllChecked = completedCount == checklistItems.size
+    val progressFraction = completedCount.toFloat() / checklistItems.size.toFloat()
+
+    val headerBorderColor by animateColorAsState(
+        targetValue = if (isAllChecked) SeaGreen else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+        label = "headerBorderColor"
+    )
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
+        // Mission Ready Status Board Header
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(22.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isAllChecked) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surfaceContainerLow
+                    containerColor = if (isAllChecked) SeaGreen.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainerLow
                 ),
-                border = BorderStroke(
-                    1.dp,
-                    if (isAllChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                border = BorderStroke(1.5.dp, headerBorderColor),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(
@@ -1836,34 +2600,95 @@ private fun PreDiveBuddyChecklistTab() {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = if (isAllChecked) Icons.Rounded.CheckCircle else Icons.Rounded.SafetyCheck,
-                                contentDescription = null,
-                                tint = if (isAllChecked) SeaGreen else MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(28.dp)
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isAllChecked) SeaGreen.copy(alpha = 0.2f) else OceanPrimary.copy(alpha = 0.15f),
+                                border = BorderStroke(1.dp, if (isAllChecked) SeaGreen else OceanPrimary),
+                                modifier = Modifier.size(38.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = if (isAllChecked) Icons.Rounded.CheckCircle else Icons.Rounded.SafetyCheck,
+                                        contentDescription = null,
+                                        tint = if (isAllChecked) SeaGreen else OceanPrimary,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = strings.preDiveChecklistTitle,
+                                    text = if (isAllChecked)
+                                        (if (isGerman) "BWRAF: 100% BEREIT ZUM TAUCHEN" else "BWRAF: 100% MISSION READY")
+                                    else
+                                        strings.preDiveChecklistTitle,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    fontWeight = FontWeight.Black,
+                                    color = if (isAllChecked) SeaGreen else MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (isGerman) "$completedCount von ${checklistItems.size} Sicherheitsprüfungen mit Buddy bestätigt" else "$completedCount of ${checklistItems.size} checks verified with buddy",
+                                    text = if (isGerman)
+                                        "$completedCount von ${checklistItems.size} Sicherheitsprüfungen mit Buddy bestätigt"
+                                    else
+                                        "$completedCount of ${checklistItems.size} checks verified with buddy",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                        }
+
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (isAllChecked) SeaGreen else OceanPrimary.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, if (isAllChecked) SeaGreen else OceanPrimary.copy(alpha = 0.35f))
+                        ) {
+                            Text(
+                                text = "${(progressFraction * 100).toInt()}%",
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Black,
+                                color = if (isAllChecked) Color.White else OceanPrimary
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Tactical 5-Segment Progress Bar
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        for (i in 0 until checklistItems.size) {
+                            val isStepChecked = checklistItems[i].isChecked
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(6.dp),
+                                shape = RoundedCornerShape(3.dp),
+                                color = if (isStepChecked) SeaGreen else MaterialTheme.colorScheme.surfaceVariant
+                            ) {}
                         }
                     }
                 }
             }
         }
 
+        // Tactical Checklist Items (B, W, R, A, F)
         items(checklistItems, key = { it.letter }) { item ->
+            val cardBgColor by animateColorAsState(
+                targetValue = if (item.isChecked) SeaGreen.copy(alpha = 0.08f) else MaterialTheme.colorScheme.surfaceContainerLow,
+                label = "cardBgColor"
+            )
+            val cardBorderColor by animateColorAsState(
+                targetValue = if (item.isChecked) SeaGreen.copy(alpha = 0.6f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                label = "cardBorderColor"
+            )
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1874,14 +2699,9 @@ private fun PreDiveBuddyChecklistTab() {
                         }
                     }
                     .testTag("checklist_item_${item.letter}"),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (item.isChecked) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surfaceContainerLow
-                ),
-                border = BorderStroke(
-                    1.dp,
-                    if (item.isChecked) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-                ),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = cardBgColor),
+                border = BorderStroke(1.2.dp, cardBorderColor),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Row(
@@ -1890,17 +2710,36 @@ private fun PreDiveBuddyChecklistTab() {
                         .padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Tactical Call-Letter Badge
                     Surface(
                         shape = CircleShape,
                         color = if (item.isChecked) SeaGreen else MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(36.dp)
+                        border = BorderStroke(
+                            1.dp,
+                            if (item.isChecked) SeaGreen else AquaCyan.copy(alpha = 0.5f)
+                        ),
+                        modifier = Modifier.size(38.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text(item.letter, color = Color.White, fontWeight = FontWeight.Black, fontSize = 16.sp)
+                            if (item.isChecked) {
+                                Icon(
+                                    Icons.Rounded.Check,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text(
+                                    text = item.letter,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 17.sp
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(14.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
@@ -1909,13 +2748,17 @@ private fun PreDiveBuddyChecklistTab() {
                             fontWeight = FontWeight.Bold,
                             color = if (item.isChecked) SeaGreen else MaterialTheme.colorScheme.onSurface
                         )
+                        Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = item.description,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 11.sp
+                            fontSize = 11.5.sp,
+                            lineHeight = 15.sp
                         )
                     }
+
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Checkbox(
                         checked = item.isChecked,
@@ -1925,16 +2768,22 @@ private fun PreDiveBuddyChecklistTab() {
                                 checklistItems[index] = item.copy(isChecked = checked)
                             }
                         },
-                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = SeaGreen,
+                            uncheckedColor = MaterialTheme.colorScheme.outline
+                        )
                     )
                 }
             }
         }
 
+        // Action Buttons Row: Reset & Quick Complete
         item {
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 OutlinedButton(
                     onClick = {
@@ -1942,11 +2791,40 @@ private fun PreDiveBuddyChecklistTab() {
                             checklistItems[i] = checklistItems[i].copy(isChecked = false)
                         }
                     },
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp),
+                    shape = RoundedCornerShape(14.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                 ) {
-                    Text(if (isGerman) "Checkliste zurücksetzen" else "Reset Checklist")
+                    Text(
+                        text = if (isGerman) "Zurücksetzen" else "Reset All",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        for (i in 0 until checklistItems.size) {
+                            checklistItems[i] = checklistItems[i].copy(isChecked = true)
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                ) {
+                    Icon(Icons.Rounded.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (isGerman) "Alle Bestätigen" else "Verify All",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -1960,17 +2838,638 @@ private data class ChecklistItem(
     val isChecked: Boolean
 )
 
+@Composable
+private fun AddCustomDiveSpotDialog(
+    onDismiss: () -> Unit,
+    onSave: (
+        name: String,
+        region: String,
+        country: String,
+        minDepth: Int,
+        maxDepth: Int,
+        difficulty: String,
+        entryType: String,
+        waterType: String,
+        notes: String,
+        emergencyContact: String,
+        latitude: Double,
+        longitude: Double
+    ) -> Unit
+) {
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+    var siteName by remember { mutableStateOf("") }
+    var region by remember { mutableStateOf("") }
+    var country by remember { mutableStateOf("") }
+    var minDepthText by remember { mutableStateOf("5") }
+    var maxDepthText by remember { mutableStateOf("25") }
+    var difficulty by remember { mutableStateOf("INTERMEDIATE") }
+    var entryType by remember { mutableStateOf("BOAT") }
+    var waterType by remember { mutableStateOf("SALT") } // SALT or FRESH
+    var emergencyContact by remember { mutableStateOf("+112 / DAN Europe: +39-06-695-4000") }
+    var notes by remember { mutableStateOf("") }
+    var latitudeText by remember { mutableStateOf("35.8922") }
+    var longitudeText by remember { mutableStateOf("14.4258") }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(vertical = 16.dp)
+                .testTag("add_custom_spot_dialog"),
+            shape = RoundedCornerShape(22.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.5f))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = CircleShape,
+                            color = AquaCyan.copy(alpha = 0.15f),
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Rounded.Add, contentDescription = null, tint = AquaCyan, modifier = Modifier.size(20.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = if (isGerman) "Eigener Tauchplatz" else "Add Custom Dive Spot",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = if (isGerman) "Individuellen Spot anlegen & navigieren" else "Register custom dive site & GPS coords",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Rounded.Close, contentDescription = "Close")
+                    }
+                }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+                // Spot Name
+                OutlinedTextField(
+                    value = siteName,
+                    onValueChange = { siteName = it },
+                    label = { Text(if (isGerman) "Tauchplatz-Name *" else "Dive Spot Name *") },
+                    placeholder = { Text(if (isGerman) "z.B. Secret Reef Pinnacles" else "e.g. Secret Reef Pinnacles") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("input_custom_spot_name"),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+                // Region & Country
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = region,
+                        onValueChange = { region = it },
+                        label = { Text(if (isGerman) "Region" else "Region") },
+                        placeholder = { Text("z.B. Gozo") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    OutlinedTextField(
+                        value = country,
+                        onValueChange = { country = it },
+                        label = { Text(if (isGerman) "Land" else "Country") },
+                        placeholder = { Text("z.B. Malta") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                }
+
+                // Min & Max Depth
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = minDepthText,
+                        onValueChange = { minDepthText = it.filter { ch -> ch.isDigit() } },
+                        label = { Text(if (isGerman) "Min Tiefe (m)" else "Min Depth (m)") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    OutlinedTextField(
+                        value = maxDepthText,
+                        onValueChange = { maxDepthText = it.filter { ch -> ch.isDigit() } },
+                        label = { Text(if (isGerman) "Max Tiefe (m)" else "Max Depth (m)") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                }
+
+                // Difficulty Selector
+                Column {
+                    Text(
+                        text = if (isGerman) "Schwierigkeit" else "Difficulty",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf("BEGINNER", "INTERMEDIATE", "ADVANCED").forEach { diff ->
+                            val isSelected = difficulty == diff
+                            val label = when (diff) {
+                                "BEGINNER" -> if (isGerman) "Einsteiger" else "Beginner"
+                                "INTERMEDIATE" -> if (isGerman) "Mittel" else "Intermed."
+                                else -> if (isGerman) "Erfahren" else "Advanced"
+                            }
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { difficulty = diff },
+                                shape = RoundedCornerShape(8.dp),
+                                color = if (isSelected) OceanPrimary else MaterialTheme.colorScheme.surfaceContainer,
+                                border = BorderStroke(1.dp, if (isSelected) AquaCyan else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontSize = 10.5.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(vertical = 6.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Entry Type & Water Type Selectors
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Entry Type
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = if (isGerman) "Einstieg" else "Entry Type",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            listOf("BOAT" to "🚤 Boat", "SHORE" to "🏖️ Shore").forEach { (type, label) ->
+                                val isSelected = entryType == type
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { entryType = type },
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isSelected) OceanSecondary else MaterialTheme.colorScheme.surfaceContainer,
+                                    border = BorderStroke(1.dp, if (isSelected) AquaCyan else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                                ) {
+                                    Text(
+                                        text = label,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(vertical = 6.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Water Type
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = if (isGerman) "Wasserart" else "Water Type",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            listOf("SALT" to "🌊 Salt", "FRESH" to "💧 Fresh").forEach { (wType, label) ->
+                                val isSelected = waterType == wType
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable { waterType = wType },
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = if (isSelected) AquaCyan else MaterialTheme.colorScheme.surfaceContainer,
+                                    border = BorderStroke(1.dp, if (isSelected) OceanPrimary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                                ) {
+                                    Text(
+                                        text = label,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) DepthNavy else MaterialTheme.colorScheme.onSurface,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(vertical = 6.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // GPS Coordinates
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = latitudeText,
+                        onValueChange = { latitudeText = it },
+                        label = { Text("Breitengrad (Lat)") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                    OutlinedTextField(
+                        value = longitudeText,
+                        onValueChange = { longitudeText = it },
+                        label = { Text("Längengrad (Lng)") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+                }
+
+                // Emergency Contact
+                OutlinedTextField(
+                    value = emergencyContact,
+                    onValueChange = { emergencyContact = it },
+                    label = { Text(if (isGerman) "Notfallkontakt / Druckkammer" else "Emergency Contact / Chamber") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+                // Notes
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text(if (isGerman) "Notizen & Highlights" else "Notes & Highlights") },
+                    placeholder = { Text(if (isGerman) "z.B. Schöne Korallenwand, Sichtweite meist exzellent" else "e.g. Beautiful wall dive, gorgonian fans") },
+                    maxLines = 3,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+                // Save button
+                Button(
+                    onClick = {
+                        val minD = minDepthText.toIntOrNull() ?: 5
+                        val maxD = maxDepthText.toIntOrNull() ?: 20
+                        val lat = latitudeText.toDoubleOrNull() ?: 35.8922
+                        val lng = longitudeText.toDoubleOrNull() ?: 14.4258
+                        onSave(
+                            siteName,
+                            region.ifBlank { "Custom Region" },
+                            country.ifBlank { "Ocean" },
+                            minD,
+                            maxD,
+                            difficulty,
+                            entryType,
+                            waterType,
+                            notes,
+                            emergencyContact,
+                            lat,
+                            lng
+                        )
+                    },
+                    enabled = siteName.isNotBlank(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = OceanPrimary,
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("btn_submit_custom_spot"),
+                    contentPadding = PaddingValues(vertical = 12.dp)
+                ) {
+                    Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (isGerman) "Tauchplatz anlegen & speichern" else "Create & Save Dive Spot",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SaveDraftDiveLogDialog(
+    draft: PlannedDiveDraft,
+    allSpots: List<DiveSpot>,
+    onDismiss: () -> Unit,
+    onConfirmSave: (siteName: String, location: String, notes: String) -> Unit
+) {
+    val isGerman = LocalCurrentLanguage.current == AppLanguage.DE
+    var selectedSiteName by remember { mutableStateOf(draft.siteName) }
+    var selectedLocation by remember { mutableStateOf(draft.location) }
+    var notesText by remember { mutableStateOf(draft.notes) }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(vertical = 16.dp)
+                .testTag("save_draft_dive_log_dialog"),
+            shape = RoundedCornerShape(22.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            border = BorderStroke(1.2.dp, OceanPrimary.copy(alpha = 0.5f))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = CircleShape,
+                            color = OceanPrimary.copy(alpha = 0.15f),
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Rounded.BookmarkAdd, contentDescription = null, tint = OceanPrimary, modifier = Modifier.size(20.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = if (isGerman) "Geplanten Tauchgang loggen" else "Save as Planned Dive Log",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = if (isGerman) "Übernahme in dein persönliches Logbuch" else "Pre-populates your official logbook",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Rounded.Close, contentDescription = "Close")
+                    }
+                }
+
+                // Telemetry Summary Card
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = if (isGerman) "TIEFE" else "DEPTH",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "${draft.maxDepthMeters.toInt()} m",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = AquaCyan
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = if (isGerman) "GASMIX" else "GAS MIX",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = draft.gasType,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = OceanPrimary
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = if (isGerman) "ZEIT" else "TIME",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "${draft.plannedBottomTimeMin} min",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = OceanTertiary
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = if (isGerman) "WENDEDRUCK" else "TURN",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "${draft.turnPressureBar} bar",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = SandGold
+                            )
+                        }
+                    }
+                }
+
+                // Quick spot selector chips
+                if (allSpots.isNotEmpty()) {
+                    Column {
+                        Text(
+                            text = if (isGerman) "Schnellauswahl Tauchplatz:" else "Quick Select Dive Site:",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            allSpots.take(6).forEach { spot ->
+                                val isSelected = selectedSiteName == spot.name
+                                Surface(
+                                    modifier = Modifier.clickable {
+                                        selectedSiteName = spot.name
+                                        selectedLocation = "${spot.region}, ${spot.country}"
+                                    },
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                                    border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                                ) {
+                                    Text(
+                                        text = spot.name,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Site Name
+                OutlinedTextField(
+                    value = selectedSiteName,
+                    onValueChange = { selectedSiteName = it },
+                    label = { Text(if (isGerman) "Tauchplatz-Name" else "Dive Site Name") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+                // Location
+                OutlinedTextField(
+                    value = selectedLocation,
+                    onValueChange = { selectedLocation = it },
+                    label = { Text(if (isGerman) "Ort / Region" else "Location / Region") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+                // Notes
+                OutlinedTextField(
+                    value = notesText,
+                    onValueChange = { notesText = it },
+                    label = { Text(if (isGerman) "Planungsnotizen" else "Planning Notes") },
+                    maxLines = 3,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Confirm Save Button
+                Button(
+                    onClick = {
+                        onConfirmSave(
+                            selectedSiteName.ifBlank { "Planned Dive" },
+                            selectedLocation.ifBlank { "Ocean Spot" },
+                            notesText
+                        )
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = OceanPrimary,
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("btn_confirm_save_draft_log"),
+                    contentPadding = PaddingValues(vertical = 12.dp)
+                ) {
+                    Icon(Icons.Rounded.BookmarkAdd, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (isGerman) "In mein Logbuch eintragen" else "Save to My Dive Logbook",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
 private fun openExternalMap(context: Context, lat: Double, lng: Double, label: String) {
     try {
-        val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng(${Uri.encode(label)})")
+        val uri = Uri.parse("geo:$lat,$lng?q=${Uri.encode(label)}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         context.startActivity(intent)
     } catch (_: Exception) {
         try {
-            val browserUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng")
-            val browserIntent = Intent(Intent.ACTION_VIEW, browserUri)
-            context.startActivity(browserIntent)
-        } catch (_: Exception) {}
+            val fallbackUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng(${Uri.encode(label)})")
+            context.startActivity(Intent(Intent.ACTION_VIEW, fallbackUri))
+        } catch (_: Exception) {
+            try {
+                val browserUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng")
+                context.startActivity(Intent(Intent.ACTION_VIEW, browserUri))
+            } catch (_: Exception) {}
+        }
     }
 }
 

@@ -1,9 +1,10 @@
 package com.example.ui.theme
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 // =========================================================================
-// Oceanic Material 3 Color Tokens & Abyssal Glass Ecosystem
+// Oceanic Material 3 Color Tokens
 // =========================================================================
 
 // Primary Oceanic Accents
@@ -38,38 +39,128 @@ val OceanSurfaceContainerHighLight = Color(0xFFE2E8F0)
 val OceanSurfaceContainerHighestLight = Color(0xFFCBD5E1)
 
 // =========================================================================
-// Dark Theme Abyssal Glass & Tactical HUD Hierarchy
-// OLED Deep Midnight with Bioluminescent Accents
+// Canonical Aqua Dark Theme Surface Hierarchy & Primaries
 // =========================================================================
-val AbyssalOled = Color(0xFF040711) // Pure Deep Midnight Void
-val OceanBackgroundDark = Color(0xFF050813) // Abyssal Oceanic Depth
-val OceanSurfaceDark = Color(0xFF0B1220) // Frosted Midnight Slate
-val OceanSurfaceVariantDark = Color(0xFF131D31) // Sub-surface Slate
-val OceanOutlineDark = Color(0xFF334E68) // Tactical Outline Slate
-val OceanOutlineVariantDark = Color(0x3338BDF8) // Bioluminescent Cyan Hairline Border
+val AquaSurfaceBase = Color(0xFF070D18)       // Base (#070D18)
+val AquaSurfaceLow = Color(0xFF0F172A)        // SurfaceLow (#0F172A)
+val AquaSurfaceDefault = Color(0xFF142036)    // SurfaceDefault (#142036)
+val AquaSurfaceHigh = Color(0xFF1C2B46)       // SurfaceHigh (#1C2B46)
+val AquaSurfaceHighest = Color(0xFF25395A)    // Elevated hover / overlay
+val AquaOutline = Color(0xFF334155)           // Outline (#334155)
+val AquaOutlineVariant = Color(0xFF1E2D44)    // OutlineVariant subtle border
 
-val OceanSurfaceContainerLowestDark = Color(0xFF03050B)
-val OceanSurfaceContainerLowDark = Color(0xFF080E1A)
-val OceanSurfaceContainerDark = Color(0xFF0E1626)
-val OceanSurfaceContainerHighDark = Color(0xFF142036)
-val OceanSurfaceContainerHighestDark = Color(0xFF1D2C4A)
+// High-Tech Electric Azure / Cyan Primaries
+val AquaElectricAzure = Color(0xFF0284C7)     // High-Tech Electric Azure (#0284C7)
+val AquaBioluminescentCyan = Color(0xFF00F2FE) // Bioluminescent Cyan Glow (#00F2FE)
 
-// Bioluminescent Glowing Accents (Abyssal Glass Spec)
-val BioluminescentCyan = Color(0xFF00F2FE) // High Intensity Cyan Ray
-val BioluminescentSky = Color(0xFF38BDF8) // Crisp Tactical Sky Cyan
-val BioluminescentEmerald = Color(0xFF34D399) // Safe Deco / Optimal Status Glow
-val BioluminescentCoral = Color(0xFFFB7185) // High Alert / Decompression Warning
-val BioluminescentAmber = Color(0xFFFBBF24) // Caution / Gas Threshold Warm Glow
+// Dark Theme Surface Hierarchy (Deep Abyssal Ocean)
+val OceanBackgroundDark = AquaSurfaceBase
+val OceanSurfaceDark = AquaSurfaceLow
+val OceanSurfaceVariantDark = AquaSurfaceDefault
+val OceanOutlineDark = AquaOutline
+val OceanOutlineVariantDark = AquaOutlineVariant
 
-// Glass & Glow Utilities
-val AbyssalGlassSurface = Color(0xB80E1626) // Semi-transparent glass fill
-val AbyssalGlassBorder = Color(0x3D38BDF8) // Hairline Cyan Edge Glow
-val AbyssalGlowShadow = Color(0x2E00F2FE)
+val OceanSurfaceContainerLowestDark = AquaSurfaceBase
+val OceanSurfaceContainerLowDark = AquaSurfaceLow
+val OceanSurfaceContainerDark = AquaSurfaceDefault
+val OceanSurfaceContainerHighDark = AquaSurfaceHigh
+val OceanSurfaceContainerHighestDark = AquaSurfaceHighest
 
-// Preserved Legacy Highlights for Full Backwards Compatibility
-val AquaCyan = Color(0xFF38BDF8)
-val CoralAlert = Color(0xFFFB7185)
-val DepthNavy = Color(0xFF0A1120)
-val SandGold = Color(0xFFFBBF24)
-val SeaGreen = Color(0xFF34D399)
-val DeepAbyss = Color(0xFF040711)
+// Special Specialty & Status Highlights
+val AquaCyan = Color(0xFF06B6D4) // Refined Turquoise Cyan
+val CoralAlert = Color(0xFFEF4444) // Clean Modern Red
+val DepthNavy = AquaSurfaceLow // Rich Midnight Navy
+val SandGold = Color(0xFFF59E0B) // Warm Amber Gold
+val SeaGreen = Color(0xFF10B981) // Fresh Emerald Green
+val DeepAbyss = Color(0xFF020617)
+
+// =========================================================================
+// Abyssal Glass & Tactical Dive HUD Tokens
+// =========================================================================
+
+// Deep Abyssal Slate Hierarchy Aliases (Harmonized)
+val AbyssalSlateBase = AquaSurfaceBase         // Deepest abyss floor (#070D18)
+val AbyssalSlateSurface = AquaSurfaceLow       // Underwater HUD surface (#0F172A)
+val AbyssalSlateElevated = AquaSurfaceDefault  // Card container (#142036)
+val AbyssalSlateHighlight = AquaSurfaceHigh    // Border / hover elevation (#1C2B46)
+val AbyssalSlateMuted = AquaOutline            // Outline border (#334155)
+
+// Bioluminescent Cyan Glow
+val BioCyanGlow = AquaBioluminescentCyan       // High-intensity HUD cyan neon (#00F2FE)
+val BioCyanCore = Color(0xFF38BDF8)            // Electric cyan center
+val BioCyanMuted = AquaElectricAzure           // High-tech electric azure (#0284C7)
+val BioCyanSubtle = Color(0x1A00F2FE)          // 10% luminous tint
+
+// Emerald Safe Glow
+val EmeraldSafeGlow = Color(0xFF10B981)       // Tactical safe neon
+val EmeraldSafeDark = Color(0xFF059669)       // Deep emerald gradient base
+val EmeraldSafeSubtle = Color(0x2610B981)     // 15% safe zone highlight
+
+// Tactical Status Accents
+val TacticalAmber = Color(0xFFF59E0B)         // Warning / safety stop highlight
+val TacticalAmberDark = Color(0xFFD97706)
+val NitroxWarningYellow = Color(0xFFEAB308)   // Nitrox / caution marker
+val SafetyStopCoral = Color(0xFFFF5252)       // Critical safety / deco alert
+val SafetyStopCoralDark = Color(0xFFDC2626)
+
+// HUD Structural & Glass Colors
+val HudNeonBlue = Color(0xFF38BDF8)
+val HudGridCyan = Color(0x2600F2FE)
+val GlassBorderCyan = Color(0x4000F2FE)       // 25% frosted border
+val GlassBorderMuted = Color(0x1FFFFFFF)      // 12% white frost border
+
+// =========================================================================
+// Reusable HUD Gradients & Glass Brushes
+// =========================================================================
+
+// Subtle vertical gradient for Abyssal HUD cards
+val AbyssalCardGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF0E1A2E),
+        Color(0xFF060D19)
+    )
+)
+
+// Subtle radial gradient for luminous card depth
+val AbyssalRadialGradient = Brush.radialGradient(
+    colors = listOf(
+        Color(0xFF132742),
+        Color(0xFF060C17)
+    )
+)
+
+// Frosted glass border brush with subtle cyan luminescence
+val GlassBorderBrush = Brush.linearGradient(
+    colors = listOf(
+        Color(0xFF00F2FE).copy(alpha = 0.38f),
+        Color(0xFF38BDF8).copy(alpha = 0.16f),
+        Color(0xFF050B14).copy(alpha = 0.55f)
+    )
+)
+
+// Tactical safety stop zone gradient (4m - 6m band)
+val EmeraldZoneBrush = Brush.verticalGradient(
+    colors = listOf(
+        EmeraldSafeGlow.copy(alpha = 0.28f),
+        EmeraldSafeDark.copy(alpha = 0.08f)
+    )
+)
+
+// Bioluminescent neon sweep gradient for gauges
+val BioSweepGradient = Brush.sweepGradient(
+    colors = listOf(
+        Color(0xFF0052D4),
+        Color(0xFF00F2FE),
+        Color(0xFF10B981),
+        Color(0xFF00F2FE)
+    )
+)
+
+// Sleek high-pressure cylinder fluid gradient
+val CylinderPressureBrush = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF00F2FE).copy(alpha = 0.90f),
+        Color(0xFF0284C7).copy(alpha = 0.92f),
+        Color(0xFF034694).copy(alpha = 0.98f)
+    )
+)

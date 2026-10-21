@@ -225,7 +225,7 @@ fun DocumentApprovalDialog(
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 20.dp)
                 .testTag("document_approval_dialog"),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(22.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             tonalElevation = 0.dp
@@ -870,10 +870,11 @@ fun DocumentApprovalDialog(
                             onClick = onDismiss,
                             modifier = Modifier
                                 .weight(1f)
+                                .height(50.dp)
                                 .testTag("cancel_doc_approval_btn"),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(14.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp)
+                            contentPadding = PaddingValues(horizontal = 14.dp)
                         ) {
                             Text(strings.cancel)
                         }
@@ -896,9 +897,10 @@ fun DocumentApprovalDialog(
                             enabled = approverName.isNotBlank() && approverLicense.isNotBlank(),
                             modifier = Modifier
                                 .weight(1.5f)
+                                .height(50.dp)
                                 .testTag("confirm_doc_approval_btn"),
-                            shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary

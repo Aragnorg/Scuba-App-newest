@@ -97,3 +97,83 @@ val Typography = Typography(
         letterSpacing = 0.4.sp
     )
 )
+
+// =========================================================================
+// Tactical Dive HUD Telemetry Typography Tokens
+// =========================================================================
+
+val HudTelemetryLarge = TextStyle(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.Bold,
+    fontSize = 32.sp,
+    lineHeight = 36.sp,
+    letterSpacing = 0.5.sp
+)
+
+val HudTelemetryMedium = TextStyle(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.Bold,
+    fontSize = 20.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.5.sp
+)
+
+val HudTelemetrySmall = TextStyle(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 13.sp,
+    lineHeight = 16.sp,
+    letterSpacing = 0.5.sp
+)
+
+val HudCaption = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 11.sp,
+    lineHeight = 14.sp,
+    letterSpacing = 0.8.sp
+)
+
+val HudTagStyle = TextStyle(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.Bold,
+    fontSize = 10.sp,
+    lineHeight = 12.sp,
+    letterSpacing = 1.sp
+)
+
+// =========================================================================
+// Canonical Aqua Design Component Typography
+// =========================================================================
+
+val AquaButtonTextStyle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    letterSpacing = 0.2.sp
+)
+
+val AquaSecondaryButtonTextStyle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp,
+    lineHeight = 18.sp,
+    letterSpacing = 0.15.sp
+)
+
+val AquaCompactButtonTextStyle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
+    fontSize = 12.sp,
+    lineHeight = 16.sp,
+    letterSpacing = 0.3.sp
+)
+
+val AquaFilterChipTextStyle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 13.sp,
+    lineHeight = 16.sp,
+    letterSpacing = 0.2.sp
+)

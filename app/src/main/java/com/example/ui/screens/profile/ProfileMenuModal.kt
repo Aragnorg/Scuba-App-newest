@@ -133,8 +133,19 @@ fun ProfileMenuModal(
     val currentLanguage = LocalCurrentLanguage.current
     val strings = LocalAppStrings.current
 
-    val diverName = currentUser?.fullName ?: userProgress?.studentName ?: "Diver Candidate"
-    val diverEmail = currentUser?.email ?: "diver@example.com"
+    val isInstructor = currentUser?.role == "INSTRUCTOR"
+    val diverName = if (isInstructor) {
+        currentUser?.fullName?.takeIf { it.isNotBlank() } ?: "Adrian Scheid"
+    } else {
+        currentUser?.fullName?.takeIf { it.isNotBlank() }
+            ?: userProgress?.studentName?.takeIf { it.isNotBlank() }
+            ?: if (currentLanguage == AppLanguage.DE) "Leo Chen" else "Leo Chen"
+    }
+    val diverEmail = if (isInstructor) {
+        currentUser?.email?.takeIf { it.isNotBlank() } ?: "adrian.scheid01@gmail.com"
+    } else {
+        currentUser?.email?.takeIf { it.isNotBlank() } ?: "leo.chen@diver.com"
+    }
     val profilePicUri = currentUser?.profilePictureUri ?: userProgress?.profilePictureUri
 
     var showAddDocumentDialog by remember { mutableStateOf(false) }
@@ -148,6 +159,7 @@ fun ProfileMenuModal(
     var showEditFullProfileDialog by remember { mutableStateOf(false) }
     var showCreateOrgDialog by remember { mutableStateOf(false) }
     var showEditOrgDialog by remember { mutableStateOf(false) }
+    var showLogoutConfirmDialog by remember { mutableStateOf(false) }
 
     // Camera Capture Launcher for Profile Picture
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -326,23 +338,35 @@ fun ProfileMenuModal(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
 
-                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Spacer(modifier = Modifier.height(6.dp))
 
+                                        // Role Badge: Angemeldet als: [Role]
                                         Surface(
-                                            shape = RoundedCornerShape(8.dp),
-                                            color = SeaGreen.copy(alpha = 0.15f)
+                                            shape = RoundedCornerShape(10.dp),
+                                            color = if (isInstructor) OceanPrimary.copy(alpha = 0.12f) else SeaGreen.copy(alpha = 0.12f),
+                                            border = BorderStroke(1.dp, if (isInstructor) OceanPrimary.copy(alpha = 0.45f) else SeaGreen.copy(alpha = 0.45f)),
+                                            modifier = Modifier.testTag("logged_in_role_badge")
                                         ) {
                                             Row(
-                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(12.dp))
-                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Icon(
+                                                    imageVector = if (isInstructor) Icons.Rounded.Verified else Icons.Rounded.School,
+                                                    contentDescription = null,
+                                                    tint = if (isInstructor) OceanPrimary else SeaGreen,
+                                                    modifier = Modifier.size(14.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
-                                                    text = if (currentUser?.role == "INSTRUCTOR") strings.instructorLabel else strings.diverStatusActive,
+                                                    text = if (currentLanguage == AppLanguage.DE) {
+                                                        if (isInstructor) "Angemeldet als: Tauchlehrer / Master Instructor" else "Angemeldet als: Tauchschüler"
+                                                    } else {
+                                                        if (isInstructor) "Signed in as: Instructor / Master Instructor" else "Signed in as: Diving Student"
+                                                    },
                                                     fontSize = 11.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    color = SeaGreen
+                                                    color = if (isInstructor) OceanPrimary else SeaGreen
                                                 )
                                             }
                                         }
@@ -411,6 +435,22 @@ fun ProfileMenuModal(
                                         color = MaterialTheme.colorScheme.primary
                                     )
 
+                                    val certAgencyDisplay = currentUser?.certAgency?.takeIf { it.isNotBlank() } ?: "VDST / CMAS"
+                                    val certLevelDisplay = if (isInstructor) {
+                                        currentUser?.instructorLevel?.takeIf { it.isNotBlank() } ?: currentUser?.certLevel?.takeIf { it.isNotBlank() } ?: "Tauchlehrer ** (CMAS Instructor **)"
+                                    } else {
+                                        currentUser?.certLevel?.takeIf { it.isNotBlank() } ?: "Open Water Diver (18m)"
+                                    }
+                                    val licenseNumberDisplay = if (isInstructor) {
+                                        currentUser?.instructorLicenseNumber?.takeIf { it.isNotBlank() } ?: currentUser?.licenseNumber?.takeIf { it.isNotBlank() } ?: "TL2-GER-9921"
+                                    } else {
+                                        currentUser?.licenseNumber?.takeIf { it.isNotBlank() } ?: "SSI-DIV-5512"
+                                    }
+                                    val ttuExpiryDisplay = currentUser?.ttuExpiryDate?.takeIf { it.isNotBlank() } ?: (if (isInstructor) "2027-05-20" else "2027-08-15")
+                                    val ttuDoctorDisplay = currentUser?.ttuDoctorName?.takeIf { it.isNotBlank() } ?: (if (isInstructor) "Dr. med. Thomas Weber" else "Dr. med. Frank Meyer")
+                                    val emergencyNameDisplay = currentUser?.emergencyContactName?.takeIf { it.isNotBlank() } ?: (if (isInstructor) "Monika Scheid" else "Sarah Chen")
+                                    val emergencyPhoneDisplay = currentUser?.emergencyContactPhone?.takeIf { it.isNotBlank() } ?: (if (isInstructor) "+49 171 9876543" else "+49 176 1122334")
+
                                     // Row 1: Brevet & Dives
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                         Surface(
@@ -420,16 +460,18 @@ fun ProfileMenuModal(
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
-                                                Text("Brevet & Verband", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
-                                                    text = "${currentUser?.certAgency ?: "VDST / CMAS"} • ${currentUser?.certLevel ?: "Open Water Diver"}",
+                                                    text = if (currentLanguage == AppLanguage.DE) "Brevet & Verband" else "Certification & Agency",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                                Text(
+                                                    text = "$certAgencyDisplay • $certLevelDisplay",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = OceanPrimary
                                                 )
-                                                if (!currentUser?.licenseNumber.isNullOrBlank()) {
-                                                    Text(text = "Nr: ${currentUser?.licenseNumber}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
-                                                }
+                                                Text(text = "Nr: $licenseNumberDisplay", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
                                             }
                                         }
 
@@ -440,9 +482,13 @@ fun ProfileMenuModal(
                                             modifier = Modifier.weight(0.7f)
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
-                                                Text("Geloggte Dives", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
-                                                    text = "🤿 ${currentUser?.totalLoggedDives ?: 12} Dives",
+                                                    text = if (currentLanguage == AppLanguage.DE) "Geloggte Dives" else "Logged Dives",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                                Text(
+                                                    text = "🤿 ${currentUser?.totalLoggedDives ?: if (isInstructor) 340 else 14} Dives",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = SeaGreen
@@ -460,16 +506,18 @@ fun ProfileMenuModal(
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
-                                                Text("TTU Attest", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
-                                                    text = "🩺 ${currentUser?.ttuExpiryDate ?: "2027-06-30"}",
+                                                    text = if (currentLanguage == AppLanguage.DE) "TTU Attest" else "Medical Statement",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                                Text(
+                                                    text = "🩺 $ttuExpiryDisplay",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = Color(0xFF2E7D32)
                                                 )
-                                                if (!currentUser?.ttuDoctorName.isNullOrBlank()) {
-                                                    Text(text = "${currentUser?.ttuDoctorName}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
-                                                }
+                                                Text(text = ttuDoctorDisplay, style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
                                             }
                                         }
 
@@ -480,15 +528,18 @@ fun ProfileMenuModal(
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
-                                                Text("Tauchversicherung", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                                 Text(
-                                                    text = "🛡️ ${currentUser?.insuranceProvider.takeIf { !it.isNullOrBlank() } ?: "DAN Europe"}",
+                                                    text = if (currentLanguage == AppLanguage.DE) "Tauchversicherung" else "Diving Insurance",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                                Text(
+                                                    text = "🛡️ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold
                                                 )
-                                                if (!currentUser?.insuranceNumber.isNullOrBlank()) {
-                                                    Text(text = "Nr: ${currentUser?.insuranceNumber}", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
-                                                }
+                                                val insNum = currentUser?.insuranceNumber?.takeIf { it.isNotBlank() } ?: "DAN-DE-449102"
+                                                Text(text = "Nr: $insNum", style = MaterialTheme.typography.labelSmall, fontSize = 10.sp)
                                             }
                                         }
                                     }
@@ -502,13 +553,13 @@ fun ProfileMenuModal(
                                     ) {
                                         Column(modifier = Modifier.padding(10.dp)) {
                                             Text(
-                                                text = "🚨 Notfallkontakt: ${currentUser?.emergencyContactName.takeIf { !it.isNullOrBlank() } ?: "Monika Scheid"} (${currentUser?.emergencyContactPhone.takeIf { !it.isNullOrBlank() } ?: "+49 171 9876543"})",
+                                                text = "🚨 Notfallkontakt: $emergencyNameDisplay ($emergencyPhoneDisplay)",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontSize = 11.sp
                                             )
                                             Spacer(modifier = Modifier.height(2.dp))
                                             Text(
-                                                text = "🎽 Leih-Größen: Anzug ${currentUser?.suitSize ?: "L"} • Schuhgr. ${currentUser?.shoeSize ?: "43"} • BCD ${currentUser?.bcdSize ?: "M"} • ${currentUser?.preferredTank ?: "12L DIN"}",
+                                                text = "🎽 Leih-Größen: Anzug ${currentUser?.suitSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "L (52)" else "M"} • Schuhgr. ${currentUser?.shoeSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "43" else "42"} • BCD ${currentUser?.bcdSize?.takeIf { it.isNotBlank() } ?: "M"} • ${currentUser?.preferredTank?.takeIf { it.isNotBlank() } ?: "12L Stahl DIN"}",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontSize = 11.sp,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1185,18 +1236,20 @@ fun ProfileMenuModal(
                             contentAlignment = Alignment.Center
                         ) {
                             OutlinedButton(
-                                onClick = {
-                                    onDismiss()
-                                    viewModel.logout()
-                                },
+                                onClick = { showLogoutConfirmDialog = true },
                                 modifier = Modifier.testTag("profile_logout_btn"),
                                 shape = RoundedCornerShape(16.dp),
                                 contentPadding = PaddingValues(horizontal = 28.dp, vertical = 10.dp),
-                                border = BorderStroke(1.dp, Color(0xFFE53E3E).copy(alpha = 0.5f))
+                                border = BorderStroke(1.2.dp, Color(0xFFE53E3E).copy(alpha = 0.6f))
                             ) {
                                 Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = null, tint = Color(0xFFE53E3E), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(strings.signOut, color = Color(0xFFE53E3E), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Abmelden" else strings.signOut,
+                                    color = Color(0xFFE53E3E),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
+                                )
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -1284,6 +1337,7 @@ fun ProfileMenuModal(
     documentToDelete?.let { doc ->
         AlertDialog(
             onDismissRequest = { documentToDelete = null },
+            shape = RoundedCornerShape(22.dp),
             title = { Text(strings.delete) },
             text = { Text("${strings.deleteDocumentConfirm}\n\n\"${doc.title}\" (#${doc.documentNumber})") },
             confirmButton = {
@@ -1292,6 +1346,8 @@ fun ProfileMenuModal(
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
                     },
+                    modifier = Modifier.height(50.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E))
                 ) {
                     Text(strings.delete)
@@ -1309,6 +1365,7 @@ fun ProfileMenuModal(
     if (showEditNameDialog) {
         AlertDialog(
             onDismissRequest = { showEditNameDialog = false },
+            shape = RoundedCornerShape(22.dp),
             title = { Text(strings.updateStudentName) },
             text = {
                 OutlinedTextField(
@@ -1316,17 +1373,28 @@ fun ProfileMenuModal(
                     onValueChange = { editNameText = it },
                     label = { Text(strings.studentNameLabel) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
                 )
             },
             confirmButton = {
                 Button(
                     onClick = {
                         if (editNameText.isNotBlank()) {
-                            viewModel.updateStudentName(editNameText.trim())
+                            val newName = editNameText.trim()
+                            val current = currentUser
+                            if (current != null) {
+                                viewModel.updateFullUserProfile(current.copy(fullName = newName))
+                            } else {
+                                viewModel.updateStudentName(newName)
+                            }
                         }
                         showEditNameDialog = false
-                    }
+                    },
+                    modifier = Modifier.height(50.dp),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text(strings.save)
                 }
@@ -1341,11 +1409,101 @@ fun ProfileMenuModal(
 
     val currentOrg by viewModel.currentOrganization.collectAsState()
 
-    if (showEditFullProfileDialog && currentUser != null) {
+    // Full Profile Edit Dialog
+    if (showEditFullProfileDialog) {
+        val userToEdit = currentUser ?: UserAccountEntity(
+            id = if (isInstructor) "usr_adrian_instructor" else "usr_leo_student",
+            email = diverEmail,
+            fullName = diverName,
+            role = if (isInstructor) "INSTRUCTOR" else "STUDENT",
+            phoneNumber = if (isInstructor) "+49 170 1234567" else "+49 176 9988776",
+            certLevel = if (isInstructor) "CMAS *** / PADI OWSI" else "Open Water Diver (18m)",
+            certAgency = if (isInstructor) "VDST / CMAS" else "SSI",
+            licenseNumber = if (isInstructor) "TL2-GER-9921" else "SSI-DIV-5512",
+            totalLoggedDives = if (isInstructor) 340 else 14,
+            ttuExpiryDate = if (isInstructor) "2027-05-20" else "2027-08-15",
+            ttuDoctorName = if (isInstructor) "Dr. med. Thomas Weber" else "Dr. med. Frank Meyer",
+            emergencyContactName = if (isInstructor) "Monika Scheid" else "Sarah Chen",
+            emergencyContactPhone = if (isInstructor) "+49 171 9876543" else "+49 176 1122334",
+            insuranceProvider = "DAN Europe",
+            insuranceNumber = "DAN-DE-449102",
+            suitSize = if (isInstructor) "L (52)" else "M",
+            shoeSize = if (isInstructor) "43" else "42",
+            bcdSize = "M",
+            preferredTank = "12L Stahl DIN",
+            instructorAgency = "VDST / CMAS",
+            instructorLicenseNumber = "TL2-GER-9921",
+            instructorLevel = "Tauchlehrer ** (CMAS Instructor **)",
+            teachingSpecialtiesJson = "[\"Nitrox EANx\", \"Tieftauchen\", \"Trockentauchen\", \"Wracktauchen\", \"HLW / O2-Provider\"]",
+            instructorValidUntil = "2027-12-31",
+            homeOrganizationName = "Tauchclub Delphin Bodensee e.V."
+        )
         EditFullProfileDialog(
-            user = currentUser!!,
-            onSave = { updated -> viewModel.updateFullUserProfile(updated) },
+            user = userToEdit,
+            onSave = { updated ->
+                viewModel.updateFullUserProfile(updated)
+                showEditFullProfileDialog = false
+            },
             onDismiss = { showEditFullProfileDialog = false }
+        )
+    }
+
+    // Logout Confirmation Dialog
+    if (showLogoutConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirmDialog = false },
+            shape = RoundedCornerShape(22.dp),
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.Logout,
+                        contentDescription = null,
+                        tint = Color(0xFFE53E3E),
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (currentLanguage == AppLanguage.DE) "Abmelden bestätigen" else "Confirm Sign Out",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            text = {
+                Text(
+                    text = if (currentLanguage == AppLanguage.DE)
+                        "Möchtest du dich wirklich abmelden? Deine aktive Sitzung wird beendet und du wirst zur Anmeldeseite weitergeleitet."
+                    else
+                        "Are you sure you want to sign out? Your session will end and you will be returned to the sign-in screen.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutConfirmDialog = false
+                        onDismiss()
+                        viewModel.logout()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53E3E)),
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .testTag("confirm_logout_btn")
+                ) {
+                    Text(
+                        text = if (currentLanguage == AppLanguage.DE) "Abmelden" else strings.signOut,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showLogoutConfirmDialog = false },
+                    modifier = Modifier.testTag("cancel_logout_btn")
+                ) {
+                    Text(strings.cancel)
+                }
+            }
         )
     }
 
@@ -1456,7 +1614,7 @@ fun EditFullProfileDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(22.dp),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Column {
@@ -1518,22 +1676,43 @@ fun EditFullProfileDialog(
                     // SECTION 0: Diver Profile
                     OutlinedButton(
                         onClick = {
-                            fullName = if (fullName.isNotBlank()) fullName else "Adrian Scheid"
-                            phoneNumber = "+49 170 1234567"
-                            certLevel = "Advanced Open Water Diver (AOWD)"
-                            certAgency = "VDST / CMAS"
-                            licenseNumber = "GER-DIVER-88214"
-                            totalLoggedDives = "45"
-                            ttuExpiryDate = "2027-06-30"
-                            ttuDoctorName = "Dr. med. T. Weber (GTÜM e.V.)"
-                            emergencyContactName = "Monika Scheid"
-                            emergencyContactPhone = "+49 171 9876543"
-                            insuranceProvider = "DAN Europe"
-                            insuranceNumber = "DAN-DE-449102"
-                            suitSize = "L (52)"
-                            shoeSize = "43"
-                            bcdSize = "M"
-                            preferredTank = "12L Stahl DIN (232 bar)"
+                            if (user.role == "INSTRUCTOR") {
+                                fullName = "Adrian Scheid"
+                                email = "adrian.scheid01@gmail.com"
+                                phoneNumber = "+49 170 1234567"
+                                certLevel = "CMAS *** / PADI OWSI"
+                                certAgency = "VDST / CMAS"
+                                licenseNumber = "TL2-GER-9921"
+                                totalLoggedDives = "340"
+                                ttuExpiryDate = "2027-05-20"
+                                ttuDoctorName = "Dr. med. Thomas Weber"
+                                emergencyContactName = "Monika Scheid"
+                                emergencyContactPhone = "+49 171 9876543"
+                                insuranceProvider = "DAN Europe"
+                                insuranceNumber = "DAN-DE-449102"
+                                suitSize = "L (52)"
+                                shoeSize = "43"
+                                bcdSize = "M"
+                                preferredTank = "12L Stahl DIN"
+                            } else {
+                                fullName = "Leo Chen"
+                                email = "leo.chen@diver.com"
+                                phoneNumber = "+49 176 9988776"
+                                certLevel = "Open Water Diver (18m)"
+                                certAgency = "SSI"
+                                licenseNumber = "SSI-DIV-5512"
+                                totalLoggedDives = "14"
+                                ttuExpiryDate = "2027-08-15"
+                                ttuDoctorName = "Dr. med. Frank Meyer"
+                                emergencyContactName = "Sarah Chen"
+                                emergencyContactPhone = "+49 176 1122334"
+                                insuranceProvider = "AquaMed"
+                                insuranceNumber = "AQM-78192-DE"
+                                suitSize = "M"
+                                shoeSize = "42"
+                                bcdSize = "M"
+                                preferredTank = "12L Alu DIN"
+                            }
                         },
                         shape = RoundedCornerShape(20.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
@@ -1545,7 +1724,7 @@ fun EditFullProfileDialog(
                         value = fullName,
                         onValueChange = { fullName = it },
                         label = { Text("Vollständiger Name *") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_name_field"),
                         singleLine = true
                     )
 
@@ -1553,7 +1732,7 @@ fun EditFullProfileDialog(
                         value = email,
                         onValueChange = { email = it },
                         label = { Text("E-Mail Adresse") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_email_field"),
                         singleLine = true
                     )
 
@@ -1562,7 +1741,7 @@ fun EditFullProfileDialog(
                         onValueChange = { phoneNumber = it },
                         label = { Text("Telefonnummer") },
                         placeholder = { Text("+49 170 1234567") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_phone_field"),
                         singleLine = true
                     )
 
@@ -1571,7 +1750,7 @@ fun EditFullProfileDialog(
                         onValueChange = { certLevel = it },
                         label = { Text("Brevet-Stufe / Zertifizierung") },
                         placeholder = { Text("z.B. OWD, AOWD, Rescue Diver") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_cert_level_field"),
                         singleLine = true
                     )
 
@@ -1580,7 +1759,7 @@ fun EditFullProfileDialog(
                         onValueChange = { certAgency = it },
                         label = { Text("Tauchverband") },
                         placeholder = { Text("z.B. VDST / CMAS, PADI, SSI") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_agency_field"),
                         singleLine = true
                     )
 
@@ -1588,7 +1767,7 @@ fun EditFullProfileDialog(
                         value = licenseNumber,
                         onValueChange = { licenseNumber = it },
                         label = { Text("Brevet- / Lizenznummer") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_license_field"),
                         singleLine = true
                     )
 
@@ -1596,7 +1775,7 @@ fun EditFullProfileDialog(
                         value = totalLoggedDives,
                         onValueChange = { totalLoggedDives = it },
                         label = { Text("Geloggte Tauchgänge") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_dives_field"),
                         singleLine = true
                     )
 
@@ -1605,7 +1784,7 @@ fun EditFullProfileDialog(
                         onValueChange = { ttuExpiryDate = it },
                         label = { Text("TTU Gültig bis (JJJJ-MM-TT)") },
                         placeholder = { Text("2027-06-30") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_ttu_expiry_field"),
                         singleLine = true
                     )
 
@@ -1613,7 +1792,7 @@ fun EditFullProfileDialog(
                         value = ttuDoctorName,
                         onValueChange = { ttuDoctorName = it },
                         label = { Text("Ausstellender Arzt / Praxis") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_ttu_doctor_field"),
                         singleLine = true
                     )
 
@@ -1621,7 +1800,7 @@ fun EditFullProfileDialog(
                         value = emergencyContactName,
                         onValueChange = { emergencyContactName = it },
                         label = { Text("Notfallkontakt Name") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_emergency_name_field"),
                         singleLine = true
                     )
 
@@ -1629,7 +1808,7 @@ fun EditFullProfileDialog(
                         value = emergencyContactPhone,
                         onValueChange = { emergencyContactPhone = it },
                         label = { Text("Notfallkontakt Telefon") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("edit_profile_emergency_phone_field"),
                         singleLine = true
                     )
 
@@ -1786,9 +1965,12 @@ fun EditFullProfileDialog(
                     onDismiss()
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = OceanPrimary),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier
+                    .height(50.dp)
+                    .testTag("save_edit_profile_btn")
             ) {
-                Text("Speichern")
+                Text("Speichern", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {

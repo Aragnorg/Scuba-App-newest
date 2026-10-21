@@ -28,23 +28,37 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Air
+import androidx.compose.material.icons.rounded.Analytics
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Draw
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.Water
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,23 +68,43 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.DiveLogEntity
 import com.example.ui.components.BuddyPushNotificationBanner
+import com.example.ui.components.ScubaCompactButton
+import com.example.ui.components.ScubaFilterChip
+import com.example.ui.components.ScubaPillButton
 import com.example.ui.components.SignaturePreview
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
+import com.example.ui.theme.DepthNavy
 import com.example.ui.theme.OceanPrimary
+import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
 import com.example.ui.viewmodel.AquaViewModel
+
+/**
+ * Sort options for scuba dive logs
+ */
+enum class DiveSortOption(val labelEn: String, val labelDe: String) {
+    DATE_DESC("Newest First", "Neueste zuerst"),
+    DATE_ASC("Oldest First", "Älteste zuerst"),
+    DEPTH_DESC("Deepest First", "Tiefste zuerst"),
+    DURATION_DESC("Longest First", "Längste zuerst")
+}
 
 /**
  * Full Scuba Diving Logbook Screen:
@@ -92,6 +126,8 @@ fun LogbookScreen(
     val activePush by viewModel.activePushNotification.collectAsState()
     val isImperial by viewModel.isImperial.collectAsState()
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
 
     // Dialog & Inspection State
     var showAddDiveDialog by remember { mutableStateOf(false) }
@@ -100,14 +136,45 @@ fun LogbookScreen(
     var diveForBuddyApproval by remember { mutableStateOf<DiveLogEntity?>(null) }
     var diveForIncomingPushReview by remember { mutableStateOf<DiveLogEntity?>(null) }
 
+    // Live Search & Sort State
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var selectedSortOption by rememberSaveable { mutableStateOf(DiveSortOption.DATE_DESC) }
+    var isAnalyticsExpanded by rememberSaveable { mutableStateOf(false) }
+    var showSortMenu by remember { mutableStateOf(false) }
+
     // Filter Chips: 0 = All, 1 = Approved Only, 2 = Pending Only
     var selectedFilterIndex by remember { mutableIntStateOf(0) }
 
-    val filteredDives = remember(dives, selectedFilterIndex) {
-        when (selectedFilterIndex) {
-            1 -> dives.filter { it.approvalStatus != "PENDING" }
-            2 -> dives.filter { it.approvalStatus == "PENDING" }
-            else -> dives
+    // Multi-field filtered & sorted dives
+    val filteredAndSortedDives = remember(dives, selectedFilterIndex, searchQuery, selectedSortOption) {
+        val query = searchQuery.trim().lowercase()
+        val list = dives.filter { dive ->
+            // Filter chips
+            val matchesFilter = when (selectedFilterIndex) {
+                1 -> dive.approvalStatus != "PENDING"
+                2 -> dive.approvalStatus == "PENDING"
+                else -> true
+            }
+            if (!matchesFilter) return@filter false
+
+            // Multi-field search
+            if (query.isBlank()) {
+                true
+            } else {
+                dive.siteName.lowercase().contains(query) ||
+                dive.location.lowercase().contains(query) ||
+                dive.buddyName.lowercase().contains(query) ||
+                dive.notes.lowercase().contains(query) ||
+                dive.gasType.lowercase().contains(query) ||
+                dive.sightings.lowercase().contains(query)
+            }
+        }
+
+        when (selectedSortOption) {
+            DiveSortOption.DATE_DESC -> list.sortedWith(compareByDescending<DiveLogEntity> { it.date }.thenByDescending { it.diveNumber })
+            DiveSortOption.DATE_ASC -> list.sortedWith(compareBy<DiveLogEntity> { it.date }.thenBy { it.diveNumber })
+            DiveSortOption.DEPTH_DESC -> list.sortedByDescending { it.maxDepthMeters }
+            DiveSortOption.DURATION_DESC -> list.sortedByDescending { it.durationMinutes }
         }
     }
 
@@ -119,26 +186,27 @@ fun LogbookScreen(
     val remMinutes = totalMinutes % 60
     val verifiedCount = dives.count { it.approvalStatus != "PENDING" }
 
+    // Analytics Breakdown Stats
+    val avgDepthOfAll = if (dives.isNotEmpty()) dives.map { it.avgDepthMeters }.average().toFloat() else 0f
+    val avgDurationOfAll = if (dives.isNotEmpty()) dives.map { it.durationMinutes }.average().toInt() else 0
+    val favoriteSiteEntry = remember(dives) {
+        if (dives.isEmpty()) null
+        else dives.groupBy { it.siteName.trim() }
+            .filterKeys { it.isNotBlank() }
+            .maxByOrNull { it.value.size }
+    }
+    val favoriteSiteName = favoriteSiteEntry?.key ?: (if (isGerman) "Noch keine" else "None yet")
+    val favoriteSiteCount = favoriteSiteEntry?.value?.size ?: 0
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingActionButton(
+            ScubaPillButton(
+                text = strings.logNewDive,
+                icon = Icons.Rounded.Add,
                 onClick = { showAddDiveDialog = true },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(16.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
-                modifier = Modifier.testTag("fab_log_new_dive")
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Rounded.Add, contentDescription = strings.logNewDive, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = strings.logNewDive, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                }
-            }
+                testTag = "fab_log_new_dive"
+            )
         }
     ) { innerPadding ->
         Column(
@@ -175,9 +243,26 @@ fun LogbookScreen(
                     )
                 }
 
+                // LOGBOOK ANALYTICS BREAKDOWN CARD
+                item {
+                    LogbookAnalyticsBreakdownCard(
+                        avgDepth = avgDepthOfAll,
+                        avgDuration = avgDurationOfAll,
+                        totalHours = totalHours,
+                        totalMinutes = remMinutes,
+                        totalDives = totalDivesCount,
+                        favoriteSiteName = favoriteSiteName,
+                        favoriteSiteCount = favoriteSiteCount,
+                        isExpanded = isAnalyticsExpanded,
+                        onToggleExpand = { isAnalyticsExpanded = !isAnalyticsExpanded },
+                        isImperial = isImperial,
+                        isGerman = isGerman
+                    )
+                }
+
                 // FILTER CHIPS ROW
                 item {
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     FilterChipsRow(
                         selectedIndex = selectedFilterIndex,
                         onSelectIndex = { selectedFilterIndex = it },
@@ -185,11 +270,142 @@ fun LogbookScreen(
                         verifiedCount = verifiedCount,
                         pendingCount = dives.count { it.approvalStatus == "PENDING" }
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                // LIVE SEARCH & SORT ROW
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Search Input Field
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(48.dp)
+                                    .testTag("logbook_search_field"),
+                                placeholder = {
+                                    Text(
+                                        text = if (isGerman) "Tauchplatz, Ort, Buddy, Gas..." else "Search site, location, buddy...",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Search,
+                                        contentDescription = "Search",
+                                        tint = AquaCyan,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                trailingIcon = {
+                                    if (searchQuery.isNotBlank()) {
+                                        IconButton(onClick = { searchQuery = "" }) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Close,
+                                                contentDescription = "Clear Search",
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(14.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    focusedBorderColor = AquaCyan,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                textStyle = MaterialTheme.typography.bodyMedium
+                            )
+
+                            // Sort Selector Dropdown Button
+                            Box {
+                                ScubaCompactButton(
+                                    text = if (isGerman) "Sortieren" else "Sort",
+                                    icon = Icons.Rounded.Sort,
+                                    onClick = { showSortMenu = true },
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    contentColor = MaterialTheme.colorScheme.primary,
+                                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                                    testTag = "logbook_sort_button"
+                                )
+
+                                DropdownMenu(
+                                    expanded = showSortMenu,
+                                    onDismissRequest = { showSortMenu = false }
+                                ) {
+                                    DiveSortOption.values().forEach { option ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = if (isGerman) option.labelDe else option.labelEn,
+                                                    fontWeight = if (selectedSortOption == option) FontWeight.Bold else FontWeight.Normal,
+                                                    color = if (selectedSortOption == option) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                                )
+                                            },
+                                            onClick = {
+                                                selectedSortOption = option
+                                                showSortMenu = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Search & Sort Status Feedback Bar
+                        if (searchQuery.isNotBlank() || selectedSortOption != DiveSortOption.DATE_DESC) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = if (isGerman) {
+                                        "${filteredAndSortedDives.size} von ${dives.size} Tauchgängen"
+                                    } else {
+                                        "Showing ${filteredAndSortedDives.size} of ${dives.size} dives"
+                                    },
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Surface(
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = AquaCyan.copy(alpha = 0.12f)
+                                ) {
+                                    Text(
+                                        text = if (isGerman) selectedSortOption.labelDe else selectedSortOption.labelEn,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = AquaCyan,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 // EMPTY STATE
-                if (filteredDives.isEmpty()) {
+                if (filteredAndSortedDives.isEmpty()) {
                     item {
                         Card(
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -222,14 +438,19 @@ fun LogbookScreen(
                                 }
                                 Spacer(modifier = Modifier.height(14.dp))
                                 Text(
-                                    text = strings.noDivesFound,
+                                    text = if (searchQuery.isNotBlank()) {
+                                        if (isGerman) "Keine Tauchgänge gefunden" else "No matching dives found"
+                                    } else strings.noDivesFound,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = strings.noDivesFoundDesc,
+                                    text = if (searchQuery.isNotBlank()) {
+                                        if (isGerman) "Keine Treffer für \"$searchQuery\". Bitte Suchbegriff anpassen."
+                                        else "No dives match \"$searchQuery\". Try adjusting your search query or filter."
+                                    } else strings.noDivesFoundDesc,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -239,7 +460,7 @@ fun LogbookScreen(
                     }
                 } else {
                     // DIVE LOG LIST ITEMS
-                    items(filteredDives, key = { it.id }) { dive ->
+                    items(filteredAndSortedDives, key = { it.id }) { dive ->
                         DiveLogCard(
                             dive = dive,
                             onClick = { selectedDiveForInspection = dive },
@@ -373,86 +594,417 @@ private fun LogbookHeaderHero(
     isImperial: Boolean = false
 ) {
     val strings = LocalAppStrings.current
+    val verifiedRatioPercent = if (totalDives > 0) (verifiedDives * 100 / totalDives) else 0
+    val maxDepthStr = if (isImperial) {
+        "${kotlin.math.round(maxDepth * 3.28084f * 10f) / 10f} ft"
+    } else {
+        "${maxDepth}m"
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
+        border = BorderStroke(
+            1.5.dp,
+            Brush.horizontalGradient(
+                listOf(
+                    AquaCyan.copy(alpha = 0.7f),
+                    OceanPrimary.copy(alpha = 0.6f),
+                    SeaGreen.copy(alpha = 0.5f)
+                )
+            )
+        )
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            // Top Cockpit Bar: Telemetry Status & Verified Ratio Badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(
-                        text = strings.logbookHeroTitle,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(SeaGreen, CircleShape)
+                        )
+                        Text(
+                            text = "DIVE COMPUTER // TELEMETRY LINKED",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                            color = AquaCyan
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = diverName,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Black,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = SeaGreen.copy(alpha = 0.12f),
-                    border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
+                    color = SeaGreen.copy(alpha = 0.15f),
+                    border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(5.dp))
+                        Icon(
+                            Icons.Rounded.Verified,
+                            contentDescription = null,
+                            tint = SeaGreen,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Column {
+                            Text(
+                                text = "$verifiedDives/$totalDives ${strings.verifiedDives}",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = SeaGreen,
+                                fontSize = 10.sp
+                            )
+                            Text(
+                                text = "$verifiedRatioPercent% VERIFIED",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Black,
+                                color = SeaGreen.copy(alpha = 0.8f),
+                                fontSize = 8.sp
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Tactile Metric Tiles (2x2 Cockpit Grid)
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    HeroStatItem(
+                        modifier = Modifier.weight(1f),
+                        label = strings.totalDives,
+                        value = "$totalDives",
+                        subLabel = "LOGBOOK DIVES",
+                        icon = Icons.Rounded.Water,
+                        accentColor = MaterialTheme.colorScheme.primary
+                    )
+                    HeroStatItem(
+                        modifier = Modifier.weight(1f),
+                        label = strings.maxDepth,
+                        value = maxDepthStr,
+                        subLabel = "DEEPEST RECORD",
+                        icon = Icons.Rounded.Speed,
+                        accentColor = AquaCyan
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    HeroStatItem(
+                        modifier = Modifier.weight(1f),
+                        label = strings.bottomTime,
+                        value = "${totalHours}h ${totalMinutes}m",
+                        subLabel = "DEPLOYED TIME",
+                        icon = Icons.Rounded.Timer,
+                        accentColor = SeaGreen
+                    )
+                    HeroStatItem(
+                        modifier = Modifier.weight(1f),
+                        label = strings.verifiedDives,
+                        value = "$verifiedDives / $totalDives",
+                        subLabel = "$verifiedRatioPercent% CLEAR",
+                        icon = Icons.Rounded.Shield,
+                        accentColor = SandGold
+                    )
+                }
+            }
+
+            // Cockpit Safety & Algorithm Status Strip
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.6f),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Rounded.Security,
+                            contentDescription = null,
+                            tint = AquaCyan,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "$verifiedDives/$totalDives ${strings.verifiedDives}",
-                            style = MaterialTheme.typography.labelSmall,
+                            text = "ZH-L16C DECO ENGINE",
+                            fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
-                            color = SeaGreen
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        text = "CE EN 13319 TELEMETRY",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Expandable Cockpit Analytics Breakdown Card:
+ * - Average depth across all dives
+ * - Average bottom time per dive
+ * - Total accumulated dive hours & minutes
+ * - Top / Favorite dive site with dive count
+ */
+@Composable
+private fun LogbookAnalyticsBreakdownCard(
+    avgDepth: Float,
+    avgDuration: Int,
+    totalHours: Int,
+    totalMinutes: Int,
+    totalDives: Int,
+    favoriteSiteName: String,
+    favoriteSiteCount: Int,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    isImperial: Boolean = false,
+    isGerman: Boolean = false
+) {
+    val scaleToFt = 3.28084f
+    val avgDepthStr = if (isImperial) {
+        "${kotlin.math.round(avgDepth * scaleToFt * 10f) / 10f} ft"
+    } else {
+        "${kotlin.math.round(avgDepth * 10f) / 10f} m"
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .animateContentSize(),
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            // Header Row with Expand / Collapse Toggle
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onToggleExpand() },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.size(30.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Rounded.Analytics,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                    Column {
+                        Text(
+                            text = if (isGerman) "COCKPIT-STATISTIK" else "COCKPIT ANALYTICS BREAKDOWN",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 0.8.sp,
+                            color = AquaCyan
+                        )
+                        Text(
+                            text = if (isGerman) "Durchschnitte & Top-Tauchplätze" else "Fleet Averages & Dive Records",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = onToggleExpand,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                        contentDescription = "Toggle Analytics",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            AnimatedVisibility(visible = isExpanded) {
+                Column(
+                    modifier = Modifier.padding(top = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        AnalyticsMetricTile(
+                            modifier = Modifier.weight(1f),
+                            title = if (isGerman) "Ø Tauchtiefe" else "Avg Depth",
+                            value = avgDepthStr,
+                            subLabel = if (isGerman) "Durchschnitt aller Logs" else "All dives mean",
+                            icon = Icons.Rounded.Speed,
+                            accentColor = AquaCyan
+                        )
+                        AnalyticsMetricTile(
+                            modifier = Modifier.weight(1f),
+                            title = if (isGerman) "Ø Grundzeit" else "Avg Bottom Time",
+                            value = "$avgDuration min",
+                            subLabel = if (isGerman) "Pro Tauchgang" else "Per dive average",
+                            icon = Icons.Rounded.Timer,
+                            accentColor = SeaGreen
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        AnalyticsMetricTile(
+                            modifier = Modifier.weight(1f),
+                            title = if (isGerman) "Gesamte Tauchzeit" else "Total Dive Time",
+                            value = "${totalHours}h ${totalMinutes}m",
+                            subLabel = if (isGerman) "$totalDives Tauchgänge geloggt" else "$totalDives dives logged",
+                            icon = Icons.Rounded.Water,
+                            accentColor = MaterialTheme.colorScheme.primary
+                        )
+                        AnalyticsMetricTile(
+                            modifier = Modifier.weight(1f),
+                            title = if (isGerman) "Top Tauchplatz" else "Favorite Site",
+                            value = favoriteSiteName,
+                            subLabel = if (isGerman) "$favoriteSiteCount Tauchgänge" else "$favoriteSiteCount dives logged",
+                            icon = Icons.Rounded.Place,
+                            accentColor = SandGold
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            if (!isExpanded) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Ø $avgDepthStr • Ø $avgDuration min • $favoriteSiteName ($favoriteSiteCount)",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                        maxLines = 1
+                    )
+                    Text(
+                        text = if (isGerman) "Tippen zum Öffnen" else "Tap to expand",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AquaCyan
+                    )
+                }
+            }
+        }
+    }
+}
 
-            // 3 Key Stats
+@Composable
+private fun AnalyticsMetricTile(
+    title: String,
+    value: String,
+    subLabel: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    accentColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.35f))
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                HeroStatItem(
-                    label = strings.totalDives,
-                    value = "$totalDives",
-                    icon = Icons.Rounded.Water,
-                    iconTint = MaterialTheme.colorScheme.primary
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
                 )
-                HeroStatItem(
-                    label = strings.maxDepth,
-                    value = if (isImperial) {
-                        "${kotlin.math.round(maxDepth * 3.28084f * 10f) / 10f} ft"
-                    } else {
-                        "${maxDepth}m"
-                    },
-                    icon = Icons.Rounded.Speed,
-                    iconTint = AquaCyan
-                )
-                HeroStatItem(
-                    label = strings.bottomTime,
-                    value = "${totalHours}h ${totalMinutes}m",
-                    icon = Icons.Rounded.Timer,
-                    iconTint = SeaGreen
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = accentColor,
+                    modifier = Modifier.size(14.dp)
                 )
             }
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1
+            )
+            Text(
+                text = subLabel,
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 8.sp,
+                fontWeight = FontWeight.Bold,
+                color = accentColor,
+                maxLines = 1
+            )
         }
     }
 }
@@ -461,43 +1013,73 @@ private fun LogbookHeaderHero(
 private fun HeroStatItem(
     label: String,
     value: String,
+    subLabel: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    iconTint: Color = MaterialTheme.colorScheme.primary
+    accentColor: Color,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-        modifier = Modifier.width(102.dp)
+        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.35f)),
+        modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Surface(
-                modifier = Modifier.size(32.dp),
-                shape = CircleShape,
-                color = iconTint.copy(alpha = 0.14f)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
+                Surface(
+                    modifier = Modifier.size(32.dp),
+                    shape = CircleShape,
+                    color = accentColor.copy(alpha = 0.15f),
+                    border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f))
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(icon, contentDescription = null, tint = accentColor, modifier = Modifier.size(16.dp))
+                    }
                 }
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(accentColor, CircleShape)
+                )
             }
+
+            Spacer(modifier = Modifier.height(2.dp))
+
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1
             )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 10.sp,
-                maxLines = 1
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 10.sp,
+                    maxLines = 1
+                )
+                Text(
+                    text = subLabel,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = accentColor,
+                    fontSize = 8.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
@@ -524,37 +1106,12 @@ private fun FilterChipsRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(filters.size) { index ->
-            val label = filters[index]
-            val isSelected = selectedIndex == index
-            val animatedBg by animateColorAsState(
-                targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer,
-                animationSpec = tween(200),
-                label = "filter_chip_bg_$index"
+            ScubaFilterChip(
+                label = filters[index],
+                isSelected = selectedIndex == index,
+                onClick = { onSelectIndex(index) },
+                testTag = "filter_chip_$index"
             )
-            val animatedTextColor by animateColorAsState(
-                targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                animationSpec = tween(200),
-                label = "filter_chip_text_$index"
-            )
-            val animatedBorder = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
-
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = animatedBg,
-                border = animatedBorder,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable { onSelectIndex(index) }
-                    .testTag("filter_chip_$index")
-            ) {
-                Text(
-                    text = label,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                    color = animatedTextColor
-                )
-            }
         }
     }
 }
@@ -572,6 +1129,64 @@ fun DiveLogCard(
     isImperial: Boolean = false
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
+    val context = LocalContext.current
+
+    // Parse tank volume to compute SAC rate
+    val tankLiters = remember(dive.tankType) {
+        val t = dive.tankType.lowercase()
+        when {
+            t.contains("15") -> 15.0f
+            t.contains("10") -> 10.0f
+            t.contains("80") || t.contains("11") -> 11.1f
+            t.contains("7") -> 7.0f
+            else -> 12.0f
+        }
+    }
+
+    val sacRateStr = remember(dive, tankLiters, isImperial) {
+        if (dive.pressureInBar > dive.pressureOutBar && dive.durationMinutes > 0 && dive.avgDepthMeters > 0) {
+            val deltaBar = (dive.pressureInBar - dive.pressureOutBar).toFloat()
+            val ambientAta = 1.0f + (dive.avgDepthMeters / 10.0f)
+            val sacBarPerMin = deltaBar / (ambientAta * dive.durationMinutes.toFloat())
+            val sacLitersPerMin = sacBarPerMin * tankLiters
+            if (isImperial) {
+                val cuFt = sacLitersPerMin / 28.3168f
+                "${kotlin.math.round(cuFt * 100f) / 100f} cu ft/m"
+            } else {
+                "${kotlin.math.round(sacLitersPerMin * 10f) / 10f} L/m"
+            }
+        } else null
+    }
+
+    val maxDepthStr = if (isImperial) {
+        "${kotlin.math.round(dive.maxDepthMeters * 3.28084f * 10f) / 10f} ft"
+    } else {
+        "${dive.maxDepthMeters}m"
+    }
+    val avgDepthStr = if (isImperial) {
+        "${kotlin.math.round(dive.avgDepthMeters * 3.28084f * 10f) / 10f} ft"
+    } else {
+        "${dive.avgDepthMeters}m"
+    }
+    val waterTempStr = if (isImperial) {
+        "${kotlin.math.round(dive.waterTempCelsius * 1.8f + 32f).toInt()}°F"
+    } else {
+        "${dive.waterTempCelsius}°C"
+    }
+    val pressureUsedStr = if (isImperial) {
+        "${kotlin.math.round((dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0) * 14.5038f).toInt()} PSI"
+    } else {
+        "${(dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0)} bar"
+    }
+    val visibilityStr = if (isImperial) {
+        "${kotlin.math.round(dive.visibilityMeters * 3.28084f).toInt()}ft Vis"
+    } else {
+        "${dive.visibilityMeters}m Vis"
+    }
+    val isNitrox = dive.gasType.contains("EAN", ignoreCase = true) || dive.gasType.contains("Nitrox", ignoreCase = true)
+
     Card(
         onClick = onClick,
         modifier = modifier
@@ -579,34 +1194,43 @@ fun DiveLogCard(
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .animateContentSize()
             .testTag("dive_card_${dive.diveNumber}"),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             // Header: Dive Number pill + Date + Entry Type
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                     ) {
                         Text(
                             text = "${strings.diveNumberPrefix}${dive.diveNumber}",
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Black,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = dive.date,
+                        text = "${dive.date} • ${dive.timeIn}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -621,90 +1245,264 @@ fun DiveLogCard(
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 10.sp
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-
             // Site Name & Location
-            Text(
-                text = dive.siteName,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Rounded.Place,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = dive.location,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
+                    text = dive.siteName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Rounded.Place,
+                        contentDescription = null,
+                        tint = OceanPrimary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = dive.location,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            // Visual Depth Indicator Bar
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.7f),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Rounded.Speed,
+                                contentDescription = null,
+                                tint = AquaCyan,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "DEPTH PROFILE",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Black,
+                                color = AquaCyan,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                        Text(
+                            text = "MAX: $maxDepthStr • AVG: $avgDepthStr",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.6f))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(fraction = (dive.maxDepthMeters / 40f).coerceIn(0.06f, 1f))
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(
+                                    Brush.horizontalGradient(
+                                        listOf(
+                                            AquaCyan,
+                                            OceanPrimary,
+                                            DepthNavy
+                                        )
+                                    )
+                                )
+                        )
+                    }
+                }
+            }
 
-            // Telemetry Pills Row
-            val maxDepthStr = if (isImperial) {
-                "${kotlin.math.round(dive.maxDepthMeters * 3.28084f * 10f) / 10f} ft"
-            } else {
-                "${dive.maxDepthMeters}m"
-            }
-            val waterTempStr = if (isImperial) {
-                "${kotlin.math.round(dive.waterTempCelsius * 1.8f + 32f).toInt()}°F"
-            } else {
-                "${dive.waterTempCelsius}°C"
-            }
-            val pressureUsedStr = if (isImperial) {
-                "${kotlin.math.round((dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0) * 14.5038f).toInt()} PSI"
-            } else {
-                "${(dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0)} bar"
+            // Gas Badges Row (Nitrox vs Air + Tank Type)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isNitrox) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFF064E3B).copy(alpha = 0.35f),
+                        border = BorderStroke(1.2.dp, SandGold)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(SandGold, CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = "NITROX: ${dive.gasType.uppercase()}",
+                                fontWeight = FontWeight.Black,
+                                fontSize = 10.sp,
+                                color = SandGold
+                            )
+                        }
+                    }
+                } else {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = OceanPrimary.copy(alpha = 0.12f),
+                        border = BorderStroke(1.dp, OceanPrimary.copy(alpha = 0.4f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Rounded.Air,
+                                contentDescription = null,
+                                tint = OceanPrimary,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "AIR (21% O₂)",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                color = OceanPrimary
+                            )
+                        }
+                    }
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                ) {
+                    Text(
+                        text = dive.tankType,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+                    )
+                }
             }
 
+            // Telemetry Pills Row: Water Temp, Visibility, Duration, Gas Pressure Used
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                MiniPill(icon = Icons.Rounded.Water, label = maxDepthStr)
-                MiniPill(icon = Icons.Rounded.Timer, label = "${dive.durationMinutes}m")
                 MiniPill(icon = Icons.Rounded.Thermostat, label = waterTempStr)
-                MiniPill(icon = Icons.Rounded.Air, label = pressureUsedStr)
+                MiniPill(icon = Icons.Rounded.Visibility, label = visibilityStr)
+                MiniPill(icon = Icons.Rounded.Timer, label = "${dive.durationMinutes}m")
+                MiniPill(icon = Icons.Rounded.Speed, label = pressureUsedStr)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            // SAC Rate Telemetry Pill (if sufficient telemetry recorded)
+            if (sacRateStr != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    MiniPill(
+                        icon = Icons.Rounded.Air,
+                        label = "SAC: $sacRateStr",
+                        accentColor = AquaCyan
+                    )
+                }
+            }
 
-            // VERIFICATION BADGE & ACTION ROW
+            // CRISP OFFICIAL VERIFICATION BADGE & ACTION ROW
             when (dive.approvalStatus) {
                 "APPROVED_BY_INSTRUCTOR" -> {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = SeaGreen.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
+                        border = BorderStroke(1.5.dp, SeaGreen.copy(alpha = 0.7f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(Icons.Rounded.Verified, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "${strings.verifiedByInstructor}: ${dive.instructorName.ifBlank { "Adrian Scheid" }} (${strings.qrVerifiedLabel})",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = SeaGreen,
-                                fontSize = 11.sp
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = SeaGreen.copy(alpha = 0.2f),
+                                    border = BorderStroke(1.dp, SeaGreen),
+                                    modifier = Modifier.size(34.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            Icons.Rounded.Verified,
+                                            contentDescription = null,
+                                            tint = SeaGreen,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        text = "OFFICIAL INSTRUCTOR VERIFIED",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Black,
+                                        color = SeaGreen,
+                                        fontSize = 10.sp,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                    Text(
+                                        text = "${dive.instructorName.ifBlank { "Adrian Scheid" }} • ${dive.instructorLicense.ifBlank { "CMAS / VDST TL2" }}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = SeaGreen.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f))
+                            ) {
+                                Text(
+                                    text = "SEAL #${dive.qrStampCode.ifBlank { "AQ-8821" }.takeLast(8)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = SeaGreen,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -713,22 +1511,45 @@ fun DiveLogCard(
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = AquaCyan.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.35f)),
+                        border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.6f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Rounded.Draw, contentDescription = null, tint = AquaCyan, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "${strings.verifiedByBuddySig} ${dive.approvedBy.ifBlank { dive.buddyName }}",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 11.sp
-                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = AquaCyan.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, AquaCyan),
+                                modifier = Modifier.size(34.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.Draw,
+                                        contentDescription = null,
+                                        tint = AquaCyan,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "OFFICIAL BUDDY SIGNATURE SEAL",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Black,
+                                    color = AquaCyan,
+                                    fontSize = 10.sp
+                                )
+                                Text(
+                                    text = "${strings.verifiedByBuddySig} ${dive.approvedBy.ifBlank { dive.buddyName }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = 11.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -737,22 +1558,45 @@ fun DiveLogCard(
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = SeaGreen.copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
+                        border = BorderStroke(1.2.dp, SeaGreen.copy(alpha = 0.6f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Rounded.NotificationsActive, contentDescription = null, tint = SeaGreen, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "${strings.verifiedByBuddyPush} ${dive.approvedBy.ifBlank { dive.buddyName }}",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = SeaGreen,
-                                fontSize = 11.sp
-                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = SeaGreen.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, SeaGreen),
+                                modifier = Modifier.size(34.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.NotificationsActive,
+                                        contentDescription = null,
+                                        tint = SeaGreen,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "TELEMETRY PUSH CONFIRMED",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Black,
+                                    color = SeaGreen,
+                                    fontSize = 10.sp
+                                )
+                                Text(
+                                    text = "${strings.verifiedByBuddyPush} ${dive.approvedBy.ifBlank { dive.buddyName }}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontSize = 11.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -767,7 +1611,12 @@ fun DiveLogCard(
                     ) {
                         Column(modifier = Modifier.padding(10.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Rounded.Security, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(16.dp))
+                                Icon(
+                                    Icons.Rounded.Security,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.size(16.dp)
+                                )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = strings.pendingVerification,
@@ -781,49 +1630,59 @@ fun DiveLogCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Surface(
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .clickable { onApproveQrClick() }
-                                        .testTag("card_action_qr_${dive.diveNumber}")
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(Icons.Rounded.QrCodeScanner, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(text = strings.scanQr, color = MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                    }
-                                }
+                                ScubaCompactButton(
+                                    text = strings.scanQr,
+                                    icon = Icons.Rounded.QrCodeScanner,
+                                    onClick = { onApproveQrClick() },
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    borderColor = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.weight(1f),
+                                    testTag = "card_action_qr_${dive.diveNumber}"
+                                )
 
-                                Surface(
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = SeaGreen,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .clickable { onApproveBuddyClick() }
-                                        .testTag("card_action_buddy_${dive.diveNumber}")
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(Icons.Rounded.Draw, contentDescription = null, tint = Color(0xFF00382E), modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(text = strings.buddySign, color = Color(0xFF00382E), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                    }
-                                }
+                                ScubaCompactButton(
+                                    text = strings.buddySign,
+                                    icon = Icons.Rounded.Draw,
+                                    onClick = { onApproveBuddyClick() },
+                                    containerColor = SeaGreen,
+                                    contentColor = Color(0xFF00382E),
+                                    borderColor = SeaGreen,
+                                    modifier = Modifier.weight(1f),
+                                    testTag = "card_action_buddy_${dive.diveNumber}"
+                                )
                             }
                         }
                     }
                 }
+            }
+
+            // Standardized Action Buttons: Details & Share (36.dp height, 10.dp radius)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ScubaCompactButton(
+                    text = strings.showDetails,
+                    icon = Icons.Rounded.Info,
+                    onClick = { onClick() },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = AquaCyan,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.weight(1f),
+                    testTag = "card_details_dive_${dive.diveNumber}"
+                )
+
+                ScubaCompactButton(
+                    text = if (isGerman) "Teilen" else "Share",
+                    icon = Icons.Rounded.Share,
+                    onClick = { shareDiveLog(context, dive, isImperial) },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    testTag = "card_share_dive_${dive.diveNumber}"
+                )
             }
         }
     }
@@ -832,7 +1691,8 @@ fun DiveLogCard(
 @Composable
 private fun MiniPill(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String
+    label: String,
+    accentColor: Color = AquaCyan
 ) {
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -843,7 +1703,12 @@ private fun MiniPill(
             modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.primary)
+            Icon(
+                icon,
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+                tint = accentColor
+            )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = label,

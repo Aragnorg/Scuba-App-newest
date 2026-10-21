@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -95,6 +99,9 @@ fun StudentEnvironment(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
                 navigationIcon = {
                     Box(
                         modifier = Modifier
@@ -106,7 +113,7 @@ fun StudentEnvironment(
                             displayName = studentName,
                             size = 38.dp,
                             borderWidth = 2.dp,
-                            borderColor = if (hasExpirationAlerts) Color(0xFFE53E3E) else SeaGreen,
+                            borderColor = if (hasExpirationAlerts) Color(0xFFE53E3E) else AquaCyan,
                             hasAlertBadge = hasExpirationAlerts,
                             alertBadgeColor = Color(0xFFE53E3E),
                             onClick = { showProfileModal = true }
@@ -126,14 +133,14 @@ fun StudentEnvironment(
                                 else -> strings.tabLogbook
                             },
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Black,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+                            color = AquaCyan.copy(alpha = 0.12f),
+                            border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.5f)),
                             modifier = Modifier.testTag("student_profile_pill_badge")
                         ) {
                             Row(
@@ -143,7 +150,7 @@ fun StudentEnvironment(
                                 Icon(
                                     Icons.Rounded.CheckCircle,
                                     contentDescription = strings.studentLabel,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = AquaCyan,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -151,8 +158,8 @@ fun StudentEnvironment(
                                     text = studentName,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Black,
+                                    color = AquaCyan,
                                     maxLines = 1
                                 )
                             }
@@ -160,15 +167,18 @@ fun StudentEnvironment(
                     }
                 },
                 actions = {
-                    // Quick Profile & Documents Button
+                    // Quick Profile & Documents Button (Standardized 40.dp with 20.dp icon)
                     IconButton(
                         onClick = { showProfileModal = true },
-                        modifier = Modifier.testTag("quick_profile_menu_action_btn")
+                        modifier = Modifier
+                            .size(40.dp)
+                            .testTag("quick_profile_menu_action_btn")
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Person,
                             contentDescription = strings.profileTitle,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = AquaCyan,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
 
@@ -179,80 +189,96 @@ fun StudentEnvironment(
                         modifier = Modifier.padding(end = 4.dp)
                     )
 
-                    // Sign Out
+                    // Sign Out (Standardized 40.dp with 20.dp icon)
                     IconButton(
                         onClick = { viewModel.logout() },
-                        modifier = Modifier.testTag("student_logout_button")
+                        modifier = Modifier
+                            .size(40.dp)
+                            .testTag("student_logout_button")
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Logout,
                             contentDescription = strings.signOut,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
             )
         },
         bottomBar = {
-            NavigationBar(
-                modifier = Modifier.testTag("student_navigation_bar"),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                tonalElevation = 0.dp
+            val navItemColors = NavigationBarItemDefaults.colors(
+                indicatorColor = AquaCyan.copy(alpha = 0.22f),
+                selectedIconColor = AquaCyan,
+                selectedTextColor = AquaCyan,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
             ) {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.School,
-                            contentDescription = strings.tabLearn
+                Surface(
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    tonalElevation = 6.dp,
+                    shadowElevation = 8.dp,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    NavigationBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp)
+                            .testTag("student_navigation_bar"),
+                        containerColor = Color.Transparent,
+                        tonalElevation = 0.dp
+                    ) {
+                        val tabs = listOf(
+                            Triple(0, strings.tabLearn, Icons.Rounded.School),
+                            Triple(1, strings.tabExcursions, Icons.Rounded.DirectionsBoat),
+                            Triple(2, strings.tabDivePlanning, Icons.Rounded.Explore),
+                            Triple(3, strings.tabLogbook, Icons.Rounded.MenuBook)
                         )
-                    },
-                    label = { Text(strings.tabLearn) },
-                    modifier = Modifier.testTag("nav_student_learn")
-                )
-
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.DirectionsBoat,
-                            contentDescription = strings.tabExcursions
-                        )
-                    },
-                    label = { Text(strings.tabExcursions) },
-                    modifier = Modifier.testTag("nav_student_excursions")
-                )
-
-                NavigationBarItem(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Explore,
-                            contentDescription = strings.tabDivePlanning
-                        )
-                    },
-                    label = { Text(strings.tabDivePlanning) },
-                    modifier = Modifier.testTag("nav_student_planning")
-                )
-
-                NavigationBarItem(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.MenuBook,
-                            contentDescription = strings.tabLogbook
-                        )
-                    },
-                    label = { Text(strings.tabLogbook) },
-                    modifier = Modifier.testTag("nav_student_logbook")
-                )
+                        tabs.forEach { (index, title, icon) ->
+                            val isSelected = selectedTab == index
+                            val testTag = when (index) {
+                                0 -> "nav_student_learn"
+                                1 -> "nav_student_excursions"
+                                2 -> "nav_student_planning"
+                                else -> "nav_student_logbook"
+                            }
+                            NavigationBarItem(
+                                selected = isSelected,
+                                onClick = { selectedTab = index },
+                                colors = navItemColors,
+                                icon = {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = title,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = title,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        maxLines = 1
+                                    )
+                                },
+                                modifier = Modifier.testTag(testTag)
+                            )
+                        }
+                    }
+                }
             }
         }
     ) { innerPadding ->

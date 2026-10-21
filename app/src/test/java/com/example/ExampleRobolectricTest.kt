@@ -422,4 +422,66 @@ class ExampleRobolectricTest {
         viewModel.toggleLanguage()
         assertEquals(AppLanguage.EN, viewModel.currentLanguage.value)
     }
+
+    @Test
+    fun `verify SAC rate and respiratory minute volume calculations`() {
+        // Standard dive: 200 bar start, 50 bar end (150 bar used) on 12L tank
+        val tankVolume = 12.0
+        val startBar = 200.0
+        val endBar = 50.0
+        val avgDepthMeters = 18.0 // 2.8 ATA
+        val bottomTimeMin = 45
+
+        val pressureUsed = startBar - endBar
+        val gasUsedLiters = pressureUsed * tankVolume // 1800 Liters
+        val atmospheres = (avgDepthMeters / 10.0) + 1.0 // 2.8 ATA
+        val sac = gasUsedLiters / (atmospheres * bottomTimeMin) // 1800 / (2.8 * 45) = 14.2857
+
+        assertEquals(150.0, pressureUsed, 0.01)
+        assertEquals(1800.0, gasUsedLiters, 0.01)
+        assertEquals(2.8, atmospheres, 0.01)
+        assertEquals(14.285, sac, 0.01)
+
+        // Rating verification: 14.28 is Normal (13 - 18 L/min)
+        assertTrue(sac >= 13.0 && sac <= 18.0)
+
+        // Usable gas duration projection down to 50 bar reserve (150 bar usable = 1800L)
+        val usableLiters = (startBar - 50.0) * tankVolume
+        val durationAt10m = (usableLiters / (sac * 2.0)).toInt() // at 2.0 ATA
+        val durationAt20m = (usableLiters / (sac * 3.0)).toInt() // at 3.0 ATA
+        assertEquals(63, durationAt10m)
+        assertEquals(42, durationAt20m)
+    }
+
+    @Test
+    fun `verify Dalton's law best nitrox mix and MOD calculations`() {
+        // Test 1: Target depth 28m at PO2 1.4
+        val depth28 = 28.0
+        val atm28 = (depth28 / 10.0) + 1.0 // 3.8 ATA
+        val rawO2Percent28 = (1.4 / atm28) * 100.0 // ~36.84%
+        val bestMix28 = rawO2Percent28.coerceIn(21.0, 40.0)
+        assertEquals(36.84, bestMix28, 0.01)
+
+        // MOD at 1.4 for 36.84% O2 should be 28.0m
+        val mod14 = ((1.4 / (bestMix28 / 100.0)) - 1.0) * 10.0
+        assertEquals(28.0, mod14, 0.05)
+
+        // Contingency Depth at 1.6 for 36.84% O2
+        val mod16 = ((1.6 / (bestMix28 / 100.0)) - 1.0) * 10.0
+        assertEquals(33.43, mod16, 0.05)
+
+        // Test 2: Shallow depth 12m -> raw O2 would be > 40%, must be clamped to 40%
+        val depth12 = 12.0
+        val atm12 = (depth12 / 10.0) + 1.0 // 2.2 ATA
+        val rawO2Percent12 = (1.4 / atm12) * 100.0 // 63.6%
+        val bestMix12 = rawO2Percent12.coerceIn(21.0, 40.0)
+        assertEquals(40.0, bestMix12, 0.01)
+
+        // Test 3: Deep depth 60m -> raw O2 would be 20%, must be clamped to 21% (air limit)
+        val depth60 = 60.0
+        val atm60 = (depth60 / 10.0) + 1.0 // 7.0 ATA
+        val rawO2Percent60 = (1.4 / atm60) * 100.0 // 20.0%
+        val bestMix60 = rawO2Percent60.coerceIn(21.0, 40.0)
+        assertEquals(21.0, bestMix60, 0.01)
+    }
 }

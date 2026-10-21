@@ -29,6 +29,10 @@ import com.example.data.model.StudentRosterEntity
 import com.example.data.model.UserAccountEntity
 import com.example.data.model.UserProgressEntity
 import com.example.data.model.VerificationEmailMessage
+import com.example.data.model.DiveSpot
+import com.example.data.model.EmergencyInfo
+import com.example.data.model.PlannedDiveDraft
+import com.example.data.repository.DiveSpotsData
 import com.example.data.repository.DivingRepository
 import com.example.ui.i18n.AppLanguage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +42,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -73,6 +78,15 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _latestVerificationEmail = MutableStateFlow<VerificationEmailMessage?>(null)
     val latestVerificationEmail: StateFlow<VerificationEmailMessage?> = _latestVerificationEmail.asStateFlow()
+
+    private val _passwordResetSuccess = MutableStateFlow<String?>(null)
+    val passwordResetSuccess: StateFlow<String?> = _passwordResetSuccess.asStateFlow()
+
+    private val _passwordResetError = MutableStateFlow<String?>(null)
+    val passwordResetError: StateFlow<String?> = _passwordResetError.asStateFlow()
+
+    private val _latestPasswordResetEmail = MutableStateFlow<VerificationEmailMessage?>(null)
+    val latestPasswordResetEmail: StateFlow<VerificationEmailMessage?> = _latestPasswordResetEmail.asStateFlow()
 
     private val repository: DivingRepository
 
@@ -212,6 +226,78 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         loginUser("adrian.scheid01@gmail.com", "instructor123")
     }
 
+    fun requestPasswordReset(email: String, onCodeDispatched: (VerificationEmailMessage) -> Unit = {}) {
+        _passwordResetError.value = null
+        _passwordResetSuccess.value = null
+        val isDe = _currentLanguage.value == AppLanguage.DE
+        val cleanEmail = email.trim()
+        if (cleanEmail.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(cleanEmail).matches()) {
+            _passwordResetError.value = if (isDe) "Bitte gib eine gültige E-Mail-Adresse ein." else "Please enter a valid email address."
+            return
+        }
+
+        viewModelScope.launch {
+            val result = repository.requestPasswordReset(cleanEmail)
+            result.fold(
+                onSuccess = { emailMessage ->
+                    _latestPasswordResetEmail.value = emailMessage
+                    _passwordResetSuccess.value = if (isDe) {
+                        "Sicherheitscode wurde offiziell von Adrian Scheid an $cleanEmail gesendet!"
+                    } else {
+                        "Security reset code dispatched by Adrian Scheid to $cleanEmail!"
+                    }
+                    onCodeDispatched(emailMessage)
+                },
+                onFailure = { err ->
+                    _passwordResetError.value = err.message ?: if (isDe) "Passwort-Zurücksetzen fehlgeschlagen." else "Password reset request failed."
+                }
+            )
+        }
+    }
+
+    fun confirmPasswordReset(email: String, code: String, newPasswordPlain: String, onSuccess: () -> Unit = {}) {
+        _passwordResetError.value = null
+        _passwordResetSuccess.value = null
+        val isDe = _currentLanguage.value == AppLanguage.DE
+        val cleanCode = code.trim()
+        if (cleanCode.length != 6 || !cleanCode.all { it.isDigit() }) {
+            _passwordResetError.value = if (isDe) "Bitte gib den 6-stelligen Code ein." else "Please enter the 6-digit code."
+            return
+        }
+        if (newPasswordPlain.length < 6) {
+            _passwordResetError.value = if (isDe) "Das neue Passwort muss mindestens 6 Zeichen lang sein." else "New password must be at least 6 characters."
+            return
+        }
+
+        viewModelScope.launch {
+            val result = repository.resetPasswordWithCode(email.trim(), cleanCode, newPasswordPlain)
+            result.fold(
+                onSuccess = { account ->
+                    _passwordResetSuccess.value = if (isDe) {
+                        "Passwort erfolgreich geändert! Bitte logge dich ein."
+                    } else {
+                        "Password reset successfully! Please sign in."
+                    }
+                    _authSuccess.value = if (isDe) {
+                        "Passwort für ${account.email} aktualisiert. Du kannst dich jetzt einloggen."
+                    } else {
+                        "Password for ${account.email} updated. You can now sign in."
+                    }
+                    onSuccess()
+                },
+                onFailure = { err ->
+                    _passwordResetError.value = err.message ?: if (isDe) "Code oder E-Mail ungültig." else "Invalid reset code or email."
+                }
+            )
+        }
+    }
+
+    fun clearPasswordResetState() {
+        _passwordResetError.value = null
+        _passwordResetSuccess.value = null
+        _latestPasswordResetEmail.value = null
+    }
+
     fun verifyUserEmail(email: String, code: String) {
         _authError.value = null
         _authSuccess.value = null
@@ -334,19 +420,40 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun switchUserRole(newRole: String) {
-        val user = _currentUser.value ?: return
-        val updated = user.copy(role = newRole)
-        _currentUser.value = updated
-        if (newRole != "INSTRUCTOR") {
-            selectOrganization(null)
-        }
         viewModelScope.launch {
-            repository.updateUserAccount(updated)
+            val current = _currentUser.value
+            val isDemoAccount = current == null || current.id == "usr_adrian_instructor" || current.id == "usr_leo_student"
+            val targetUser = if (isDemoAccount) {
+                val targetEmail = if (newRole == "INSTRUCTOR") "adrian.scheid01@gmail.com" else "leo.chen@diver.com"
+                repository.getAccountByEmailDirect(targetEmail) ?: current?.copy(
+                    role = newRole,
+                    fullName = if (newRole == "INSTRUCTOR") "Adrian Scheid" else "Leo Chen",
+                    email = targetEmail
+                ) ?: UserAccountEntity(
+                    id = if (newRole == "INSTRUCTOR") "usr_adrian_instructor" else "usr_leo_student",
+                    email = targetEmail,
+                    fullName = if (newRole == "INSTRUCTOR") "Adrian Scheid" else "Leo Chen",
+                    role = newRole
+                )
+            } else {
+                current.copy(role = newRole)
+            }
+
+            prefs.edit().putString("logged_in_user_id", targetUser.id).apply()
+            _currentUser.value = targetUser
+            _authState.value = AuthState.Authenticated(targetUser)
+            if (newRole != "INSTRUCTOR") {
+                selectOrganization(null)
+            }
+            repository.updateUserAccount(targetUser)
+            repository.updateStudentName(targetUser.fullName)
         }
     }
 
     fun updateFullUserProfile(updated: UserAccountEntity) {
         _currentUser.value = updated
+        _authState.value = AuthState.Authenticated(updated)
+        prefs.edit().putString("logged_in_user_id", updated.id).apply()
         viewModelScope.launch {
             repository.updateUserAccount(updated)
             repository.updateStudentName(updated.fullName)
@@ -389,6 +496,17 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     // Dive Logbook State Flows
     val allDiveLogs: StateFlow<List<DiveLogEntity>> = repository.allDiveLogs
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // --- Custom Dive Spots & Mission Planning State Flows ---
+    private val _customDiveSpots = MutableStateFlow<List<DiveSpot>>(emptyList())
+    val customDiveSpots: StateFlow<List<DiveSpot>> = _customDiveSpots.asStateFlow()
+
+    val allDiveSpots: StateFlow<List<DiveSpot>> = _customDiveSpots.map { custom ->
+        custom + DiveSpotsData.allDiveSpots
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, DiveSpotsData.allDiveSpots)
+
+    private val _plannedDiveDraft = MutableStateFlow<PlannedDiveDraft?>(null)
+    val plannedDiveDraft: StateFlow<PlannedDiveDraft?> = _plannedDiveDraft.asStateFlow()
 
     // --- Multi-Tenant Organization & DiveOps State Flows ---
     val allOrganizations: StateFlow<List<OrganizationEntity>> = repository.allOrganizations
@@ -1646,6 +1764,12 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun markPresentationProgress(presentationId: String, isCompleted: Boolean = true) {
+        viewModelScope.launch {
+            repository.savePresentationProgress(presentationId, 0, isCompleted)
+        }
+    }
+
     // Active Video Player
     private val _activeVideo = MutableStateFlow<LearningVideoEntity?>(null)
     val activeVideo: StateFlow<LearningVideoEntity?> = _activeVideo.asStateFlow()
@@ -1777,6 +1901,9 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun recordQuizAttempt(quizId: String, scorePercentage: Int, isPassed: Boolean) {
+        _finalScorePercentage.value = scorePercentage
+        _isPassedQuiz.value = isPassed
+        _quizCompleted.value = true
         viewModelScope.launch {
             repository.recordQuizAttempt(quizId, scorePercentage, isPassed)
         }
@@ -1793,26 +1920,30 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         _quizCompleted.value = false
     }
 
-    // Exam Readiness Score (0 - 100%)
+    // Exam Readiness Score (0 - 100%) dynamically scaling 33%, 66%, 100%
     val examReadiness: StateFlow<Int> = combine(
         allPresentations,
         allVideos,
         allQuizzes
     ) { presList, vidList, quizList ->
-        val presScore = if (presList.isNotEmpty()) {
-            (presList.count { it.isCompleted }.toFloat() / presList.size) * 30f
-        } else 30f
-
-        val vidScore = if (vidList.isNotEmpty()) {
-            (vidList.count { it.isCompleted }.toFloat() / vidList.size) * 30f
-        } else 30f
-
-        val quizScore = if (quizList.isNotEmpty()) {
-            (quizList.count { it.isPassed }.toFloat() / quizList.size) * 40f
-        } else 0f
-
-        (presScore + vidScore + quizScore).toInt().coerceIn(0, 100)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 20)
+        val owdQuizzes = quizList.filter { it.moduleId in listOf("mod_physics", "mod_equipment", "mod_planning") || it.isMockExam }
+        val targetQuizzes = if (owdQuizzes.isNotEmpty()) owdQuizzes else quizList
+        if (targetQuizzes.isNotEmpty()) {
+            val passedCount = targetQuizzes.count { it.isPassed }
+            when {
+                passedCount == 0 -> {
+                    val compPres = presList.count { it.isCompleted }
+                    if (compPres > 0) (compPres.toFloat() / presList.size.coerceAtLeast(1) * 20f).toInt().coerceIn(5, 20) else 0
+                }
+                passedCount == 1 -> 33
+                passedCount == 2 -> 66
+                passedCount >= targetQuizzes.size -> 100
+                else -> ((passedCount.toFloat() / targetQuizzes.size) * 100).toInt().coerceIn(0, 100)
+            }
+        } else {
+            0
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     // Instructor Creation Methods
     fun createPresentation(
@@ -1982,7 +2113,10 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             repository.updateStudentName(name)
             val current = _currentUser.value
             if (current != null) {
-                _currentUser.value = current.copy(fullName = name)
+                val updated = current.copy(fullName = name)
+                _currentUser.value = updated
+                _authState.value = AuthState.Authenticated(updated)
+                repository.updateUserAccount(updated)
             }
         }
     }
@@ -1991,8 +2125,11 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val user = _currentUser.value
             if (user != null) {
+                val updated = user.copy(profilePictureUri = uri)
+                _currentUser.value = updated
+                _authState.value = AuthState.Authenticated(updated)
                 repository.updateProfilePicture(user.id, uri)
-                _currentUser.value = user.copy(profilePictureUri = uri)
+                repository.updateUserAccount(updated)
             } else {
                 repository.updateProfilePicture("usr_student", uri)
             }
@@ -2068,6 +2205,108 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             repository.insertDiveLog(newDive)
             _selectedDiveForDetails.value = newDive
         }
+    }
+
+    fun addCustomDiveSpot(
+        name: String,
+        region: String,
+        country: String,
+        minDepthMeters: Int,
+        maxDepthMeters: Int,
+        difficulty: String,
+        entryType: String,
+        waterType: String,
+        notes: String,
+        emergencyContact: String,
+        latitude: Double = 0.0,
+        longitude: Double = 0.0
+    ) {
+        val newSpot = DiveSpot(
+            id = "custom_spot_${UUID.randomUUID().toString().take(8)}",
+            name = name.trim(),
+            region = region.trim(),
+            country = country.trim(),
+            latitude = latitude,
+            longitude = longitude,
+            minDepthMeters = minDepthMeters,
+            maxDepthMeters = maxDepthMeters,
+            difficulty = difficulty.uppercase(),
+            spotType = if (waterType.equals("FRESH", ignoreCase = true)) "LAKE" else "REEF",
+            entryType = entryType.uppercase(),
+            waterType = waterType.uppercase(),
+            avgVisibilityMeters = 20,
+            currentStrength = "MILD",
+            highlights = if (notes.isNotBlank()) listOf(notes.take(40)) else listOf("Custom Diver Site", "Explorer Spot"),
+            description = notes.ifBlank { "Custom dive site registered by diver." },
+            routeAdvice = "Follow pre-dive briefing and buddy team safety plan.",
+            bestSeason = "All Year Round",
+            emergencyInfo = EmergencyInfo(
+                nearestChamberName = "Local Hyperbaric Chamber / Hospital",
+                chamberLocation = region.ifBlank { country },
+                chamberDistanceKm = 15.0,
+                chamberPhone = emergencyContact.ifBlank { "112 / 911" },
+                coastGuardVHF = "VHF Ch 16",
+                localEmergencyNumber = emergencyContact.ifBlank { "112" },
+                danHotline = "+39-06-695-4000 (DAN Europe) / +1-919-684-9111",
+                localHospitalName = "Nearest Regional Emergency Hospital",
+                localHospitalPhone = emergencyContact.ifBlank { "112" },
+                emergencyNotes = "Emergency contact: ${emergencyContact.ifBlank { "Local Dispatch" }}. 100% O2 rescue protocol.",
+                oxygenOnSite = true
+            ),
+            isCustom = true
+        )
+        _customDiveSpots.value = listOf(newSpot) + _customDiveSpots.value
+    }
+
+    fun addCustomDiveSpot(spot: DiveSpot) {
+        _customDiveSpots.value = listOf(spot.copy(isCustom = true)) + _customDiveSpots.value
+    }
+
+    fun deleteCustomDiveSpot(spotId: String) {
+        _customDiveSpots.value = _customDiveSpots.value.filter { it.id != spotId }
+    }
+
+    fun setPlannedDiveDraft(draft: PlannedDiveDraft?) {
+        _plannedDiveDraft.value = draft
+    }
+
+    fun savePlannedDiveAsLog(
+        draft: PlannedDiveDraft,
+        siteName: String,
+        location: String,
+        notes: String
+    ) {
+        val nextNumber = (allDiveLogs.value.maxOfOrNull { it.diveNumber } ?: 0) + 1
+        val todayDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+        createDiveLog(
+            diveNumber = nextNumber,
+            date = todayDate,
+            timeIn = "10:00",
+            timeOut = "10:${String.format("%02d", draft.plannedBottomTimeMin.coerceIn(0, 59))}",
+            durationMinutes = draft.plannedBottomTimeMin,
+            siteName = siteName.ifBlank { draft.siteName },
+            location = location.ifBlank { draft.location },
+            bodyOfWater = "Ocean",
+            entryType = "Boat",
+            maxDepthMeters = draft.maxDepthMeters,
+            avgDepthMeters = (draft.maxDepthMeters * 0.65f),
+            waterTempCelsius = 24.0f,
+            airTempCelsius = 28.0f,
+            visibilityMeters = 20.0f,
+            gasType = draft.gasType,
+            tankType = "12L Aluminum",
+            pressureInBar = draft.tankStartPressureBar,
+            pressureOutBar = 50,
+            suitType = "5mm Full Suit",
+            weightKg = 6.0f,
+            safetyStopCompleted = true,
+            sightings = "",
+            notes = if (notes.isNotBlank()) notes else "Planned Dive from Gas Calculator. Max Depth: ${draft.maxDepthMeters}m, Gas Mix: ${draft.gasType}, Turn Pressure: ${draft.turnPressureBar} bar.",
+            buddyName = "",
+            buddyEmail = "",
+            diveCenterName = ""
+        )
+        _plannedDiveDraft.value = null
     }
 
     fun approveDiveWithInstructorQr(

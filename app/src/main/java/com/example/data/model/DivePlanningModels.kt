@@ -43,7 +43,8 @@ data class DiveSpot(
     val bestSeason: String,
     val emergencyInfo: EmergencyInfo,
     val mapAnnotations: List<DiveSpotMapAnnotation> = emptyList(),
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val isCustom: Boolean = false
 )
 
 data class GasPlanResult(
@@ -59,4 +60,15 @@ data class GasPlanResult(
     val estimatedGasConsumedBar: Int,
     val isPlanSafe: Boolean,
     val warningMessage: String? = null
+)
+
+data class PlannedDiveDraft(
+    val maxDepthMeters: Float,
+    val gasType: String,
+    val plannedBottomTimeMin: Int,
+    val turnPressureBar: Int = 120,
+    val tankStartPressureBar: Int = 200,
+    val siteName: String = "Planned Technical Dive",
+    val location: String = "Open Water",
+    val notes: String = ""
 )

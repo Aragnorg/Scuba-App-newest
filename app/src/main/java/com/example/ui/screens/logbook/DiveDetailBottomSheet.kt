@@ -1,5 +1,7 @@
 package com.example.ui.screens.logbook
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,11 +31,13 @@ import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.Water
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -44,12 +48,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,11 +67,60 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiveLogEntity
 import com.example.ui.components.SignaturePreview
-import com.example.ui.components.TacticalDiveProfileView
+import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
+import com.example.ui.i18n.LocalCurrentLanguage
 import com.example.ui.theme.AquaCyan
 import com.example.ui.theme.OceanPrimary
+import com.example.ui.theme.SandGold
 import com.example.ui.theme.SeaGreen
+
+/**
+ * Formats a dive log into a clean text summary and launches the Android share sheet.
+ */
+fun shareDiveLog(context: Context, dive: DiveLogEntity, isImperial: Boolean = false) {
+    val scaleToFt = 3.28084f
+    val depthStr = if (isImperial) "${kotlin.math.round(dive.maxDepthMeters * scaleToFt * 10f) / 10f} ft" else "${dive.maxDepthMeters} m"
+    val avgDepthStr = if (isImperial) "${kotlin.math.round(dive.avgDepthMeters * scaleToFt * 10f) / 10f} ft" else "${dive.avgDepthMeters} m"
+    val waterTempStr = if (isImperial) "${kotlin.math.round((dive.waterTempCelsius * 1.8f + 32f) * 10f) / 10f}°F" else "${dive.waterTempCelsius}°C"
+    val approvalText = when (dive.approvalStatus) {
+        "APPROVED_BY_INSTRUCTOR" -> "Verified by Instructor (${dive.instructorName.ifBlank { "Instructor" }})"
+        "APPROVED_BY_BUDDY_SIGNATURE" -> "Verified by Buddy Signature (${dive.approvedBy.ifBlank { dive.buddyName }})"
+        "APPROVED_BY_BUDDY_PUSH" -> "Verified by Buddy Push (${dive.approvedBy.ifBlank { dive.buddyName }})"
+        else -> "Pending Verification"
+    }
+
+    val summary = """
+        🤿 AquaLearn Pro - Dive Log #${dive.diveNumber}
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        📍 Site: ${dive.siteName}
+        🗺️ Location: ${dive.location}
+        📅 Date: ${dive.date} (${dive.timeIn} - ${dive.timeOut})
+        🌊 Water: ${dive.bodyOfWater} (${dive.entryType})
+        
+        📊 Telemetry:
+        • Max Depth: $depthStr (Avg: $avgDepthStr)
+        • Bottom Time: ${dive.durationMinutes} min
+        • Water Temp: $waterTempStr
+        • Gas: ${dive.gasType} (${dive.tankType})
+        • Tank Pressure: ${dive.pressureInBar} bar → ${dive.pressureOutBar} bar (Used: ${(dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0)} bar)
+        • Safety Stop: ${if (dive.safetyStopCompleted) "Completed (${dive.safetyStopMinutes}m @ ${dive.safetyStopDepthMeters}m)" else "Not logged"}
+        
+        👥 Team & Verification:
+        • Buddy: ${dive.buddyName.ifBlank { "None recorded" }}
+        • Status: $approvalText
+        ${if (dive.sightings.isNotBlank()) "🐠 Sightings: ${dive.sightings}\n" else ""}${if (dive.notes.isNotBlank()) "📝 Notes: \"${dive.notes}\"\n" else ""}
+        Logged with AquaLearn Pro Dive Computer Cockpit
+    """.trimIndent()
+
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, summary)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, "Share Dive #${dive.diveNumber} Log")
+    context.startActivity(shareIntent)
+}
 
 @Composable
 fun DiveDetailDialog(
@@ -75,6 +133,34 @@ fun DiveDetailDialog(
     onDismiss: () -> Unit
 ) {
     val strings = LocalAppStrings.current
+    val currentLanguage = LocalCurrentLanguage.current
+    val isGerman = currentLanguage == AppLanguage.DE
+    val context = LocalContext.current
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+
+    val tankLiters = remember(dive.tankType) {
+        val t = dive.tankType.lowercase()
+        when {
+            t.contains("15") -> 15.0f
+            t.contains("10") -> 10.0f
+            t.contains("80") || t.contains("11") -> 11.1f
+            t.contains("7") -> 7.0f
+            else -> 12.0f
+        }
+    }
+
+    val sacRateData = remember(dive, tankLiters) {
+        if (dive.pressureInBar > dive.pressureOutBar && dive.durationMinutes > 0 && dive.avgDepthMeters > 0) {
+            val deltaBar = (dive.pressureInBar - dive.pressureOutBar).toFloat()
+            val ambientAta = 1.0f + (dive.avgDepthMeters / 10.0f)
+            val sacBarPerMin = deltaBar / (ambientAta * dive.durationMinutes.toFloat())
+            val sacLitersPerMin = sacBarPerMin * tankLiters
+            val sacCuFtPerMin = sacLitersPerMin / 28.3168f
+            Triple(sacBarPerMin, sacLitersPerMin, sacCuFtPerMin)
+        } else {
+            null
+        }
+    }
 
     val scaleToFt = 3.28084f
     val scaleToF = 1.8f
@@ -448,7 +534,7 @@ fun DiveDetailDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // TELEMETRY GRID & DIVE PROFILE
+                // TELEMETRY GRID
                 Text(
                     text = strings.diveTelemetryProfileTitle,
                     style = MaterialTheme.typography.labelLarge,
@@ -456,30 +542,6 @@ fun DiveDetailDialog(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-
-                val mockProfile = remember(dive.durationMinutes, dive.maxDepthMeters, dive.avgDepthMeters) {
-                    val duration = dive.durationMinutes.coerceAtLeast(10)
-                    val maxD = dive.maxDepthMeters.coerceAtLeast(5f)
-                    val avgD = dive.avgDepthMeters.coerceIn(1f, maxD)
-                    listOf(
-                        Pair(0, 0f),
-                        Pair((duration * 0.1f).toInt(), maxD * 0.7f),
-                        Pair((duration * 0.25f).toInt(), maxD),
-                        Pair((duration * 0.5f).toInt(), avgD),
-                        Pair((duration * 0.75f).toInt(), avgD * 0.9f),
-                        Pair((duration * 0.88f).toInt(), 5f),
-                        Pair(duration, 0f)
-                    )
-                }
-
-                TacticalDiveProfileView(
-                    depthProfile = mockProfile,
-                    maxDepth = dive.maxDepthMeters.coerceAtLeast(10f),
-                    totalMinutes = dive.durationMinutes.coerceAtLeast(15),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp)
-                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -575,6 +637,135 @@ fun DiveDetailDialog(
                     }
                 }
 
+                // SAC RATE CALCULATION ENGINE
+                if (sacRateData != null) {
+                    val (sacBarPerMin, sacLitersPerMin, sacCuFtPerMin) = sacRateData
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("dive_sac_rate_card")
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = AquaCyan.copy(alpha = 0.15f),
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                Icons.Rounded.Air,
+                                                contentDescription = null,
+                                                tint = AquaCyan,
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Column {
+                                        Text(
+                                            text = if (isGerman) "SAC-Atemgasrate (Surface Air Consumption)" else "SAC Breathing Rate (Surface Air Consumption)",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = if (isGerman) "Auf Meereshöhe normiert (1 ATA Basis)" else "Normalized to sea level (1 ATA basis)",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 10.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = when {
+                                        sacLitersPerMin < 14.0f -> SeaGreen.copy(alpha = 0.15f)
+                                        sacLitersPerMin <= 20.0f -> AquaCyan.copy(alpha = 0.15f)
+                                        else -> SandGold.copy(alpha = 0.15f)
+                                    },
+                                    border = BorderStroke(
+                                        1.dp,
+                                        when {
+                                            sacLitersPerMin < 14.0f -> SeaGreen.copy(alpha = 0.5f)
+                                            sacLitersPerMin <= 20.0f -> AquaCyan.copy(alpha = 0.5f)
+                                            else -> SandGold.copy(alpha = 0.5f)
+                                        }
+                                    )
+                                ) {
+                                    Text(
+                                        text = when {
+                                            sacLitersPerMin < 14.0f -> if (isGerman) "SEHR EFFIZIENT" else "EXCELLENT"
+                                            sacLitersPerMin <= 20.0f -> if (isGerman) "NORMAL" else "NORMAL"
+                                            else -> if (isGerman) "ERHÖHT" else "HIGH USAGE"
+                                        },
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Black,
+                                        color = when {
+                                            sacLitersPerMin < 14.0f -> SeaGreen
+                                            sacLitersPerMin <= 20.0f -> AquaCyan
+                                            else -> SandGold
+                                        },
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                Column {
+                                    Text(
+                                        text = if (isImperial) {
+                                            "${kotlin.math.round(sacCuFtPerMin * 100f) / 100f} cu ft/min"
+                                        } else {
+                                            "${kotlin.math.round(sacLitersPerMin * 10f) / 10f} L/min"
+                                        },
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Black,
+                                        color = AquaCyan
+                                    )
+                                    Text(
+                                        text = "${kotlin.math.round(sacBarPerMin * 100f) / 100f} bar/min (${tankLiters.toInt()}L Tank)",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                                ) {
+                                    Text(
+                                        text = "Δ ${(dive.pressureInBar - dive.pressureOutBar)} bar • ${dive.durationMinutes}m @ ${dive.avgDepthMeters}m",
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // SAFETY STOP & WEIGHT
@@ -662,15 +853,29 @@ fun DiveDetailDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Delete Dive Option
+                // Action Row: Share Dive & Delete Dive
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedButton(
                         onClick = {
-                            onDeleteClick(dive.id)
-                            onDismiss()
+                            shareDiveLog(context, dive, isImperial)
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = AquaCyan),
+                        border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.testTag("share_dive_detail_button")
+                    ) {
+                        Icon(Icons.Rounded.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(if (isGerman) "Tauchgang teilen" else "Share Dive", fontSize = 12.sp)
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            showDeleteConfirmDialog = true
                         },
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)),
@@ -683,6 +888,50 @@ fun DiveDetailDialog(
                     }
                 }
             }
+        }
+
+        // Delete Confirmation Dialog
+        if (showDeleteConfirmDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmDialog = false },
+                shape = RoundedCornerShape(20.dp),
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                title = {
+                    Text(
+                        text = if (isGerman) "Tauchgang löschen?" else "Delete Dive Log #${dive.diveNumber}?",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                text = {
+                    Text(
+                        text = if (isGerman)
+                            "Möchtest du Tauchgang #${dive.diveNumber} an '${dive.siteName}' wirklich dauerhaft aus deinem Logbuch löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+                        else
+                            "Are you sure you want to permanently delete dive #${dive.diveNumber} at '${dive.siteName}' from your logbook? This action cannot be undone.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showDeleteConfirmDialog = false
+                            onDeleteClick(dive.id)
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(if (isGerman) "Endgültig löschen" else "Delete Permanently", color = MaterialTheme.colorScheme.onError)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteConfirmDialog = false }) {
+                        Text(strings.cancel)
+                    }
+                }
+            )
         }
     }
 }

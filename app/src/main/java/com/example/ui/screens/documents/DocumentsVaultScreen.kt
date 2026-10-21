@@ -473,7 +473,7 @@ fun DocumentsVaultScreen(
     documentToDelete?.let { doc ->
         AlertDialog(
             onDismissRequest = { documentToDelete = null },
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(22.dp),
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { 
                 Text(
@@ -493,20 +493,22 @@ fun DocumentsVaultScreen(
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
                     },
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
+                    modifier = Modifier.height(50.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
                     )
                 ) {
-                    Text(if (currentLanguage == AppLanguage.DE) "Löschen" else "Delete")
+                    Text(if (currentLanguage == AppLanguage.DE) "Löschen" else "Delete", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { documentToDelete = null },
-                    shape = RoundedCornerShape(12.dp)
+                    modifier = Modifier.height(50.dp),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
                     Text(if (currentLanguage == AppLanguage.DE) "Abbrechen" else "Cancel")
                 }
@@ -767,13 +769,14 @@ fun DocumentVaultCard(
                         onClick = onOpenDetails,
                         modifier = Modifier
                             .weight(1f)
+                            .height(36.dp)
                             .testTag("doc_details_btn_${document.id}"),
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
                     ) {
-                        Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(if (isGerman) "Details" else "Details", fontSize = 12.sp)
+                        Text(if (isGerman) "Details" else "Details", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                     }
 
                     if (!isApproved) {
@@ -781,15 +784,16 @@ fun DocumentVaultCard(
                             onClick = onOpenApproval,
                             modifier = Modifier
                                 .weight(1f)
+                                .height(36.dp)
                                 .testTag("doc_approve_btn_${document.id}"),
-                            shape = RoundedCornerShape(12.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         ) {
-                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(15.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(if (isGerman) "Freigeben" else "Approve", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }

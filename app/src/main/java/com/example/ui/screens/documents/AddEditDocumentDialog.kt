@@ -214,9 +214,9 @@ fun AddEditDocumentDialog(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 16.dp)
-                .clip(RoundedCornerShape(24.dp))
+                .clip(RoundedCornerShape(22.dp))
                 .testTag("add_edit_doc_dialog"),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(22.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
             tonalElevation = 0.dp
@@ -790,9 +790,10 @@ fun AddEditDocumentDialog(
                         onClick = onDismiss,
                         modifier = Modifier
                             .weight(1f)
+                            .height(50.dp)
                             .testTag("cancel_add_doc_btn"),
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp)
                     ) {
                         Text(strings.cancel)
                     }
@@ -816,9 +817,10 @@ fun AddEditDocumentDialog(
                         enabled = title.isNotBlank(),
                         modifier = Modifier
                             .weight(1.5f)
+                            .height(50.dp)
                             .testTag("save_doc_btn"),
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
