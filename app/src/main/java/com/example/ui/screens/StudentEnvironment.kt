@@ -16,9 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.Badge
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.DirectionsBoat
 import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.LightMode
@@ -57,7 +57,7 @@ import com.example.ui.components.UserAvatarView
 import com.example.ui.i18n.AppLanguage
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.i18n.LocalCurrentLanguage
-import com.example.ui.screens.excursions.DiverExcursionsScreen
+import com.example.ui.screens.documents.DocumentsVaultScreen
 import com.example.ui.screens.logbook.LogbookScreen
 import com.example.ui.screens.planning.DivePlanningScreen
 import com.example.ui.screens.profile.ProfileMenuModal
@@ -130,19 +130,19 @@ fun StudentEnvironment(
                         Text(
                             text = when (selectedTab) {
                                 0 -> strings.tabLearn
-                                1 -> strings.tabExcursions
-                                2 -> strings.tabDivePlanning
-                                else -> strings.tabLogbook
+                                1 -> strings.tabDivePlanning
+                                2 -> strings.tabLogbook
+                                else -> strings.tabDocuments
                             },
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Black,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = AquaCyan.copy(alpha = 0.12f),
-                            border = BorderStroke(1.2.dp, AquaCyan.copy(alpha = 0.5f)),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                             modifier = Modifier.testTag("student_profile_pill_badge")
                         ) {
                             Row(
@@ -152,16 +152,16 @@ fun StudentEnvironment(
                                 Icon(
                                     Icons.Rounded.CheckCircle,
                                     contentDescription = strings.studentLabel,
-                                    tint = AquaCyan,
-                                    modifier = Modifier.size(14.dp)
+                                    tint = SeaGreen,
+                                    modifier = Modifier.size(13.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = studentName,
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Black,
-                                    color = AquaCyan,
+                                    fontSize = 10.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     maxLines = 1
                                 )
                             }
@@ -261,17 +261,17 @@ fun StudentEnvironment(
                     ) {
                         val tabs = listOf(
                             Triple(0, strings.tabLearn, Icons.Rounded.School),
-                            Triple(1, strings.tabExcursions, Icons.Rounded.DirectionsBoat),
-                            Triple(2, strings.tabDivePlanning, Icons.Rounded.Explore),
-                            Triple(3, strings.tabLogbook, Icons.Rounded.MenuBook)
+                            Triple(1, strings.tabDivePlanning, Icons.Rounded.Explore),
+                            Triple(2, strings.tabLogbook, Icons.Rounded.MenuBook),
+                            Triple(3, strings.tabDocuments, Icons.Rounded.Badge)
                         )
                         tabs.forEach { (index, title, icon) ->
                             val isSelected = selectedTab == index
                             val testTag = when (index) {
                                 0 -> "nav_student_learn"
-                                1 -> "nav_student_excursions"
-                                2 -> "nav_student_planning"
-                                else -> "nav_student_logbook"
+                                1 -> "nav_student_planning"
+                                2 -> "nav_student_logbook"
+                                else -> "nav_student_documents"
                             }
                             NavigationBarItem(
                                 selected = isSelected,
@@ -309,13 +309,13 @@ fun StudentEnvironment(
                 when (tab) {
                     0 -> HomeScreen(
                         viewModel = viewModel,
-                        onNavigateToDocuments = { showProfileModal = true },
-                        onNavigateToPlanning = { selectedTab = 2 },
-                        onNavigateToLogbook = { selectedTab = 3 }
+                        onNavigateToDocuments = { selectedTab = 3 },
+                        onNavigateToPlanning = { selectedTab = 1 },
+                        onNavigateToLogbook = { selectedTab = 2 }
                     )
-                    1 -> DiverExcursionsScreen(viewModel = viewModel)
-                    2 -> DivePlanningScreen(viewModel = viewModel)
-                    3 -> LogbookScreen(viewModel = viewModel)
+                    1 -> DivePlanningScreen(viewModel = viewModel)
+                    2 -> LogbookScreen(viewModel = viewModel)
+                    3 -> DocumentsVaultScreen(viewModel = viewModel)
                 }
             }
         }
