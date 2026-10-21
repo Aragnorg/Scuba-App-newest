@@ -304,21 +304,21 @@ fun DocumentsVaultScreen(
                     }
                     item {
                         FilterChip(
-                            title = "ðŸ“œ ${strings.filterCerts}",
+                            title = "📜 ${strings.filterCerts}",
                             isSelected = categoryFilter == "CERTIFICATION",
                             onClick = { viewModel.setDocumentCategoryFilter("CERTIFICATION") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "ðŸ©º ${strings.filterMedical}",
+                            title = "🩺 ${strings.filterMedical}",
                             isSelected = categoryFilter == "MEDICAL_FORM",
                             onClick = { viewModel.setDocumentCategoryFilter("MEDICAL_FORM") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "ðŸ›¡ï¸ ${strings.filterInsurance}",
+                            title = "🛡️ï¸ ${strings.filterInsurance}",
                             isSelected = categoryFilter == "INSURANCE",
                             onClick = { viewModel.setDocumentCategoryFilter("INSURANCE") }
                         )
@@ -332,7 +332,7 @@ fun DocumentsVaultScreen(
                     }
                     item {
                         FilterChip(
-                            title = "ðŸ¤¿ ${strings.filterEquipment}",
+                            title = "🤿 ${strings.filterEquipment}",
                             isSelected = categoryFilter == "EQUIPMENT_RECORD",
                             onClick = { viewModel.setDocumentCategoryFilter("EQUIPMENT_RECORD") }
                         )
@@ -360,7 +360,7 @@ fun DocumentsVaultScreen(
                                 .padding(32.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "ðŸ“‚", fontSize = 42.sp)
+                            Text(text = "📁", fontSize = 42.sp)
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = strings.noDocumentsFound,
@@ -479,19 +479,19 @@ fun DocumentsVaultScreen(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             title = { 
                 Text(
-                    text = if (currentLanguage == AppLanguage.DE) "Dokument lÃ¶schen" else "Delete Document",
+                    text = if (currentLanguage == AppLanguage.DE) "Dokument löschen" else "Delete Document",
                     fontWeight = FontWeight.Bold
                 ) 
             },
             text = { 
                 Text(
-                    if (currentLanguage == AppLanguage.DE) "MÃ¶chtest du das Dokument '${doc.title}' wirklich lÃ¶schen? Diese Aktion kann nicht rÃ¼ckgÃ¤ngig gemacht werden."
+                    if (currentLanguage == AppLanguage.DE) "Möchtest du das Dokument '${doc.title}' wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
                     else "Do you really want to delete '${doc.title}'? This action cannot be undone."
                 ) 
             },
             confirmButton = {
                 ScubaSecondaryButton(
-                    text = if (currentLanguage == AppLanguage.DE) "LÃ¶schen" else "Delete",
+                    text = if (currentLanguage == AppLanguage.DE) "Löschen" else "Delete",
                     onClick = {
                         viewModel.deleteDocument(doc.id)
                         documentToDelete = null
@@ -659,7 +659,7 @@ fun DocumentVaultCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = if (isGerman) "GÃ¼ltig bis: ${document.expiryDate}" else "Expiry: ${document.expiryDate}",
+                        text = if (isGerman) "Gültig bis: ${document.expiryDate}" else "Expiry: ${document.expiryDate}",
                         style = MaterialTheme.typography.labelSmall,
                         color = if (isExpired) Color(0xFFE53E3E) else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = if (isExpired) FontWeight.Bold else FontWeight.Normal
@@ -744,7 +744,7 @@ fun DocumentVaultCard(
 
                         if (!isApproved) {
                             Text(
-                                text = if (isGerman) "Jetzt prÃ¼fen" else "Review now",
+                                text = if (isGerman) "Jetzt prüfen" else "Review now",
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,

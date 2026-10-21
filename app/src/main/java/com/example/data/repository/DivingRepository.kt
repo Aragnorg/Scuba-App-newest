@@ -989,245 +989,447 @@ class DivingRepository(private val divingDao: DivingDao) {
     }
 
     suspend fun checkAndSeedInitialData() {
+        divingDao.prunePlaceholderModules()
         val existingModules = divingDao.getAllModules().firstOrNull()
         if (existingModules.isNullOrEmpty()) {
             seedDatabase()
         }
-        ensureSpecialtyContentsSeeded()
+        ensureCorePresentationsAndQuizzesSeeded()
         seedStudentsAndAccountsIfEmpty()
         seedDiveLogsIfEmpty()
         seedDocumentsIfEmpty()
         seedOrganizationsIfEmpty()
     }
 
-    private suspend fun ensureSpecialtyContentsSeeded() {
-        val existingModules = divingDao.getAllModules().firstOrNull()
-        val hasNitrox = existingModules?.any { it.id == "mod_nitrox" } == true
-        if (!hasNitrox) {
-            val specModules = listOf(
-                CourseModuleEntity(
-                    id = "mod_nitrox",
-                    title = "Sauerstoffanalyse & Gasmischung",
-                    subtitle = "Enriched Air Nitrox Spezialkurs",
-                    description = "Theorie und Sicherheitsverfahren für das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx).",
-                    iconName = "science",
-                    orderIndex = 6,
-                    estimatedMin = 60
-                ),
-                CourseModuleEntity(
-                    id = "mod_deep",
-                    title = "Tieftauchgrenzen & Tiefenrausch",
-                    subtitle = "Deep Diver Spezialkurs",
-                    description = "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management beim Tieftauchen bis 40m.",
-                    iconName = "explore",
-                    orderIndex = 7,
-                    estimatedMin = 90
-                ),
-                CourseModuleEntity(
-                    id = "mod_wreck",
-                    title = "Wrackvermessung & Führungsleinen",
-                    subtitle = "Wreck Diver Spezialkurs",
-                    description = "Verfahren zur Kartierung von Wracks, Verlegen von Penetrationsleinen und Vermeidung von Sedimentaufwirbelung.",
-                    iconName = "sailing",
-                    orderIndex = 8,
-                    estimatedMin = 80
-                ),
-                CourseModuleEntity(
-                    id = "mod_night",
-                    title = "Nachtnavigation & Lampenkommunikation",
-                    subtitle = "Night Diver Spezialkurs",
-                    description = "Nachttauchnavigation, Buddy-Signale mit der Lampe und sicheres Erkunden nachtaktiver Rifflebewesen.",
-                    iconName = "flashlight_on",
-                    orderIndex = 9,
-                    estimatedMin = 60
+    private suspend fun ensureCorePresentationsAndQuizzesSeeded() {
+        divingDao.prunePlaceholderModules()
+
+        val existingPres = divingDao.getAllPresentations().firstOrNull() ?: emptyList()
+        val existingVids = divingDao.getAllVideos().firstOrNull() ?: emptyList()
+        val existingQuizzes = divingDao.getAllQuizzes().firstOrNull() ?: emptyList()
+
+        // 1. Missing Presentations for Core Modules (Emergencies & Planning)
+        val newPresentations = mutableListOf<PresentationDeckEntity>()
+
+        if (existingPres.none { it.id == "pres_emergencies" }) {
+            val slides = org.json.JSONArray().apply {
+                put(org.json.JSONObject().apply {
+                    put("slideNumber", 1)
+                    put("title", "Maskenflutung & Ausblastechnik")
+                    put("subtitle", "Souveränes Reagieren bei Wassereinbruch oder Maskenverlust.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Ruhig weiteratmen: Atme kontinuierlich und entspannt durch den Mund aus dem Regler weiter.")
+                        put("Maske fixieren: Drücke den oberen Maskenrahmen mit Zeige- und Mittelfingern leicht an die Stirn.")
+                        put("Kopf nach hinten neigen: Schau leicht nach oben, damit sich das Wasser am unteren Maskenrand sammelt.")
+                        put("Durch die Nase ausatmen: Ein kräftiger, gleichmäßiger Atemstoß durch die Nase verdrängt das gesamte Wasser.")
+                    })
+                    put("diagramType", "GENERAL_CHECKLIST")
+                    put("instructorNotes", "Übe das Ausblasen zuerst bei teilweiser Flutung, bevor die Maske komplett abgenommen wird.")
+                    put("keyTakeaway", "Wasser in der Maske ist kein Notfall. Ruhig bleiben und durch die Nase ausblasen.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("slideNumber", 2)
+                    put("title", "Atemregler wiedererlangen (Sweep & Reach)")
+                    put("subtitle", "Zwei zuverlässige Methoden zum Wiederfinden der zweiten Stufe.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Arm-Sweep-Methode: Oberkörper leicht nach rechts neigen, mit dem rechten Arm am Oberschenkel entlang nach hinten und in weitem Bogen nach vorne schwenken.")
+                        put("Reach-Methode: Mit der rechten Hand an den ersten Abgang an der Flaschenschulter fassen und am Niederdruckschlauch nach unten tasten.")
+                        put("Luftblasen abgeben: Während der Regler nicht im Mund ist, kontinuierlich kleine Luftblasen ausblasen ('Aaaah').")
+                        put("Ausblasen oder Duschtaste: Nach dem Einsetzen kurz ausblasen oder die Duschtaste mit der Zunge am Mundstück betätigen.")
+                    })
+                    put("diagramType", "GENERAL_CHECKLIST")
+                    put("instructorNotes", "Niemals den Atem anhalten, während nach dem Regler gesucht wird!")
+                    put("keyTakeaway", "Der Regler hängt immer an deiner rechten Schulter. Sweep-Methode bringt ihn sofort zurück.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("slideNumber", 3)
+                    put("title", "Luftnot (Out-of-Air) & Partneratmung")
+                    put("subtitle", "Sofortige Hilfeleistung mit dem alternativen Zweitregler (Oktopus).")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Signal geben: Hand quer an die Kehle ('Ich habe keine Luft mehr!').")
+                        put("Oktopus anfordern / übergeben: Der Spender reicht den gut sichtbaren gelben Oktopus aus dem Brustdreieck.")
+                        put("Sicherer Halt: Beide Taucher greifen sich mit einer Hand fest am Begurtungs-/Schulterbereich des Partners.")
+                        put("Aufstieg einleiten: Nach Stabilisierung der Atmung gemeinsam den kontrollierten Aufstieg beginnen.")
+                    })
+                    put("diagramType", "BWRAF_BUDDY")
+                    put("instructorNotes", "Betone, dass der Oktopus im goldenen Dreieck zwischen Kinn und Rippenbogen fixiert sein muss.")
+                    put("keyTakeaway", "Dein Buddy ist deine redundante Luftquelle. Ruhiges Handzeichen rettet jede Situation.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("slideNumber", 4)
+                    put("title", "Kontrollierter schwimmender Notaufstieg (CESA)")
+                    put("subtitle", "Letzte Option bei Luftnot ohne erreichbaren Buddy aus maximal 9-12m.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Rechte Hand nach oben gestreckt, Blick nach oben zur Oberfläche.")
+                        put("Linke Hand hält den BCD-Schnellablass / Faltenschlauch, um expandierende Luft abzulassen.")
+                        put("Kontinuierlicher Ausatmeton: Ununterbrochen ein leises 'Aaaaaah' summen, um Lungenüberdehnung zu vermeiden.")
+                        put("Normale Aufstiegsgeschwindigkeit einhalten (maximal 9 m/min).")
+                        put("An der Oberfläche BCD sofort mit dem Mund (oral) aufblasen.")
+                    })
+                    put("diagramType", "ASCENT_PROFILE")
+                    put("instructorNotes", "CESA ist nur für flache Tiefen gedacht, wenn der Buddy außer Reichweite ist.")
+                    put("keyTakeaway", "Beim Aufstieg dehnt sich die Luft in der Lunge aus – ständiges Summen hält die Atemwege offen.")
+                })
+            }
+            newPresentations.add(
+                PresentationDeckEntity(
+                    id = "pres_emergencies",
+                    moduleId = "mod_emergencies",
+                    title = "Notfallmanagement, Masken- & Reglerfertigkeiten",
+                    description = "Grundlegende Sicherheitsverfahren: Maske ausblasen, Regler wiedererlangen, Partneratmung via Oktopus und CESA-Notaufstieg.",
+                    slidesJson = slides.toString(),
+                    totalSlides = 4,
+                    lastSlideRead = 0,
+                    isCompleted = false,
+                    isInstructorUploaded = false
                 )
             )
-            divingDao.insertModules(specModules)
+        }
 
-            // Seed Nitrox Presentation
-            val nitroxSlides = JSONArray().apply {
-                put(JSONObject().apply {
+        if (existingPres.none { it.id == "pres_planning" }) {
+            val slides = org.json.JSONArray().apply {
+                put(org.json.JSONObject().apply {
                     put("slideNumber", 1)
-                    put("title", "What is Enriched Air Nitrox?")
-                    put("subtitle", "Breathing air with higher oxygen and lower nitrogen.")
-                    put("bulletPoints", JSONArray().apply {
-                        put("Standard air is 21% Oxygen and 79% Nitrogen.")
-                        put("Enriched Air Nitrox (EANx) typically has 32% or 36% Oxygen.")
-                        put("Benefit: Lower nitrogen absorption means longer No-Decompression Limits (NDL).")
+                    put("title", "Nullzeit (NDL) & Tauchgangsberechnung")
+                    put("subtitle", "Grenzen für sicheres Sporttauchen ohne obligatorische Dekompressionsstopps.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Nullzeit (No-Decompression Limit): Die maximale Grundzeit auf einer bestimmten Tiefe, bei der ein direkter Aufstieg möglich ist.")
+                        put("Tiefe bestimmt die Zeit: Je tiefer der Tauchgang, desto schneller sättigt sich das Gewebe mit Stickstoff und desto kürzer ist die Nullzeit.")
+                        put("Tauchcomputer: Berechnet die verbleibende Nullzeit in Echtzeit basierend auf Tiefenprofil und bisherigen Tauchgängen.")
+                        put("OWD-Tiefenlimit: Für frisch zertifizierte Open Water Diver beträgt das empfohlene Tiefenlimit 18 Meter.")
                     })
-                    put("diagramType", "GENERAL_CHECKLIST")
-                    put("instructorNotes", "Explain that Nitrox does not make you dive deeper, only longer at medium depths.")
-                    put("keyTakeaway", "Nitrox reduces nitrogen uptake, extending bottom times.")
+                    put("diagramType", "ASCENT_PROFILE")
+                    put("instructorNotes", "Erkläre den Unterschied zwischen Grundzeit (Abtauchen bis Beginn des Aufstiegs) und Gesamttauchzeit.")
+                    put("keyTakeaway", "Tauche immer innerhalb der Nullzeit. Gehe niemals an die absolute Grenze deines Computers.")
                 })
-                put(JSONObject().apply {
+                put(org.json.JSONObject().apply {
                     put("slideNumber", 2)
-                    put("title", "Oxygen Toxicity and Partial Pressure")
-                    put("subtitle", "Managing the depth limits of oxygen.")
-                    put("bulletPoints", JSONArray().apply {
-                        put("Oxygen becomes toxic under pressure. Max safe partial pressure (PPO2) is 1.4 ATA.")
-                        put("Maximum Operating Depth (MOD) is calculated based on oxygen percentage.")
-                        put("Diver must analyze and verify cylinder oxygen content prior to diving.")
-                    })
-                    put("diagramType", "BOYLES_LAW")
-                    put("instructorNotes", "Show how MOD changes based on whether EANx32 or EANx36 is used.")
-                    put("keyTakeaway", "Always check your cylinder percentage and calculate your MOD.")
-                })
-            }
-            val presNitrox = PresentationDeckEntity(
-                id = "pres_nitrox",
-                moduleId = "mod_nitrox",
-                title = "Nitrox Gas Analysis & Max Depth (MOD) calculations",
-                description = "Learn how to analyze oxygen percentages, calculate oxygen toxicity, and program dive computers for nitrox gas up to 40% O2.",
-                slidesJson = nitroxSlides.toString(),
-                totalSlides = 2,
-                lastSlideRead = 0,
-                isCompleted = false,
-                isInstructorUploaded = false
-            )
-
-            // Seed Deep Presentation
-            val deepSlides = JSONArray().apply {
-                put(JSONObject().apply {
-                    put("slideNumber", 1)
-                    put("title", "Safety Limits of Deep Diving")
-                    put("subtitle", "Understanding depth limits and decompression theory.")
-                    put("bulletPoints", JSONArray().apply {
-                        put("Recreational deep limit is 40 meters / 130 feet.")
-                        put("Nitrogen narcosis becomes prominent past 30 meters.")
-                        put("Ascending slowly (9m/min) and performing a safety stop is mandatory.")
+                    put("title", "Oberflächenpause & Wiederholungstauchgänge")
+                    put("subtitle", "Stickstoffabatmung zwischen zwei Tauchgängen.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Restsättigung: Nach dem Auftauchen befindet sich noch überschüssiger Stickstoff im Körper (Druckgruppe).")
+                        put("Oberflächenpause: Während der Pause an Land oder auf dem Boot atmet der Körper Stickstoff kontinuierlich ab.")
+                        put("Wiederholungstauchgang: Die Nullzeit für den zweiten Tauchgang ist durch die verbleibende Restsättigung kürzer.")
+                        put("Reihenfolge der Tauchgänge: Immer den tiefsten Tauchgang zuerst durchführen (Forward Profiling).")
                     })
                     put("diagramType", "GENERAL_CHECKLIST")
-                    put("instructorNotes", "Emphasize narcosis awareness and redundant air source necessity.")
-                    put("keyTakeaway", "Respect deep diving depth limits and monitor gas consumption.")
+                    put("instructorNotes", "Mindestens 1 Stunde Oberflächenpause zwischen zwei Tauchgängen einhalten.")
+                    put("keyTakeaway", "Oberflächenpausen bauen Stickstoff ab und machen Folgetauchgänge wesentlich sicherer.")
                 })
-            }
-            val presDeep = PresentationDeckEntity(
-                id = "pres_deep",
-                moduleId = "mod_deep",
-                title = "Decompression Safety & Gas Planning",
-                description = "Learn the safety protocols, physical adjustments, narcosis checks, and dual tank redundant gas supply management.",
-                slidesJson = deepSlides.toString(),
-                totalSlides = 1,
-                lastSlideRead = 0,
-                isCompleted = false,
-                isInstructorUploaded = false
-            )
-
-            // Seed Wreck Presentation
-            val wreckSlides = JSONArray().apply {
-                put(JSONObject().apply {
-                    put("slideNumber", 1)
-                    put("title", "Wreck Hazards and Safety lines")
-                    put("subtitle", "Navigation and safety guidelines inside and around wrecks.")
-                    put("bulletPoints", JSONArray().apply {
-                        put("Wrecks are artificial reefs but have sharp metals and silt hazards.")
-                        put("Laying guidelines is essential for any inside penetration.")
-                        put("Always use frog kicks to avoid kicking up silt and losing visibility.")
+                put(org.json.JSONObject().apply {
+                    put("slideNumber", 3)
+                    put("title", "Gasvorrat & Umkehrdruck-Regeln")
+                    put("subtitle", "Vermeidung von Luftmangel durch vorausschauende Planung.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Ausgangsdruck: Typische Aluminium- oder Stahlflaschen sind auf 200 bis 230 bar gefüllt.")
+                        put("Sicherheitsreserve: Mindestens 50 bar müssen an der Oberfläche als Reserve in der Flasche verbleiben.")
+                        put("Umkehrdruck berechnen: Bei Erreichen von ca. 120 bar wird der Rückweg zum Einstieg / Boot angetreten.")
+                        put("Regelmäßige Manometer-Kontrolle: Mindestens alle 5 bis 10 Minuten den Flaschendruck mit dem Buddy abgleichen.")
                     })
                     put("diagramType", "GENERAL_CHECKLIST")
-                    put("instructorNotes", "Explain line-laying and tie-off procedures.")
-                    put("keyTakeaway", "Never enter a wreck without proper training, lighting, and guideline.")
+                    put("instructorNotes", "Tauche niemals in die Reserve von 50 bar hinein, während du noch tief bist.")
+                    put("keyTakeaway", "Mit 50 bar beendest du den Tauchgang an der Oberfläche, nicht auf Tiefe.")
                 })
-            }
-            val presWreck = PresentationDeckEntity(
-                id = "pres_wreck",
-                moduleId = "mod_wreck",
-                title = "Wreck Hazards, Navigation & Penetration Lines",
-                description = "Acquire the skills to chart sunken vessels, lay guide penetration lines, and safely explore wreck interiors.",
-                slidesJson = wreckSlides.toString(),
-                totalSlides = 1,
-                lastSlideRead = 0,
-                isCompleted = false,
-                isInstructorUploaded = false
-            )
-
-            // Seed Night Presentation
-            val nightSlides = JSONArray().apply {
-                put(JSONObject().apply {
-                    put("slideNumber", 1)
-                    put("title", "Night Diving Communication & Lighting")
-                    put("subtitle", "Communication under water when dark.")
-                    put("bulletPoints", JSONArray().apply {
-                        put("Use primary and backup dive torches.")
-                        put("Signal buddy using torch patterns (circle for OK, waving side-to-side for attention).")
-                        put("Never shine light directly into buddy's eyes.")
+                put(org.json.JSONObject().apply {
+                    put("slideNumber", 4)
+                    put("title", "Pre-Dive Briefing & Buddy-Verfahren")
+                    put("subtitle", "Klare Absprachen vor jedem Sprung ins Wasser.")
+                    put("bulletPoints", org.json.JSONArray().apply {
+                        put("Tauchziel & Route festlegen: Maximaltiefe, Wendezeitpunkt und Einstiegs-/Ausstiegsstelle besprechen.")
+                        put("Buddy-Trennung: Maximal 1 Minute unter Wasser suchen (360-Grad-Blick), danach kontrolliert auftauchen und an der Oberfläche treffen.")
+                        put("Handzeichen auffrischen: Besondere Zeichen für Fischarten, Strömung oder Umkehrdruck vorab abstimmen.")
+                        put("BWRAF-Check: Niemals ohne gegenseitigen Buddy-Check ins Wasser gehen.")
                     })
-                    put("diagramType", "GENERAL_CHECKLIST")
-                    put("instructorNotes", "Demonstrate hand and light communication signals.")
-                    put("keyTakeaway", "Light is your lifeline at night. Communicate calmly and observe nocturnal life.")
+                    put("diagramType", "BWRAF_BUDDY")
+                    put("instructorNotes", "Ein gutes Briefing verhindert 90% aller Probleme unter Wasser.")
+                    put("keyTakeaway", "Plane deinen Tauchgang und tauche deinen Plan (Plan your dive, dive your plan).")
                 })
             }
-            val presNight = PresentationDeckEntity(
-                id = "pres_night",
-                moduleId = "mod_night",
-                title = "Nocturnal Wildlife & Dive Torch Management",
-                description = "Navigate in complete darkness, master light communications, and observe nocturnal marine life.",
-                slidesJson = nightSlides.toString(),
-                totalSlides = 1,
-                lastSlideRead = 0,
-                isCompleted = false,
-                isInstructorUploaded = false
+            newPresentations.add(
+                PresentationDeckEntity(
+                    id = "pres_planning",
+                    moduleId = "mod_planning",
+                    title = "Tauchgangsplanung, Nullzeit & Tauchtabelle (RDP)",
+                    description = "Grundregeln der Nullzeitberechnung, Oberflächenpausen, Umkehrdruck und Buddy-Briefing für sichere Tauchgänge.",
+                    slidesJson = slides.toString(),
+                    totalSlides = 4,
+                    lastSlideRead = 0,
+                    isCompleted = false,
+                    isInstructorUploaded = false
+                )
             )
+        }
 
-            divingDao.insertPresentations(listOf(presNitrox, presDeep, presWreck, presNight))
+        if (newPresentations.isNotEmpty()) {
+            divingDao.insertPresentations(newPresentations)
+        }
 
-            // Seed Nitrox Quiz
-            val nitroxQuestions = JSONArray().apply {
-                put(JSONObject().apply {
-                    put("id", "nq_1")
-                    put("question", "What is the primary benefit of diving with Enriched Air Nitrox?")
-                    put("options", JSONArray().apply {
-                        put("It allows you to dive deeper.")
-                        put("It reduces nitrogen absorption, extending no-decompression limits.")
-                        put("It completely prevents nitrogen narcosis.")
-                        put("It warms your body temperature.")
+        // 2. Missing Videos for Core Modules (Physiology & Planning)
+        val newVideos = mutableListOf<LearningVideoEntity>()
+
+        if (existingVids.none { it.id == "vid_decompression" }) {
+            val chapters = org.json.JSONArray().apply {
+                put(org.json.JSONObject().apply {
+                    put("timeSec", 0)
+                    put("title", "Stickstoffaufnahme & Gewebesättigung")
+                    put("summary", "Wie sich Stickstoff unter Umgebungsdruck im Gewebe löst.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("timeSec", 65)
+                    put("title", "Aufstiegsrate einhalten (max. 9m/min)")
+                    put("summary", "Langsames Aufsteigen verhindert gefährliche Blasenbildung im Blut.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("timeSec", 140)
+                    put("title", "Der 3-Minuten-Sicherheitsstopp auf 5m")
+                    put("summary", "Kontrolliertes Abgasen vor dem endgültigen Auftauchen an die Oberfläche.")
+                })
+            }
+            val takeaways = org.json.JSONArray().apply {
+                put("Nie schneller als 9 Meter pro Minute aufsteigen (langsamer als kleine Bläschen).")
+                put("Auf allen Tauchgängen über 10mTiefe ist ein 3-Minuten-Sicherheitsstopp auf 5m Pflicht.")
+                put("Bei Symptomen von DCS sofort 100% Sauerstoff atmen und Druckkammer kontaktieren.")
+            }
+            newVideos.add(
+                LearningVideoEntity(
+                    id = "vid_decompression",
+                    moduleId = "mod_physiology",
+                    title = "Stickstoffsättigung, Aufstiegsrate & Sicherheitsstopps",
+                    description = "Erfahre, wie Stickstoff im Körper wirkt, warum die Aufstiegsgeschwindigkeit entscheidend ist und wie man den Sicherheitsstopp meistert.",
+                    durationSeconds = 210,
+                    videoUrlOrUri = "scuba://video/decompression_physiology",
+                    chaptersJson = chapters.toString(),
+                    takeawaysJson = takeaways.toString(),
+                    watchedSeconds = 0,
+                    isCompleted = false,
+                    isInstructorUploaded = false
+                )
+            )
+        }
+
+        if (existingVids.none { it.id == "vid_planning" }) {
+            val chapters = org.json.JSONArray().apply {
+                put(org.json.JSONObject().apply {
+                    put("timeSec", 0)
+                    put("title", "Tauchcomputer Display & Nullzeit")
+                    put("summary", "Bedeutung von NDL, aktueller Tiefe und Dekompressionswarnung.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("timeSec", 80)
+                    put("title", "Gasmanagement & Umkehrdruck")
+                    put("summary", "Berechnung des Rückwegs mit mindestens 50 bar Reserve an der Oberfläche.")
+                })
+                put(org.json.JSONObject().apply {
+                    put("timeSec", 160)
+                    put("title", "Oberflächenpause & Folge-Tauchgänge")
+                    put("summary", "Restsättigung berücksichtigen und Oberflächenintervall planen.")
+                })
+            }
+            val takeaways = org.json.JSONArray().apply {
+                put("Tauchgang rechtzeitig beenden, bevor die Nullzeit auf 0 Minuten sinkt.")
+                put("Mindestens 50 bar Flaschendruck als Reserve für den Sicherheitsstopp reservieren.")
+                put("Nach dem Tauchen mindestens 18 bis 24 Stunden vor dem Fliegen warten.")
+            }
+            newVideos.add(
+                LearningVideoEntity(
+                    id = "vid_planning",
+                    moduleId = "mod_planning",
+                    title = "Tauchgangsberechnung & Tauchcomputer-Bedienung",
+                    description = "Praxis-Leitfaden für Tauchgangsplanung, Nullzeitüberwachung auf dem Tauchcomputer und vorausschauendes Luftmanagement.",
+                    durationSeconds = 240,
+                    videoUrlOrUri = "scuba://video/dive_planning_computer",
+                    chaptersJson = chapters.toString(),
+                    takeawaysJson = takeaways.toString(),
+                    watchedSeconds = 0,
+                    isCompleted = false,
+                    isInstructorUploaded = false
+                )
+            )
+        }
+
+        if (newVideos.isNotEmpty()) {
+            divingDao.insertVideos(newVideos)
+        }
+
+        // 3. Missing Quizzes for Core Modules (Physiology & Emergencies)
+        val newQuizzes = mutableListOf<QuizEntity>()
+
+        if (existingQuizzes.none { it.id == "quiz_physiology" }) {
+            val questions = org.json.JSONArray().apply {
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_phys_1")
+                    put("question", "Welche maximale Aufstiegsgeschwindigkeit gilt als Standard im modernen Sporttauchen?")
+                    put("options", org.json.JSONArray().apply {
+                        put("18 Meter pro Minute")
+                        put("9 Meter pro Minute (langsamer als die kleinsten aufsteigenden Blasen)")
+                        put("25 Meter pro Minute")
+                        put("Solange der Taucher ausatmet, gibt es kein Tempolimit")
                     })
                     put("correctIndex", 1)
-                    put("explanation", "By replacing some nitrogen with oxygen, your body absorbs less nitrogen, which extends your No-Decompression bottom times.")
-                    put("safetyRule", "Nitrox allows longer dives but requires strict tracking of oxygen depth limits.")
-                    put("depthOrContext", "Nitrox Physics")
+                    put("explanation", "Die maximale sichere Aufstiegsrate beträgt 9 Meter (30 Fuß) pro Minute. Ein langsamer Aufstieg schützt vor Dekompressionskrankheit.")
+                    put("safetyRule", "Maximal 9m/min aufsteigen und niemals schneller als die kleinsten Blasen sein.")
+                    put("depthOrContext", "Aufstiegsverfahren")
                 })
-            }
-            val quizNitrox = QuizEntity(
-                id = "quiz_nitrox",
-                moduleId = "mod_nitrox",
-                title = "Nitrox Specialty Quiz",
-                description = "Enriched Air Safety & Oxygen Toxicity Exams",
-                passScorePercentage = 80,
-                questionsJson = nitroxQuestions.toString(),
-                isMockExam = false,
-                isInstructorUploaded = false
-            )
-
-            // Seed Deep Quiz
-            val deepQuestions = JSONArray().apply {
-                put(JSONObject().apply {
-                    put("id", "dq_1")
-                    put("question", "What is the recreational deep diving limit?")
-                    put("options", JSONArray().apply {
-                        put("18 meters")
-                        put("30 meters")
-                        put("40 meters")
-                        put("50 meters")
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_phys_2")
+                    put("question", "Was ist der Hauptzweck des 3-minütigen Sicherheitsstopps auf 5 Metern Tiefe?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Auf den Tauchpartner warten")
+                        put("Dem Körper Zeit geben, gelösten Stickstoff kontrolliert über die Lunge abzuatmen, bevor der geringe Oberflächendruck erreicht wird")
+                        put("Die Tarierweste komplett zu entleeren")
+                        put("Nach Booten an der Oberfläche Ausschau halten")
                     })
-                    put("correctIndex", 2)
-                    put("explanation", "40 meters (130 feet) is the absolute depth limit for recreational scuba diving.")
-                    put("safetyRule", "Never exceed 40m without technical decompression training.")
-                    put("depthOrContext", "Deep Limits")
+                    put("correctIndex", 1)
+                    put("explanation", "Der Sicherheitsstopp auf 5 Metern gibt den Geweben wertvolle Minuten, um überschüssigen Stickstoff vor Erreichen von 1 ATA Druck gefahrlos abzugeben.")
+                    put("safetyRule", "Auf allen Tauchgängen über 10m Tiefe immer 3 Minuten auf 5m stoppen.")
+                    put("depthOrContext", "Sicherheitsstopp")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_phys_3")
+                    put("question", "Welche Symptome deuten typischerweise auf eine Dekompressionskrankheit (DCS) hin?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Dumpfe Gelenkschmerzen ('Bends'), Hautjucken, Taubheitsgefühl und extreme Abgeschlagenheit")
+                        put("Zahnschmerzen beim Abtauchen")
+                        put("Trockener Mund durch Atemluft")
+                        put("Kurzzeitiger Schwindel beim Maskenausblasen")
+                    })
+                    put("correctIndex", 0)
+                    put("explanation", "Gelenkschmerzen, Taubheit, Kribbeln und Lähmungserscheinungen entstehen durch Stickstoffbläschen in Gewebe und Blutbahn.")
+                    put("safetyRule", "Verdacht auf DCS: Sofort 100% medizinischen Sauerstoff verabreichen und Notfallkette zur Druckkammer aktivieren.")
+                    put("depthOrContext", "Tauchmedizin")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_phys_4")
+                    put("question", "Wie lange solltest du nach mehreren Tauchgängen an aufeinanderfolgenden Tagen mindestens mit dem Fliegen warten?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Mindestens 2 bis 4 Stunden")
+                        put("Mindestens 18 bis 24 Stunden")
+                        put("6 Stunden genügen vollkommen")
+                        put("Fliegen ist sofort nach dem Tauchen unbedenklich")
+                    })
+                    put("correctIndex", 1)
+                    put("explanation", "Der verringerte Kabinendruck im Passagierflugzeug entspricht etwa 2000-2400m Höhe. Restsättigung im Körper kann dadurch schlagartig Blasen bilden.")
+                    put("safetyRule", "Nach Mehrfachtauchgängen mindestens 18-24 Stunden Oberflächenintervall vor Flugantritt einhalten.")
+                    put("depthOrContext", "Flugrichtlinien")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_phys_5")
+                    put("question", "Wie reagierst du, wenn du bei einem tieferen Tauchgang (z.B. >25m) Symptome von Tiefenrausch (Stickstoffnarkose) wie Benommenheit oder Euphorie spürst?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Die Augen schließen und ruhig tief durchatmen")
+                        put("Dem Buddy sofort ein Signal geben und gemeinsam langsam einige Meter in flacheres Wasser aufsteigen")
+                        put("Sofort einen Notaufstieg zur Oberfläche einleiten")
+                        put("Auf der Tiefe verweilen, bis der Körper sich an den Druck gewöhnt")
+                    })
+                    put("correctIndex", 1)
+                    put("explanation", "Stickstoffnarkose verschwindet fast augenblicklich und rückstandslos, sobald der Umgebungsdruck durch Aufsteigen um wenige Meter sinkt.")
+                    put("safetyRule", "Bei Narkoseanzeichen: Buddy signalisieren und zusammen auf geringere Tiefe aufsteigen.")
+                    put("depthOrContext", "Tieftauchen")
                 })
             }
-            val quizDeep = QuizEntity(
-                id = "quiz_deep",
-                moduleId = "mod_deep",
-                title = "Deep Diving Specialty Quiz",
-                description = "Narcosis Symptoms & Safety Protocol Quiz",
-                passScorePercentage = 80,
-                questionsJson = deepQuestions.toString(),
-                isMockExam = false,
-                isInstructorUploaded = false
+            newQuizzes.add(
+                QuizEntity(
+                    id = "quiz_physiology",
+                    moduleId = "mod_physiology",
+                    title = "Tauch-Physiologie & Dekompressions-Quiz",
+                    description = "5 praxisnahe Fragen zu Stickstoffaufnahme, Aufstiegsrate, DCS-Symptomen und Flugverbot nach dem Tauchen.",
+                    passScorePercentage = 80,
+                    questionsJson = questions.toString(),
+                    isMockExam = false,
+                    isInstructorUploaded = false
+                )
             )
+        }
 
-            divingDao.insertQuizzes(listOf(quizNitrox, quizDeep))
+        if (existingQuizzes.none { it.id == "quiz_emergencies" }) {
+            val questions = org.json.JSONArray().apply {
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_emg_1")
+                    put("question", "Wenn dir unter Wasser versehentlich die Maske vom Gesicht geschlagen wird, was ist der allererste Schritt?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Sofort zur Oberfläche schwimmen")
+                        put("Ruhig weiter durch den Mund atmen, die Augen leicht schließen oder entspannt lassen und die Maske suchen / aufsetzen")
+                        put("Die Luft anhalten, um kein Wasser einzuatmen")
+                        put("Die Tarierweste aufblasen")
+                    })
+                    put("correctIndex", 1)
+                    put("explanation", "Wasser im Gesicht oder an den Augen ist harmlos. Das Wichtigste ist, ruhig weiter durch den Atemregler im Mund zu atmen.")
+                    put("safetyRule", "Niemals in Panik verfallen. Du kannst auch ohne Maske völlig normal atmen.")
+                    put("depthOrContext", "Maskennotfall")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_emg_2")
+                    put("question", "Welche Methode wendest du an, um einen hinter die rechte Schulter gerutschten Atemregler schnell wiederzuerlangen?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Arm-Sweep-Methode: Leicht nach rechts neigen, mit dem rechten Arm am Oberschenkel nach hinten und weit nach vorne greifen")
+                        put("Den Partner bitten, den Regler zu suchen")
+                        put("Die Flasche abschnallen")
+                        put("Sofort den Bleigurt abwerfen")
+                    })
+                    put("correctIndex", 0)
+                    put("explanation", "Die Sweep-Methode fängt den Niederdruckschlauch zuverlässig in der Armbeuge ein und führt die zweite Stufe direkt zur Hand.")
+                    put("safetyRule", "Beim Suchen kleine Luftblasen ausblasen und nicht den Atem anhalten.")
+                    put("depthOrContext", "Reglerwiedererlangung")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_emg_3")
+                    put("question", "Dein Buddy gibt dir das Handzeichen 'Keine Luft mehr!' (Hand quer an den Hals). Was tust du unverzüglich?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Ihm dein Manometer zeigen")
+                        put("Ihm sofort deinen alternativen Zweitregler (Oktopus) reichen und ihn am BCD sichern")
+                        put("Ihn auffordern, langsam aufzusteigen")
+                        put("Erst deinen eigenen Flaschendruck kontrollieren")
+                    })
+                    put("correctIndex", 1)
+                    put("explanation", "In einer echten OOG-Situation (Out of Air) zählt jede Sekunde. Reiche sofort den Oktopus und halte den Buddy am Gurtsystem fest.")
+                    put("safetyRule", "Oktopus sofort mit dem Mundstück nach vorne anbieten und Partner fixieren.")
+                    put("depthOrContext", "Buddy-Rettung")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_emg_4")
+                    put("question", "Was ist die überlebenswichtige Kernregel bei einem kontrollierten schwimmenden Notaufstieg (CESA)?")
+                    put("options", org.json.JSONArray().apply {
+                        put("So schnell wie möglich schwimmen")
+                        put("Kontinuierlich einen leisen Ausatmeton 'Aaaah' summen, damit die expandierende Luft aus den Lungen entweichen kann")
+                        put("Die Tarierweste komplett aufblasen")
+                        put("Die Augen fest geschlossen halten")
+                    })
+                    put("correctIndex", 1)
+                    put("explanation", "Beim Aufstieg dehnt sich die Restluft in den Lungen aus. Das kontinuierliche Ausatmen mit einem Summenton verhindert einen Lungenriss.")
+                    put("safetyRule", "Regel #1: Niemals den Atem anhalten – beim CESA kontinuierlich 'Aaaah' summen.")
+                    put("depthOrContext", "Notaufstieg")
+                })
+                put(org.json.JSONObject().apply {
+                    put("id", "qp_emg_5")
+                    put("question", "Du hast deinen Tauchpartner unter Wasser aus den Augen verloren. Wie lautet das weltweite Standard-Sicherheitsverfahren?")
+                    put("options", org.json.JSONArray().apply {
+                        put("Den Tauchgang alleine zu Ende führen")
+                        put("Maximal 1 Minute unter Wasser suchen (360-Grad-Rundumblick), dann kontrolliert mit Sicherheitsstopp an die Oberfläche aufsteigen und dort treffen")
+                        put("15 Minuten auf der Tiefe warten")
+                        put("Sofort einen Notaufstieg ohne Stopps erzwingen")
+                    })
+                    put("correctIndex", 1)
+                    put("explanation", "Die 1-Minuten-Regel verhindert, dass Taucher getrennt weiter tauchen oder sich gegenseitig verpassen. Treffpunkt ist an der Oberfläche.")
+                    put("safetyRule", "Maximal 1 Minute suchen, dann ruhig zur Oberfläche aufsteigen.")
+                    put("depthOrContext", "Buddy-Verfahren")
+                })
+            }
+            newQuizzes.add(
+                QuizEntity(
+                    id = "quiz_emergencies",
+                    moduleId = "mod_emergencies",
+                    title = "Notfall- & Rettungskompetenz Quiz",
+                    description = "5 Fragen zu Maskenausblasen, Reglerwiedererlangung, Oktopusatmung und CESA-Notaufstieg.",
+                    passScorePercentage = 80,
+                    questionsJson = questions.toString(),
+                    isMockExam = false,
+                    isInstructorUploaded = false
+                )
+            )
+        }
+
+        if (newQuizzes.isNotEmpty()) {
+            divingDao.insertQuizzes(newQuizzes)
         }
     }
 

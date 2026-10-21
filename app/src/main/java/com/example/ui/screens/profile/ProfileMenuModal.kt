@@ -88,9 +88,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.model.DiverDocumentEntity
 import com.example.data.model.UserAccountEntity
-import com.example.ui.components.CreateOrganizationDialog
 import com.example.ui.components.DocumentExpirationAlertBanner
-import com.example.ui.components.EditOrganizationDialog
 import com.example.ui.components.ExamReadinessGauge
 import com.example.ui.components.LanguageSwitchButton
 import com.example.ui.components.ScubaCompactButton
@@ -160,8 +158,6 @@ fun ProfileMenuModal(
     var showEditNameDialog by remember { mutableStateOf(false) }
     var editNameText by remember { mutableStateOf("") }
     var showEditFullProfileDialog by remember { mutableStateOf(false) }
-    var showCreateOrgDialog by remember { mutableStateOf(false) }
-    var showEditOrgDialog by remember { mutableStateOf(false) }
     var showLogoutConfirmDialog by remember { mutableStateOf(false) }
 
     // Camera Capture Launcher for Profile Picture
@@ -363,7 +359,7 @@ fun ProfileMenuModal(
                                                 Spacer(modifier = Modifier.width(6.dp))
                                                 Text(
                                                     text = if (currentLanguage == AppLanguage.DE) {
-                                                        if (isInstructor) "Angemeldet als: Tauchlehrer / Master Instructor" else "Angemeldet als: TauchschÃ¼ler"
+                                                        if (isInstructor) "Angemeldet als: Tauchlehrer / Master Instructor" else "Angemeldet als: Tauchschüler"
                                                     } else {
                                                         if (isInstructor) "Signed in as: Instructor / Master Instructor" else "Signed in as: Diving Student"
                                                     },
@@ -432,7 +428,7 @@ fun ProfileMenuModal(
                                 // Diver Brevet & Credentials Dossier
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Text(
-                                        text = if (currentLanguage == AppLanguage.DE) "PersÃ¶nliche Taucher-Akte" else "Personal Diver Dossier",
+                                        text = if (currentLanguage == AppLanguage.DE) "Persönliche Taucher-Akte" else "Personal Diver Dossier",
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
@@ -469,7 +465,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "$certAgencyDisplay â€¢ $certLevelDisplay",
+                                                    text = "$certAgencyDisplay • $certLevelDisplay",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = MaterialTheme.colorScheme.primary
@@ -491,7 +487,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "ðŸ¤¿ ${currentUser?.totalLoggedDives ?: if (isInstructor) 340 else 14} Dives",
+                                                    text = "🤿 ${currentUser?.totalLoggedDives ?: if (isInstructor) 340 else 14} Dives",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = SeaGreen
@@ -515,7 +511,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "ðŸ©º $ttuExpiryDisplay",
+                                                    text = "🩺 $ttuExpiryDisplay",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold,
                                                     color = Color(0xFF2E7D32)
@@ -537,7 +533,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "ðŸ›¡ï¸ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
+                                                    text = "🛡️ï¸ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -556,13 +552,13 @@ fun ProfileMenuModal(
                                     ) {
                                         Column(modifier = Modifier.padding(10.dp)) {
                                             Text(
-                                                text = "ðŸš¨ Notfallkontakt: $emergencyNameDisplay ($emergencyPhoneDisplay)",
+                                                text = "🚨 Notfallkontakt: $emergencyNameDisplay ($emergencyPhoneDisplay)",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontSize = 11.sp
                                             )
                                             Spacer(modifier = Modifier.height(2.dp))
                                             Text(
-                                                text = "ðŸŽ½ Leih-GrÃ¶ÃŸen: Anzug ${currentUser?.suitSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "L (52)" else "M"} â€¢ Schuhgr. ${currentUser?.shoeSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "43" else "42"} â€¢ BCD ${currentUser?.bcdSize?.takeIf { it.isNotBlank() } ?: "M"} â€¢ ${currentUser?.preferredTank?.takeIf { it.isNotBlank() } ?: "12L Stahl DIN"}",
+                                                text = "🎽 Leih-Größen: Anzug ${currentUser?.suitSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "L (52)" else "M"} • Schuhgr. ${currentUser?.shoeSize?.takeIf { it.isNotBlank() } ?: if (isInstructor) "43" else "42"} • BCD ${currentUser?.bcdSize?.takeIf { it.isNotBlank() } ?: "M"} • ${currentUser?.preferredTank?.takeIf { it.isNotBlank() } ?: "12L Stahl DIN"}",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 fontSize = 11.sp,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -595,7 +591,7 @@ fun ProfileMenuModal(
                                                     fontWeight = FontWeight.Bold
                                                 )
                                                 Text(
-                                                    text = "Lizenz: ${currentUser?.instructorLicenseNumber ?: "TL2-GER-9921"} â€¢ GÃ¼ltig bis: ${currentUser?.instructorValidUntil ?: "2027-12-31"}",
+                                                    text = "Lizenz: ${currentUser?.instructorLicenseNumber ?: "TL2-GER-9921"} • Gültig bis: ${currentUser?.instructorValidUntil ?: "2027-12-31"}",
                                                     style = MaterialTheme.typography.labelSmall
                                                 )
                                                 Text(
@@ -626,7 +622,7 @@ fun ProfileMenuModal(
                                         )
 
                                         ScubaSecondaryButton(
-                                            text = if (currentLanguage == AppLanguage.DE) "Datei anhÃ¤ngen" else "Attach File",
+                                            text = if (currentLanguage == AppLanguage.DE) "Datei anhängen" else "Attach File",
                                             icon = Icons.Rounded.AttachFile,
                                             onClick = {
                                                 documentToEdit = null
@@ -678,136 +674,6 @@ fun ProfileMenuModal(
                         var wifiOnly by remember { mutableStateOf(true) }
                         var dailyReminder by remember { mutableStateOf(true) }
 
-                        // Profile / Role Switcher Card (Diver vs Leadership/Orga)
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 14.dp)
-                                .testTag("profile_role_switcher_card"),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (currentUser?.role == "INSTRUCTOR") MaterialTheme.colorScheme.primary.copy(alpha = 0.08f) else SeaGreen.copy(alpha = 0.08f)
-                            ),
-                            border = BorderStroke(
-                                1.dp,
-                                if (currentUser?.role == "INSTRUCTOR") MaterialTheme.colorScheme.primary.copy(alpha = 0.35f) else SeaGreen.copy(alpha = 0.35f)
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(18.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = if (currentLanguage == AppLanguage.DE) "Aktives Profil:" else "Active Profile:",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        Text(
-                                            text = if (currentUser?.role == "INSTRUCTOR") strings.instructorLabel else strings.studentLabel,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.ExtraBold,
-                                            color = if (currentUser?.role == "INSTRUCTOR") MaterialTheme.colorScheme.primary else SeaGreen
-                                        )
-                                    }
-                                    ScubaCompactButton(
-                                        text = if (currentUser?.role == "INSTRUCTOR") {
-                                            if (currentLanguage == AppLanguage.DE) "Zu Taucher wechseln" else "Switch to Diver"
-                                        } else {
-                                            if (currentLanguage == AppLanguage.DE) "Zu Leitung wechseln" else "Switch to Leadership"
-                                        },
-                                        onClick = {
-                                            val targetRole = if (currentUser?.role == "INSTRUCTOR") "STUDENT" else "INSTRUCTOR"
-                                            viewModel.switchUserRole(targetRole)
-                                            onDismiss()
-                                        },
-                                        containerColor = if (currentUser?.role == "INSTRUCTOR") SeaGreen else MaterialTheme.colorScheme.primary,
-                                        contentColor = Color.White
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = if (currentUser?.role == "INSTRUCTOR") {
-                                        if (currentLanguage == AppLanguage.DE)
-                                            "Leitungs- & Vereinsmodus: Voller Zugriff auf Basis- & Vereinsverwaltung (DiveOps), Material, TÃœV, Ausfahrten & SchÃ¼ler."
-                                        else
-                                            "Leadership & Club mode: Full access to Dive Center & Club operations (DiveOps), assets, TÃœV, trips & students."
-                                    } else {
-                                        if (currentLanguage == AppLanguage.DE)
-                                            "Standard-Taucherprofil: Fokus auf persÃ¶nliches Logbuch, eigene Kurse, Brevets und TTU-Akte."
-                                        else
-                                            "Standard diver profile: Focus on personal logbook, enrolled courses, certifications and medical file."
-                                    },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontSize = 11.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
-                        // Organization & Club Quick Access Card
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 14.dp)
-                                .testTag("profile_org_card"),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                val currentOrg by viewModel.currentOrganization.collectAsState()
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Rounded.CorporateFare, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = if (currentLanguage == AppLanguage.DE) "Tauchorganisation (Verein / Basis)" else "Diving Organization (Club / Center)",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                                Text(
-                                    text = if (currentOrg != null) {
-                                        if (currentLanguage == AppLanguage.DE)
-                                            "Aktiver Workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Verein" else "Tauchbasis"}) â€¢ ${currentOrg!!.activeMembersCount} Personen"
-                                        else
-                                            "Active workspace: ${currentOrg!!.name} (${if (currentOrg!!.isClub) "Club" else "Dive Center"})"
-                                    } else {
-                                        if (currentLanguage == AppLanguage.DE)
-                                            "Aktuell im persÃ¶nlichen Tauchermodus. Du kannst jederzeit einen Verein oder eine Tauchbasis anlegen oder verwalten."
-                                        else
-                                            "Currently in personal diver mode. You can create or manage a club or dive center anytime."
-                                    },
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    ScubaSecondaryButton(
-                                        text = if (currentLanguage == AppLanguage.DE) "+ Neue Org" else "+ New Org",
-                                        onClick = { showCreateOrgDialog = true },
-                                        modifier = Modifier.weight(1f)
-                                    )
-
-                                    if (currentOrg != null) {
-                                        ScubaSecondaryButton(
-                                            text = if (currentLanguage == AppLanguage.DE) "Org bearbeiten" else "Edit Org",
-                                            onClick = { showEditOrgDialog = true },
-                                            containerColor = if (currentOrg!!.isClub) SeaGreen.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primaryContainer,
-                                            contentColor = if (currentOrg!!.isClub) SeaGreen else MaterialTheme.colorScheme.primary,
-                                            border = BorderStroke(1.dp, if (currentOrg!!.isClub) SeaGreen.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -819,7 +685,7 @@ fun ProfileMenuModal(
                         ) {
                             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "App-Einstellungen & PrÃ¤ferenzen" else "App Settings & Preferences",
+                                    text = if (currentLanguage == AppLanguage.DE) "App-Einstellungen & Präferenzen" else "App Settings & Preferences",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
@@ -963,12 +829,12 @@ fun ProfileMenuModal(
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Column {
                                             Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Nur Ã¼ber WLAN laden" else "Wi-Fi Only Downloads",
+                                                text = if (currentLanguage == AppLanguage.DE) "Nur über WLAN laden" else "Wi-Fi Only Downloads",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.SemiBold
                                             )
                                             Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "Datenvolumen fÃ¼r Videos & Slides sparen" else "Save mobile data for offline material downloads",
+                                                text = if (currentLanguage == AppLanguage.DE) "Datenvolumen für Videos & Slides sparen" else "Save mobile data for offline material downloads",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -999,7 +865,7 @@ fun ProfileMenuModal(
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Column {
                                             Text(
-                                                text = if (currentLanguage == AppLanguage.DE) "TÃ¤gliche Lerneinstufung" else "Daily Study Reminder",
+                                                text = if (currentLanguage == AppLanguage.DE) "Tägliche Lerneinstufung" else "Daily Study Reminder",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.SemiBold
                                             )
@@ -1083,7 +949,7 @@ fun ProfileMenuModal(
                             trailingIcon = {
                                 if (searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.setDocumentSearchQuery("") }) {
-                                        Icon(Icons.Rounded.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "LÃ¶schen" else "Clear")
+                                        Icon(Icons.Rounded.Clear, contentDescription = if (currentLanguage == AppLanguage.DE) "Löschen" else "Clear")
                                     }
                                 }
                             },
@@ -1115,28 +981,28 @@ fun ProfileMenuModal(
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "ðŸ“œ ${strings.filterCerts}",
+                                    title = "📜 ${strings.filterCerts}",
                                     isSelected = categoryFilter == "CERTIFICATION",
                                     onClick = { viewModel.setDocumentCategoryFilter("CERTIFICATION") }
                                 )
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "ðŸ©º ${strings.filterMedical}",
+                                    title = "🩺 ${strings.filterMedical}",
                                     isSelected = categoryFilter == "MEDICAL_FORM",
                                     onClick = { viewModel.setDocumentCategoryFilter("MEDICAL_FORM") }
                                 )
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "ðŸ›¡ï¸ ${strings.filterInsurance}",
+                                    title = "🛡️ï¸ ${strings.filterInsurance}",
                                     isSelected = categoryFilter == "INSURANCE",
                                     onClick = { viewModel.setDocumentCategoryFilter("INSURANCE") }
                                 )
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "ðŸ“‹ ${strings.filterWaivers}",
+                                    title = "📋 ${strings.filterWaivers}",
                                     isSelected = categoryFilter == "LIABILITY_WAIVER",
                                     onClick = { viewModel.setDocumentCategoryFilter("LIABILITY_WAIVER") }
                                 )
@@ -1162,7 +1028,7 @@ fun ProfileMenuModal(
                                         .padding(28.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(text = "ðŸ—‚ï¸", fontSize = 36.sp)
+                                    Text(text = "🗂️ï¸", fontSize = 36.sp)
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Text(
                                         text = strings.noDocumentsFound,
@@ -1368,8 +1234,6 @@ fun ProfileMenuModal(
         )
     }
 
-    val currentOrg by viewModel.currentOrganization.collectAsState()
-
     // Full Profile Edit Dialog
     if (showEditFullProfileDialog) {
         val userToEdit = currentUser ?: UserAccountEntity(
@@ -1424,7 +1288,7 @@ fun ProfileMenuModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (currentLanguage == AppLanguage.DE) "Abmelden bestÃ¤tigen" else "Confirm Sign Out",
+                        text = if (currentLanguage == AppLanguage.DE) "Abmelden bestätigen" else "Confirm Sign Out",
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -1432,7 +1296,7 @@ fun ProfileMenuModal(
             text = {
                 Text(
                     text = if (currentLanguage == AppLanguage.DE)
-                        "MÃ¶chtest du dich wirklich abmelden? Deine aktive Sitzung wird beendet und du wirst zur Anmeldeseite weitergeleitet."
+                        "Möchtest du dich wirklich abmelden? Deine aktive Sitzung wird beendet und du wirst zur Anmeldeseite weitergeleitet."
                     else
                         "Are you sure you want to sign out? Your session will end and you will be returned to the sign-in screen.",
                     style = MaterialTheme.typography.bodyMedium
@@ -1465,20 +1329,7 @@ fun ProfileMenuModal(
         )
     }
 
-    if (showCreateOrgDialog) {
-        CreateOrganizationDialog(
-            viewModel = viewModel,
-            onDismiss = { showCreateOrgDialog = false }
-        )
-    }
 
-    if (showEditOrgDialog && currentOrg != null) {
-        EditOrganizationDialog(
-            organization = currentOrg!!,
-            onSave = { updated -> viewModel.updateOrganizationDetails(updated) },
-            onDismiss = { showEditOrgDialog = false }
-        )
-    }
 }
 
 @Composable
@@ -1577,7 +1428,7 @@ fun EditFullProfileDialog(
         title = {
             Column {
                 Text(
-                    text = "VollstÃ¤ndiges Profil bearbeiten",
+                    text = "Vollständiges Profil bearbeiten",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -1605,7 +1456,7 @@ fun EditFullProfileDialog(
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 10.dp)) {
                             Text(
-                                text = "ðŸ‘¤ Taucher-Profil",
+                                text = "👤 Taucher-Profil",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
@@ -1621,7 +1472,7 @@ fun EditFullProfileDialog(
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(vertical = 10.dp)) {
                             Text(
-                                text = "ðŸ¤¿ Leitung & TL",
+                                text = "🤿 Leitung & TL",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = if (selectedTab == 1) SeaGreen else MaterialTheme.colorScheme.onSurface
@@ -1675,13 +1526,13 @@ fun EditFullProfileDialog(
                         shape = RoundedCornerShape(20.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        Text("âš¡ Mit Test-Taucherdaten befÃ¼llen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text("⚡ Mit Test-Taucherdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                     }
 
                     OutlinedTextField(
                         value = fullName,
                         onValueChange = { fullName = it },
-                        label = { Text("VollstÃ¤ndiger Name *") },
+                        label = { Text("Vollständiger Name *") },
                         modifier = Modifier.fillMaxWidth().testTag("edit_profile_name_field"),
                         singleLine = true
                     )
@@ -1732,7 +1583,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = totalLoggedDives,
                         onValueChange = { totalLoggedDives = it },
-                        label = { Text("Geloggte TauchgÃ¤nge") },
+                        label = { Text("Geloggte Tauchgänge") },
                         modifier = Modifier.fillMaxWidth().testTag("edit_profile_dives_field"),
                         singleLine = true
                     )
@@ -1740,7 +1591,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = ttuExpiryDate,
                         onValueChange = { ttuExpiryDate = it },
-                        label = { Text("TTU GÃ¼ltig bis (JJJJ-MM-TT)") },
+                        label = { Text("TTU Gültig bis (JJJJ-MM-TT)") },
                         placeholder = { Text("2027-06-30") },
                         modifier = Modifier.fillMaxWidth().testTag("edit_profile_ttu_expiry_field"),
                         singleLine = true
@@ -1789,7 +1640,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = suitSize,
                         onValueChange = { suitSize = it },
-                        label = { Text("AnzuggrÃ¶ÃŸe (z.B. M, L, XL)") },
+                        label = { Text("Anzuggröße (z.B. M, L, XL)") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -1797,7 +1648,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = shoeSize,
                         onValueChange = { shoeSize = it },
-                        label = { Text("SchuhgrÃ¶ÃŸe (z.B. 43)") },
+                        label = { Text("Schuhgröße (z.B. 43)") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -1805,7 +1656,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = bcdSize,
                         onValueChange = { bcdSize = it },
-                        label = { Text("Tarierweste / BCD GrÃ¶ÃŸe") },
+                        label = { Text("Tarierweste / BCD Größe") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -1833,7 +1684,7 @@ fun EditFullProfileDialog(
                         shape = RoundedCornerShape(20.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                     ) {
-                        Text("âš¡ Mit Test-Tauchlehrerdaten befÃ¼llen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = SeaGreen)
+                        Text("⚡ Mit Test-Tauchlehrerdaten befüllen", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = SeaGreen)
                     }
 
                     OutlinedTextField(
@@ -1866,7 +1717,7 @@ fun EditFullProfileDialog(
                     OutlinedTextField(
                         value = instructorValidUntil,
                         onValueChange = { instructorValidUntil = it },
-                        label = { Text("Lizenz gÃ¼ltig bis (JJJJ-MM-TT)") },
+                        label = { Text("Lizenz gültig bis (JJJJ-MM-TT)") },
                         placeholder = { Text("2027-12-31") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true

@@ -218,7 +218,7 @@ fun HomeScreen(
                     cert.contains("OWD", ignoreCase = true) -> "OWD Taucher"
                     cert.isNotBlank() -> cert.take(12)
                     readiness >= 80 -> "AOWD Kandidat"
-                    else -> "OWD SchÃƒÂ¼ler"
+                    else -> "OWD Schüler"
                 }
             }
 
@@ -315,7 +315,7 @@ fun HomeScreen(
                             )
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(text = "Ã°Å¸Â¤Â¿", fontSize = 24.sp)
+                                Text(text = "🤿", fontSize = 24.sp)
                             }
                         }
 
@@ -350,7 +350,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(2.dp))
 
                             Text(
-                                text = "${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit} gelernt Ã¢â‚¬Â¢ $readiness% PrÃƒÂ¼fungsreife",
+                                text = "${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit} gelernt • $readiness% Prüfungsreife",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 12.sp
@@ -422,7 +422,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "NÃƒâ€žCHSTE LERNEINHEIT" else "NEXT STUDY UNIT",
+                                    text = if (currentLanguage == AppLanguage.DE) "NÄCHSTE LERNEINHEIT" else "NEXT STUDY UNIT",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
@@ -443,7 +443,7 @@ fun HomeScreen(
 
                     // ONE Prominent Full-Width 52dp Primary Button
                     ScubaPrimaryButton(
-                        text = if (currentLanguage == AppLanguage.DE) "Lerneinheit starten Ã¢â€“Â¶" else "Start Study Unit Ã¢â€“Â¶",
+                        text = if (currentLanguage == AppLanguage.DE) "Lerneinheit starten ▶" else "Start Study Unit ▶",
                         onClick = {
                             val unit = nextStudyUnit
                             if (unit != null) {
@@ -564,7 +564,7 @@ fun HomeScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "EintrÃƒÂ¤ge" else "Entries",
+                                    text = if (currentLanguage == AppLanguage.DE) "Einträge" else "Entries",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -693,8 +693,7 @@ fun HomeScreen(
                 ) {
                     val tabsList = listOf(
                         Triple(if (currentLanguage == AppLanguage.DE) "Klassenzimmer" else "Classroom", Icons.Rounded.School, 0),
-                        Triple(if (currentLanguage == AppLanguage.DE) "Mein Fortschritt" else "My Progress", Icons.Rounded.Speed, 1),
-                        Triple(if (currentLanguage == AppLanguage.DE) "Kurskatalog" else "Course Catalog", Icons.Rounded.Explore, 2)
+                        Triple(if (currentLanguage == AppLanguage.DE) "Mein Fortschritt" else "My Progress", Icons.Rounded.Speed, 1)
                     )
                     tabsList.forEach { (label, icon, index) ->
                         val isSelected = activeSubTab == index
@@ -822,7 +821,7 @@ fun HomeScreen(
                                         color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else SeaGreen.copy(alpha = 0.12f)
                                     ) {
                                         Text(
-                                            text = if (isSelected) (if (currentLanguage == AppLanguage.DE) "AUSGEWÃƒâ€žHLT" else "SELECTED") else (if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE"),
+                                            text = if (isSelected) (if (currentLanguage == AppLanguage.DE) "AUSGEWÄHLT" else "SELECTED") else (if (currentLanguage == AppLanguage.DE) "AKTIV" else "ACTIVE"),
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.Black,
                                             color = if (isSelected) MaterialTheme.colorScheme.primary else SeaGreen,
@@ -830,7 +829,7 @@ fun HomeScreen(
                                         )
                                     }
                                     Text(
-                                        text = "${course.lessonsCount} ${if (currentLanguage == AppLanguage.DE) "Einheiten" else "lessons"} Ã¢â‚¬Â¢ ${course.duration}",
+                                        text = "${course.lessonsCount} ${if (currentLanguage == AppLanguage.DE) "Einheiten" else "lessons"} • ${course.duration}",
                                         fontSize = 10.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -903,7 +902,7 @@ fun HomeScreen(
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(text = selectedCourse?.iconEmoji ?: "Ã°Å¸Â¤Â¿", fontSize = 22.sp)
+                                Text(text = selectedCourse?.iconEmoji ?: "🤿", fontSize = 22.sp)
                             }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -947,285 +946,6 @@ fun HomeScreen(
                         onOpenVideo = { viewModel.openVideo(it) },
                         onOpenQuiz = { viewModel.openQuiz(it) }
                     )
-                }
-            } else if (selectedCourseId == "course_nitrox") {
-                item {
-                    val nitroxPres = presentations.find { it.id == "pres_nitrox" }
-                    val nitroxQuiz = quizzes.find { it.id == "quiz_nitrox" }
-                    val isNitroxPassed = nitroxQuiz?.isPassed == true
-                    val isGerman = currentLanguage == AppLanguage.DE
-                    Card(
-                        modifier = Modifier.fillMaxWidth().testTag("nitrox_curriculum_module"),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isNitroxPassed) SeaGreen.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surfaceContainerLow
-                        ),
-                        border = BorderStroke(
-                            if (isNitroxPassed) 2.dp else 1.dp,
-                            if (isNitroxPassed) SeaGreen.copy(alpha = 0.65f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = if (isGerman) "Spezialkurs: Sauerstoffanalyse & Gasmischung" else "Specialty Unit: Oxygen Analysis & Gas Mixing",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        if (isNitroxPassed) {
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Icon(
-                                                imageVector = Icons.Rounded.CheckCircle,
-                                                contentDescription = "Passed",
-                                                tint = SeaGreen,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = if (isGerman) "Theorie und Sicherheitsverfahren fÃƒÂ¼r das Tauchen mit Sauerstoffkonzentrationen bis 40% Enriched Air Nitrox (EANx)." else "Theory and safety procedures for diving with oxygen concentrations up to 40% Enriched Air Nitrox (EANx).",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-
-                                if (isNitroxPassed) {
-                                    Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = SeaGreen.copy(alpha = 0.15f),
-                                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f))
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Rounded.CheckCircle,
-                                                contentDescription = null,
-                                                tint = SeaGreen,
-                                                modifier = Modifier.size(12.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                text = if (isGerman) "Ã¢Å“â€œ BESTANDEN" else "Ã¢Å“â€œ PASSED",
-                                                fontSize = 9.sp,
-                                                fontWeight = FontWeight.Black,
-                                                color = SeaGreen
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            ModuleItemRow(
-                                title = if (isGerman) "Nitrox-Gasanalyse & Maximaltiefen-Berechnung (MOD)" else "Nitrox Gas Analysis & Max Depth (MOD) calculations",
-                                type = if (isGerman) "PrÃƒÂ¤sentation (2 Folien)" else "Slide Deck (2 Slides)",
-                                icon = Icons.Rounded.Slideshow,
-                                isDone = nitroxPres?.isCompleted == true,
-                                onClick = {
-                                    if (nitroxPres != null) {
-                                        viewModel.markPresentationProgress(nitroxPres.id, true)
-                                        viewModel.openPresentation(nitroxPres)
-                                    }
-                                }
-                            )
-                            ModuleItemRow(
-                                title = if (isGerman) "Enriched Air Sicherheit & SauerstofftoxizitÃƒÂ¤t" else "Enriched Air Safety & Oxygen Toxicity Exams",
-                                type = if (isGerman) "ÃƒÅ“bungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
-                                icon = Icons.Rounded.Quiz,
-                                isDone = nitroxQuiz?.isPassed == true,
-                                onClick = {
-                                    if (nitroxQuiz != null) {
-                                        viewModel.openQuiz(nitroxQuiz)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            } else if (selectedCourseId == "course_deep") {
-                item {
-                    val deepPres = presentations.find { it.id == "pres_deep" }
-                    val deepQuiz = quizzes.find { it.id == "quiz_deep" }
-                    val isDeepPassed = deepQuiz?.isPassed == true
-                    val isGerman = currentLanguage == AppLanguage.DE
-                    Card(
-                        modifier = Modifier.fillMaxWidth().testTag("deep_curriculum_module"),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isDeepPassed) SeaGreen.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surfaceContainerLow
-                        ),
-                        border = BorderStroke(
-                            if (isDeepPassed) 2.dp else 1.dp,
-                            if (isDeepPassed) SeaGreen.copy(alpha = 0.65f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = if (isGerman) "Spezialkurs: Tieftauchgrenzen & Tiefenrausch" else "Specialty Unit: Deep Diving Limits & Narcosis Safety",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        if (isDeepPassed) {
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Icon(
-                                                imageVector = Icons.Rounded.CheckCircle,
-                                                contentDescription = "Passed",
-                                                tint = SeaGreen,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = if (isGerman) "Sichere Abstiegsverfahren, redundante Gasplanung und Tiefenrausch-Management bis 40m Tiefe." else "Master safe descent procedures, redundant gas planning, and narcosis management for deep diving to 40m/130ft.",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-
-                                if (isDeepPassed) {
-                                    Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = SeaGreen.copy(alpha = 0.15f),
-                                        border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f))
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Rounded.CheckCircle,
-                                                contentDescription = null,
-                                                tint = SeaGreen,
-                                                modifier = Modifier.size(12.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                text = if (isGerman) "Ã¢Å“â€œ BESTANDEN" else "Ã¢Å“â€œ PASSED",
-                                                fontSize = 9.sp,
-                                                fontWeight = FontWeight.Black,
-                                                color = SeaGreen
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            ModuleItemRow(
-                                title = if (isGerman) "Dekompressionssicherheit & redundante Gassysteme" else "Decompression Safety & Redundant Gas Systems",
-                                type = if (isGerman) "PrÃƒÂ¤sentation (1 Folie)" else "Slide Deck (1 Slide)",
-                                icon = Icons.Rounded.Slideshow,
-                                isDone = deepPres?.isCompleted == true,
-                                onClick = {
-                                    if (deepPres != null) {
-                                        viewModel.markPresentationProgress(deepPres.id, true)
-                                        viewModel.openPresentation(deepPres)
-                                    }
-                                }
-                            )
-                            ModuleItemRow(
-                                title = if (isGerman) "Tiefenrausch-Symptome & Sicherheitsprotokoll" else "Narcosis Symptoms & Safety Protocol Quiz",
-                                type = if (isGerman) "ÃƒÅ“bungsquiz (1 Frage)" else "Practice Quiz (1 Question)",
-                                icon = Icons.Rounded.Quiz,
-                                isDone = deepQuiz?.isPassed == true,
-                                onClick = {
-                                    if (deepQuiz != null) {
-                                        viewModel.openQuiz(deepQuiz)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            } else if (selectedCourseId == "course_wreck") {
-                item {
-                    val wreckPres = presentations.find { it.id == "pres_wreck" }
-                    val isGerman = currentLanguage == AppLanguage.DE
-                    Card(
-                        modifier = Modifier.fillMaxWidth().testTag("wreck_curriculum_module"),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                text = if (isGerman) "Spezialkurs: Wrackvermessung & FÃƒÂ¼hrungsleinen" else "Specialty Unit: Wreck Surveying & Line Laying",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = if (isGerman) "Verfahren zur Kartierung von Wracks, Verlegen von Penetrationsleinen und Vermeidung von Sedimentaufwirbelung." else "Procedures and protocols for mapping artificial reefs, deploying penetration guidelines, and avoiding silt-outs.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            ModuleItemRow(
-                                title = if (isGerman) "Wrackgefahren, Navigation & Penetrationsleinen" else "Wreck Hazards, Navigation & Penetration Lines",
-                                type = if (isGerman) "PrÃƒÂ¤sentation (1 Folie)" else "Slide Deck (1 Slide)",
-                                icon = Icons.Rounded.Slideshow,
-                                isDone = wreckPres?.isCompleted == true,
-                                onClick = {
-                                    if (wreckPres != null) {
-                                        viewModel.markPresentationProgress(wreckPres.id, true)
-                                        viewModel.openPresentation(wreckPres)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            } else if (selectedCourseId == "course_night") {
-                item {
-                    val nightPres = presentations.find { it.id == "pres_night" }
-                    val isGerman = currentLanguage == AppLanguage.DE
-                    Card(
-                        modifier = Modifier.fillMaxWidth().testTag("night_curriculum_module"),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                text = if (isGerman) "Spezialkurs: Nachtnavigation & Lampenkommunikation" else "Specialty Unit: Dark Navigation & Light Communication",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = if (isGerman) "Nachttauchnavigation, Buddy-Signale mit der Lampe und sicheres Erkunden nachtaktiver Rifflebewesen." else "Master night dive navigation, specialized buddy communication signals, and explore nocturnal reef environments safely.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            ModuleItemRow(
-                                title = if (isGerman) "Nachtaktive Meeresbewohner & Lampen-Management" else "Nocturnal Wildlife & Dive Torch Management",
-                                type = if (isGerman) "PrÃƒÂ¤sentation (1 Folie)" else "Slide Deck (1 Slide)",
-                                icon = Icons.Rounded.Slideshow,
-                                isDone = nightPres?.isCompleted == true,
-                                onClick = {
-                                    if (nightPres != null) {
-                                        viewModel.openPresentation(nightPres)
-                                    }
-                                }
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -1563,7 +1283,7 @@ fun HomeScreen(
                     )
                     Text(
                         text = if (currentLanguage == AppLanguage.DE) 
-                            "Nur vergangene PrÃƒÂ¼fungen. Um eine neue PrÃƒÂ¼fung abzulegen, gehe bitte in den Klassenzimmer-Bereich." 
+                            "Nur vergangene Prüfungen. Um eine neue Prüfung abzulegen, gehe bitte in den Klassenzimmer-Bereich." 
                         else 
                             "Past exams only. To take or retake an exam, please visit the Classroom section.",
                         style = MaterialTheme.typography.bodySmall,
@@ -1585,7 +1305,7 @@ fun HomeScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Text(
-                            text = if (currentLanguage == AppLanguage.DE) "Noch keine PrÃƒÂ¼fungsversuche. Absolviere deine erste PrÃƒÂ¼fung im Klassenzimmer!" else "No exam attempts yet. Take your first exam in the Classroom section!",
+                            text = if (currentLanguage == AppLanguage.DE) "Noch keine Prüfungsversuche. Absolviere deine erste Prüfung im Klassenzimmer!" else "No exam attempts yet. Take your first exam in the Classroom section!",
                             modifier = Modifier.padding(20.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1638,7 +1358,7 @@ fun HomeScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (quiz.isMockExam) "${strings.finalExamPrefix} Ã¢â‚¬Â¢ ${strings.passReqPrefix}: ${quiz.passScorePercentage}%" else "${strings.passReqPrefix}: ${quiz.passScorePercentage}%",
+                                    text = if (quiz.isMockExam) "${strings.finalExamPrefix} • ${strings.passReqPrefix}: ${quiz.passScorePercentage}%" else "${strings.passReqPrefix}: ${quiz.passScorePercentage}%",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -1709,177 +1429,6 @@ fun HomeScreen(
             }
         }
 
-        // =========================================================================
-        // SUB-TAB 2: BROWSE SPECIALTIES (Specialty Scuba Courses Catalog)
-        // =========================================================================
-        if (activeSubTab == 2) {
-            item {
-                Text(
-                    text = if (currentLanguage == AppLanguage.DE) "VerfÃƒÂ¼gbare Spezialkurse" else "Available Specialty Courses",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = if (currentLanguage == AppLanguage.DE) "Erweitern Sie Ihre Grenzen mit zertifizierten Zusatzausbildungen." else "Expand your limits and acquire advanced certifications with our premium specialties.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            val availableCourses = courses.filter { !it.isEnrolled }
-
-            if (availableCourses.isEmpty()) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = "Ã°Å¸Å½â€œÃ°Å¸Å½â€°", fontSize = 48.sp)
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = if (currentLanguage == AppLanguage.DE) "Sie sind in alle Kurse eingeschrieben!" else "You are Enrolled in All Available Courses!",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = if (currentLanguage == AppLanguage.DE) "Gehen Sie zu 'Klassenzimmer', um die Theorie zu studieren." else "Review your active classes under 'Classroom' to study their units.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
-                        }
-                    }
-                }
-            } else {
-                items(availableCourses, key = { it.id }) { course ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("available_course_card_${course.id}"),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            // Row with Icon + Title + Difficulty
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Surface(
-                                        modifier = Modifier.size(44.dp),
-                                        shape = CircleShape,
-                                        color = OceanSecondary.copy(alpha = 0.15f)
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Text(text = course.iconEmoji, fontSize = 24.sp)
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Column {
-                                        Text(
-                                            text = course.title,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        Text(
-                                            text = course.subtitle,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = when (course.difficulty.lowercase()) {
-                                        "easy" -> SeaGreen.copy(alpha = 0.12f)
-                                        "medium" -> SandGold.copy(alpha = 0.12f)
-                                        else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-                                    }
-                                ) {
-                                    Text(
-                                        text = course.difficulty.uppercase(),
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Black,
-                                        color = when (course.difficulty.lowercase()) {
-                                            "easy" -> SeaGreen
-                                            "medium" -> SandGold
-                                            else -> MaterialTheme.colorScheme.primary
-                                        },
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Text(
-                                text = course.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                lineHeight = 16.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(14.dp))
-
-                            // Specs Row (depth limit, duration, prerequisites)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                SpecPill(label = if (currentLanguage == AppLanguage.DE) "Tiefe: ${course.depthLimit}" else "Depth: ${course.depthLimit}")
-                                SpecPill(label = if (currentLanguage == AppLanguage.DE) "Dauer: ${course.duration}" else "Duration: ${course.duration}")
-                                SpecPill(label = if (currentLanguage == AppLanguage.DE) "Voraussetzung: ${course.prerequisites}" else "Req: ${course.prerequisites}")
-                            }
-
-                            Spacer(modifier = Modifier.height(14.dp))
-
-                            // Interactive Enroll Now button
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                ScubaSecondaryButton(
-                                    text = if (currentLanguage == AppLanguage.DE) "Einschreiben" else "Enroll",
-                                    icon = Icons.Rounded.School,
-                                    onClick = {
-                                        viewModel.enrollInCourse(course.id)
-                                        enrollmentSuccessMessage = if (currentLanguage == AppLanguage.DE) {
-                                             "Erfolgreich in den Spezialkurs '${course.title}' eingeschrieben!"
-                                        } else {
-                                            "Enrolled in specialty course '${course.title}' successfully!"
-                                        }
-                                    },
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                                    border = null,
-                                    testTag = "enroll_btn_${course.id}"
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -1906,7 +1455,7 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "Ã°Å¸â€˜Å’", fontSize = 24.sp)
+                            Text(text = "👌", fontSize = 24.sp)
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
                                 Text(
@@ -2179,7 +1728,7 @@ fun ModuleCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = if (isGerman) "Ã¢Å“â€œ BESTANDEN" else "Ã¢Å“â€œ PASSED",
+                                    text = if (isGerman) "✓ BESTANDEN" else "✓ PASSED",
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Black,
                                     color = SeaGreen
@@ -2298,7 +1847,7 @@ fun ModuleCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Ã¢Å“Ë†Ã¯Â¸Â " + strings.offlineReadyNotice,
+                    text = "✈️ " + strings.offlineReadyNotice,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(10.dp),
                         color = SeaGreen
@@ -2343,7 +1892,7 @@ fun ModuleCard(
                     )
                     if (progressFraction >= 1f) {
                         Text(
-                            text = "Ã¢Å“Â¨ " + strings.moduleMastered,
+                            text = "✨ " + strings.moduleMastered,
                             style = MaterialTheme.typography.labelSmall,
                             color = SeaGreen,
                             fontWeight = FontWeight.Bold,

@@ -443,7 +443,7 @@ private fun DiveSpotsListTab(
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
                             IconButton(onClick = { onSearchChange("") }) {
-                                Icon(Icons.Rounded.Clear, contentDescription = if (isGerman) "LÃ¶schen" else "Clear")
+                                Icon(Icons.Rounded.Clear, contentDescription = if (isGerman) "Löschen" else "Clear")
                             }
                         }
                     },
@@ -462,7 +462,7 @@ private fun DiveSpotsListTab(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (isGerman) "${spots.size} TauchplÃ¤tze verfÃ¼gbar" else "${spots.size} Dive spots available",
+                        text = if (isGerman) "${spots.size} Tauchplätze verfügbar" else "${spots.size} Dive spots available",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -548,7 +548,7 @@ private fun DiveSpotsListTab(
                         Icon(Icons.Rounded.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = if (isGerman) "Keine TauchplÃ¤tze entsprechen deinem Filter" else "No dive spots match your filter",
+                            text = if (isGerman) "Keine Tauchplätze entsprechen deinem Filter" else "No dive spots match your filter",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -614,10 +614,10 @@ private fun DiveSpotSummaryCard(
     }
 
     val entryTypeIcon = when {
-        spot.entryType.contains("BOAT", ignoreCase = true) -> "ðŸš¤"
+        spot.entryType.contains("BOAT", ignoreCase = true) -> "🚤"
         spot.entryType.contains("SHORE", ignoreCase = true) || spot.entryType.contains("BEACH", ignoreCase = true) -> "ðŸ–ï¸"
-        spot.entryType.contains("DRIFT", ignoreCase = true) -> "ðŸŒŠ"
-        else -> "ðŸ¤¿"
+        spot.entryType.contains("DRIFT", ignoreCase = true) -> "🌊"
+        else -> "🤿"
     }
 
     val spotTypeIcon = when {
@@ -801,13 +801,13 @@ private fun DiveSpotSummaryCard(
                 // Current Metric
                 val currentText = if (isGerman) when (spot.currentStrength.uppercase()) {
                     "STRONG" -> "Stark"
-                    "MODERATE" -> "MÃ¤ÃŸig"
+                    "MODERATE" -> "Mäßig"
                     "MILD", "LOW", "LIGHT" -> "Leicht"
                     "NONE" -> "Keine"
                     else -> spot.currentStrength
                 } else spot.currentStrength
                 SpotMetricPill(
-                    title = if (isGerman) "StrÃ¶mung" else "Current",
+                    title = if (isGerman) "Strömung" else "Current",
                     value = currentText,
                     modifier = Modifier.weight(1f)
                 )
@@ -817,7 +817,7 @@ private fun DiveSpotSummaryCard(
 
             // Highlights snippet
             Text(
-                text = "âœ¨ " + spot.highlights.take(2).joinToString(" â€¢ "),
+                text = "✨ " + spot.highlights.take(2).joinToString(" • "),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 11.sp,
@@ -1048,7 +1048,7 @@ private fun DiveSpotDetailDialog(
                             Text("${spot.entryType} (${spot.waterType})", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(if (isGerman) "StrÃ¶mung & Drift:" else "Current & Drift:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(if (isGerman) "Strömung & Drift:" else "Current & Drift:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(spot.currentStrength, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -1337,7 +1337,7 @@ private fun SpotEmergencyDossierDialog(
                     }
 
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Rounded.Close, contentDescription = if (isGerman) "SchlieÃŸen" else "Close")
+                        Icon(Icons.Rounded.Close, contentDescription = if (isGerman) "Schließen" else "Close")
                     }
                 }
 
@@ -1356,7 +1356,7 @@ private fun SpotEmergencyDossierDialog(
                             Icon(Icons.Rounded.LocalHospital, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = if (isGerman) "NÃ„CHSTE DRUCKKAMMER" else "NEAREST HYPERBARIC CHAMBER",
+                                text = if (isGerman) "NÄCHSTE DRUCKKAMMER" else "NEAREST HYPERBARIC CHAMBER",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error
@@ -1372,7 +1372,7 @@ private fun SpotEmergencyDossierDialog(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "${emergency.chamberLocation} â€¢ ~${emergency.chamberDistanceKm} km ${if (isGerman) "entfernt" else "away"}",
+                            text = "${emergency.chamberLocation} • ~${emergency.chamberDistanceKm} km ${if (isGerman) "entfernt" else "away"}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1404,7 +1404,7 @@ private fun SpotEmergencyDossierDialog(
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         EmergencyRowItem(
                             icon = Icons.Rounded.Radio,
-                            title = if (isGerman) "KÃ¼stenwache / Seefunk (VHF):" else "Coast Guard / Marine VHF:",
+                            title = if (isGerman) "Küstenwache / Seefunk (VHF):" else "Coast Guard / Marine VHF:",
                             value = emergency.coastGuardVHF,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -1463,7 +1463,7 @@ private fun SpotEmergencyDossierDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ScubaPrimaryButton(
-                    text = if (isGerman) "Dossier schlieÃŸen" else "Close Dossier",
+                    text = if (isGerman) "Dossier schließen" else "Close Dossier",
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(),
                     testTag = "close_emergency_modal_btn"
@@ -1720,7 +1720,7 @@ private fun GasAndModCalculatorTab(
         )
         else -> Triple(
             CoralAlert,
-            if (isGerman) "ðŸš¨ RED ALERT: SAUERSTOFF-TOXIZITÃ„T (> 1.6)" else "ðŸš¨ RED ALERT: CNS TOXICITY (> 1.6)",
+            if (isGerman) "🚨 RED ALERT: SAUERSTOFF-TOXIZITÄT (> 1.6)" else "🚨 RED ALERT: CNS TOXICITY (> 1.6)",
             true
         )
     }
@@ -2083,7 +2083,7 @@ private fun GasAndModCalculatorTab(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = result.warningMessage ?: (if (isGerman) "Achtung: Geplante Tiefe Ã¼berschreitet MOD-Sicherheitsgrenze!" else "Warning: Planned depth exceeds safe MOD limit!"),
+                                    text = result.warningMessage ?: (if (isGerman) "Achtung: Geplante Tiefe überschreitet MOD-Sicherheitsgrenze!" else "Warning: Planned depth exceeds safe MOD limit!"),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = CoralAlert,
                                     fontWeight = FontWeight.Bold,
@@ -2292,7 +2292,7 @@ private fun GasAndModCalculatorTab(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (isGerman) "Plan in Logbuch Ã¼bertragen" else "Convert Plan to Dive Log",
+                                text = if (isGerman) "Plan in Logbuch übertragen" else "Convert Plan to Dive Log",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -2386,22 +2386,22 @@ private fun PreDiveBuddyChecklistTab() {
     val checklistItems = remember(isGerman) {
         mutableStateListOf(
             if (isGerman) {
-                ChecklistItem("B", "Tarierung (BCD)", "Inflator, MundstÃ¼ck und SchnellablÃ¤sse prÃ¼fen. Tarierweste hÃ¤lt dicht und fÃ¼llt sich einwandfrei.", false)
+                ChecklistItem("B", "Tarierung (BCD)", "Inflator, Mundstück und Schnellablässe prüfen. Tarierweste hält dicht und füllt sich einwandfrei.", false)
             } else {
                 ChecklistItem("B", "Buoyancy (BCD)", "Check power inflator, oral inflation, and dump valves. Verify BCD holds air and inflates effortlessly.", false)
             },
             if (isGerman) {
-                ChecklistItem("W", "Blei (Weights)", "Bleigurt oder integrierte Bleitaschen mit RechtsauslÃ¶sung prÃ¼fen. Trimmblei sichern.", false)
+                ChecklistItem("W", "Blei (Weights)", "Bleigurt oder integrierte Bleitaschen mit Rechtsauslösung prüfen. Trimmblei sichern.", false)
             } else {
                 ChecklistItem("W", "Weights", "Verify weight belt or integrated pouches right-hand release. Check trim weights and security.", false)
             },
             if (isGerman) {
-                ChecklistItem("R", "VerschlÃ¼sse (Releases)", "Schultergurte, Brustgurt, Bauchgurt und Flaschenspanngurt auf festen Sitz prÃ¼fen.", false)
+                ChecklistItem("R", "Verschlüsse (Releases)", "Schultergurte, Brustgurt, Bauchgurt und Flaschenspanngurt auf festen Sitz prüfen.", false)
             } else {
                 ChecklistItem("R", "Releases", "Check shoulder straps, chest clip, cummerbund, and tank cylinder cam band tightness.", false)
             },
             if (isGerman) {
-                ChecklistItem("A", "Atemregler (Air)", "3 tiefe AtemzÃ¼ge aus Hauptregler und Oktopus bei gleichzeitigem Blick auf das Finimeter (SPG).", false)
+                ChecklistItem("A", "Atemregler (Air)", "3 tiefe Atemzüge aus Hauptregler und Oktopus bei gleichzeitigem Blick auf das Finimeter (SPG).", false)
             } else {
                 ChecklistItem("A", "Air & Regulators", "Breathe 3 deep cycles from primary and alternate octopus while watching the SPG pressure gauge.", false)
             },
@@ -2476,7 +2476,7 @@ private fun PreDiveBuddyChecklistTab() {
                                 )
                                 Text(
                                     text = if (isGerman)
-                                        "$completedCount von ${checklistItems.size} SicherheitsprÃ¼fungen mit Buddy bestÃ¤tigt"
+                                        "$completedCount von ${checklistItems.size} Sicherheitsprüfungen mit Buddy bestätigt"
                                     else
                                         "$completedCount of ${checklistItems.size} checks verified with buddy",
                                     style = MaterialTheme.typography.bodySmall,
@@ -2630,7 +2630,7 @@ private fun PreDiveBuddyChecklistTab() {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 ScubaSecondaryButton(
-                    text = if (isGerman) "ZurÃ¼cksetzen" else "Reset All",
+                    text = if (isGerman) "Zurücksetzen" else "Reset All",
                     icon = Icons.Rounded.Refresh,
                     onClick = {
                         for (i in 0 until checklistItems.size) {
@@ -2641,7 +2641,7 @@ private fun PreDiveBuddyChecklistTab() {
                 )
 
                 ScubaPrimaryButton(
-                    text = if (isGerman) "Alle BestÃ¤tigen" else "Verify All",
+                    text = if (isGerman) "Alle Bestätigen" else "Verify All",
                     icon = Icons.Rounded.CheckCircle,
                     onClick = {
                         for (i in 0 until checklistItems.size) {
@@ -2880,7 +2880,7 @@ private fun AddCustomDiveSpotDialog(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            listOf("BOAT" to "ðŸš¤ Boat", "SHORE" to "ðŸ–ï¸ Shore").forEach { (type, label) ->
+                            listOf("BOAT" to "🚤 Boat", "SHORE" to "ðŸ–ï¸ Shore").forEach { (type, label) ->
                                 val isSelected = entryType == type
                                 Surface(
                                     modifier = Modifier
@@ -2913,7 +2913,7 @@ private fun AddCustomDiveSpotDialog(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            listOf("SALT" to "ðŸŒŠ Salt", "FRESH" to "ðŸ’§ Fresh").forEach { (wType, label) ->
+                            listOf("SALT" to "🌊 Salt", "FRESH" to "💧 Fresh").forEach { (wType, label) ->
                                 val isSelected = waterType == wType
                                 Surface(
                                     modifier = Modifier
@@ -2955,7 +2955,7 @@ private fun AddCustomDiveSpotDialog(
                     OutlinedTextField(
                         value = longitudeText,
                         onValueChange = { longitudeText = it },
-                        label = { Text("LÃ¤ngengrad (Lng)") },
+                        label = { Text("Längengrad (Lng)") },
                         singleLine = true,
                         modifier = Modifier
                             .weight(1f)
@@ -2981,7 +2981,7 @@ private fun AddCustomDiveSpotDialog(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text(if (isGerman) "Notizen & Highlights" else "Notes & Highlights") },
-                    placeholder = { Text(if (isGerman) "z.B. SchÃ¶ne Korallenwand, Sichtweite meist exzellent" else "e.g. Beautiful wall dive, gorgonian fans") },
+                    placeholder = { Text(if (isGerman) "z.B. Schöne Korallenwand, Sichtweite meist exzellent" else "e.g. Beautiful wall dive, gorgonian fans") },
                     maxLines = 3,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
@@ -3076,7 +3076,7 @@ private fun SaveDraftDiveLogDialog(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = if (isGerman) "Ãœbernahme in dein persÃ¶nliches Logbuch" else "Pre-populates your official logbook",
+                                text = if (isGerman) "Übernahme in dein persönliches Logbuch" else "Pre-populates your official logbook",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

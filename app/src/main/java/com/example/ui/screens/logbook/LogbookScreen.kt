@@ -102,9 +102,9 @@ import com.example.ui.viewmodel.AquaViewModel
  */
 enum class DiveSortOption(val labelEn: String, val labelDe: String) {
     DATE_DESC("Newest First", "Neueste zuerst"),
-    DATE_ASC("Oldest First", "Ãƒâ€žlteste zuerst"),
+    DATE_ASC("Oldest First", "Älteste zuerst"),
     DEPTH_DESC("Deepest First", "Tiefste zuerst"),
-    DURATION_DESC("Longest First", "LÃƒÂ¤ngste zuerst")
+    DURATION_DESC("Longest First", "Längste zuerst")
 }
 
 /**
@@ -379,7 +379,7 @@ fun LogbookScreen(
                             ) {
                                 Text(
                                     text = if (isGerman) {
-                                        "${filteredAndSortedDives.size} von ${dives.size} TauchgÃƒÂ¤ngen"
+                                        "${filteredAndSortedDives.size} von ${dives.size} Tauchgängen"
                                     } else {
                                         "Showing ${filteredAndSortedDives.size} of ${dives.size} dives"
                                     },
@@ -440,7 +440,7 @@ fun LogbookScreen(
                                 Spacer(modifier = Modifier.height(14.dp))
                                 Text(
                                     text = if (searchQuery.isNotBlank()) {
-                                        if (isGerman) "Keine TauchgÃƒÂ¤nge gefunden" else "No matching dives found"
+                                        if (isGerman) "Keine Tauchgänge gefunden" else "No matching dives found"
                                     } else strings.noDivesFound,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
@@ -449,7 +449,7 @@ fun LogbookScreen(
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = if (searchQuery.isNotBlank()) {
-                                        if (isGerman) "Keine Treffer fÃƒÂ¼r \"$searchQuery\". Bitte Suchbegriff anpassen."
+                                        if (isGerman) "Keine Treffer für \"$searchQuery\". Bitte Suchbegriff anpassen."
                                         else "No dives match \"$searchQuery\". Try adjusting your search query or filter."
                                     } else strings.noDivesFoundDesc,
                                     style = MaterialTheme.typography.bodySmall,
@@ -855,7 +855,7 @@ private fun LogbookAnalyticsBreakdownCard(
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = if (isGerman) "Durchschnitte & Top-TauchplÃƒÂ¤tze" else "Fleet Averages & Dive Records",
+                            text = if (isGerman) "Durchschnitte & Top-Tauchplätze" else "Fleet Averages & Dive Records",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -886,7 +886,7 @@ private fun LogbookAnalyticsBreakdownCard(
                     ) {
                         AnalyticsMetricTile(
                             modifier = Modifier.weight(1f),
-                            title = if (isGerman) "ÃƒËœ Tauchtiefe" else "Avg Depth",
+                            title = if (isGerman) "Ø Tauchtiefe" else "Avg Depth",
                             value = avgDepthStr,
                             subLabel = if (isGerman) "Durchschnitt aller Logs" else "All dives mean",
                             icon = Icons.Rounded.Speed,
@@ -894,7 +894,7 @@ private fun LogbookAnalyticsBreakdownCard(
                         )
                         AnalyticsMetricTile(
                             modifier = Modifier.weight(1f),
-                            title = if (isGerman) "ÃƒËœ Grundzeit" else "Avg Bottom Time",
+                            title = if (isGerman) "Ø Grundzeit" else "Avg Bottom Time",
                             value = "$avgDuration min",
                             subLabel = if (isGerman) "Pro Tauchgang" else "Per dive average",
                             icon = Icons.Rounded.Timer,
@@ -910,7 +910,7 @@ private fun LogbookAnalyticsBreakdownCard(
                             modifier = Modifier.weight(1f),
                             title = if (isGerman) "Gesamte Tauchzeit" else "Total Dive Time",
                             value = "${totalHours}h ${totalMinutes}m",
-                            subLabel = if (isGerman) "$totalDives TauchgÃƒÂ¤nge geloggt" else "$totalDives dives logged",
+                            subLabel = if (isGerman) "$totalDives Tauchgänge geloggt" else "$totalDives dives logged",
                             icon = Icons.Rounded.Water,
                             accentColor = MaterialTheme.colorScheme.primary
                         )
@@ -918,7 +918,7 @@ private fun LogbookAnalyticsBreakdownCard(
                             modifier = Modifier.weight(1f),
                             title = if (isGerman) "Top Tauchplatz" else "Favorite Site",
                             value = favoriteSiteName,
-                            subLabel = if (isGerman) "$favoriteSiteCount TauchgÃƒÂ¤nge" else "$favoriteSiteCount dives logged",
+                            subLabel = if (isGerman) "$favoriteSiteCount Tauchgänge" else "$favoriteSiteCount dives logged",
                             icon = Icons.Rounded.Place,
                             accentColor = SandGold
                         )
@@ -934,14 +934,14 @@ private fun LogbookAnalyticsBreakdownCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "ÃƒËœ $avgDepthStr Ã¢â‚¬Â¢ ÃƒËœ $avgDuration min Ã¢â‚¬Â¢ $favoriteSiteName ($favoriteSiteCount)",
+                        text = "Ø $avgDepthStr • Ø $avgDuration min • $favoriteSiteName ($favoriteSiteCount)",
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
                         maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                     Text(
-                        text = if (isGerman) "Tippen zum Ãƒâ€“ffnen" else "Tap to expand",
+                        text = if (isGerman) "Tippen zum Öffnen" else "Tap to expand",
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -1172,9 +1172,9 @@ fun DiveLogCard(
         "${dive.avgDepthMeters}m"
     }
     val waterTempStr = if (isImperial) {
-        "${kotlin.math.round(dive.waterTempCelsius * 1.8f + 32f).toInt()}Ã‚Â°F"
+        "${kotlin.math.round(dive.waterTempCelsius * 1.8f + 32f).toInt()}°F"
     } else {
-        "${dive.waterTempCelsius}Ã‚Â°C"
+        "${dive.waterTempCelsius}°C"
     }
     val pressureUsedStr = if (isImperial) {
         "${kotlin.math.round((dive.pressureInBar - dive.pressureOutBar).coerceAtLeast(0) * 14.5038f).toInt()} PSI"
@@ -1231,7 +1231,7 @@ fun DiveLogCard(
                         )
                     }
                     Text(
-                        text = "${dive.date} Ã¢â‚¬Â¢ ${dive.timeIn}",
+                        text = "${dive.date} • ${dive.timeIn}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1242,7 +1242,7 @@ fun DiveLogCard(
                     color = MaterialTheme.colorScheme.surfaceContainerHigh
                 ) {
                     Text(
-                        text = "${dive.entryType} Ã¢â‚¬Â¢ ${dive.bodyOfWater}",
+                        text = "${dive.entryType} • ${dive.bodyOfWater}",
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1308,7 +1308,7 @@ fun DiveLogCard(
                             )
                         }
                         Text(
-                            text = "MAX: $maxDepthStr Ã¢â‚¬Â¢ AVG: $avgDepthStr",
+                            text = "MAX: $maxDepthStr • AVG: $avgDepthStr",
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
@@ -1390,7 +1390,7 @@ fun DiveLogCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "AIR (21% OÃ¢â€šâ€š)",
+                                text = "AIR (21% O₂)",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 10.sp,
                                 color = MaterialTheme.colorScheme.primary
@@ -1482,7 +1482,7 @@ fun DiveLogCard(
                                         letterSpacing = 0.5.sp
                                     )
                                     Text(
-                                        text = "${dive.instructorName.ifBlank { "Adrian Scheid" }} Ã¢â‚¬Â¢ ${dive.instructorLicense.ifBlank { "CMAS / VDST TL2" }}",
+                                        text = "${dive.instructorName.ifBlank { "Adrian Scheid" }} • ${dive.instructorLicense.ifBlank { "CMAS / VDST TL2" }}",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,

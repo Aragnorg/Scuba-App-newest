@@ -461,6 +461,10 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     val allModules: StateFlow<List<CourseModuleEntity>> = repository.allModules
+        .map { list ->
+            list.filter { it.id in listOf("mod_physics", "mod_equipment", "mod_physiology", "mod_emergencies", "mod_planning") }
+                .sortedBy { it.orderIndex }
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val allPresentations: StateFlow<List<PresentationDeckEntity>> = repository.allPresentations
@@ -1481,58 +1485,6 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                 iconEmoji = "🤿",
                 lessonsCount = 5,
                 difficulty = "Einsteiger"
-            ),
-            com.example.data.model.ScubaCourse(
-                id = "course_nitrox",
-                title = "Enriched Air Nitrox Specialty",
-                subtitle = "Beliebtester Spezialkurs weltweit",
-                description = "Verlängere deine Grundzeit und tauche sicherer durch Sauerstoffanalyse, Berechnung der Sauerstofftoxizität und Computerprogrammierung bis 40% O2.",
-                depthLimit = "Gemäß Brevet-Stufe",
-                duration = "1 Tag",
-                prerequisites = "Open Water Diver",
-                isEnrolled = false,
-                iconEmoji = "🧪",
-                lessonsCount = 3,
-                difficulty = "Leicht"
-            ),
-            com.example.data.model.ScubaCourse(
-                id = "course_deep",
-                title = "Deep Diver Specialty",
-                subtitle = "Tauchen bis an das Sporttauchlimit",
-                description = "Sicherheitsprotokolle, physiologische Anpassungen, Tiefenrausch-Checks und redundantes Gasmanagement für Tauchgänge bis zu 40 Metern Tiefe.",
-                depthLimit = "40m",
-                duration = "2 Tage",
-                prerequisites = "Advanced Open Water",
-                isEnrolled = false,
-                iconEmoji = "⚓",
-                lessonsCount = 4,
-                difficulty = "Fortgeschritten"
-            ),
-            com.example.data.model.ScubaCourse(
-                id = "course_wreck",
-                title = "Wreck Diver Specialty",
-                subtitle = "Historische Wracks & künstliche Riffe",
-                description = "Sicheres Erkunden versunkener Schiffe: Navigation mit Führungsleine, Vermeidung von Sediment-Aufwirbelung und Notfallverfahren im Wrack.",
-                depthLimit = "Gemäß Brevet-Stufe",
-                duration = "2 Tage",
-                prerequisites = "Advanced Open Water",
-                isEnrolled = false,
-                iconEmoji = "🚢",
-                lessonsCount = 4,
-                difficulty = "Anspruchsvoll"
-            ),
-            com.example.data.model.ScubaCourse(
-                id = "course_night",
-                title = "Night Diver Specialty",
-                subtitle = "Tauchplätze in neuem Licht erleben",
-                description = "Orientierung bei Dunkelheit, Handhabung der Unterwasserlampe, Lichtsignale und faszinierende nachtaktive Meeresbewohner.",
-                depthLimit = "Gemäß Brevet-Stufe",
-                duration = "3 Abende",
-                prerequisites = "Open Water Diver",
-                isEnrolled = false,
-                iconEmoji = "🔦",
-                lessonsCount = 3,
-                difficulty = "Mittel"
             )
         )
     )

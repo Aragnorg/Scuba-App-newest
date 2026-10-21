@@ -40,6 +40,9 @@ interface DivingDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertModules(modules: List<CourseModuleEntity>)
 
+    @Query("DELETE FROM course_modules WHERE id NOT IN ('mod_physics', 'mod_equipment', 'mod_physiology', 'mod_emergencies', 'mod_planning')")
+    suspend fun prunePlaceholderModules()
+
     // Presentations
     @Query("SELECT * FROM presentations ORDER BY createdAt DESC")
     fun getAllPresentations(): Flow<List<PresentationDeckEntity>>
