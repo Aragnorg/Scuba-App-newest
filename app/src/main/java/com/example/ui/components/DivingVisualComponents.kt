@@ -1,5 +1,7 @@
 package com.example.ui.components
 
+import com.example.ui.theme.*
+
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState

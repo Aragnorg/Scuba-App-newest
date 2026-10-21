@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -256,7 +257,7 @@ fun DivePlanningScreen(
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(horizontal = 4.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
@@ -1896,7 +1897,7 @@ private fun GasAndModCalculatorTab(
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 4.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
+                                horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -1912,15 +1913,6 @@ private fun GasAndModCalculatorTab(
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                     color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 10.5.sp,
-                                    maxLines = 1
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-                                    fontSize = 11.sp,
                                     maxLines = 1
                                 )
                             }
