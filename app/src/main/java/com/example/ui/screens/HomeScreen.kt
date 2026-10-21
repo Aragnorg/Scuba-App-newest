@@ -109,6 +109,8 @@ import com.example.util.DocumentExpirationHelper
 fun HomeScreen(
     viewModel: AquaViewModel,
     onNavigateToDocuments: () -> Unit,
+    onNavigateToPlanning: () -> Unit = {},
+    onNavigateToLogbook: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val currentUser by viewModel.currentUser.collectAsState()
@@ -206,16 +208,16 @@ fun HomeScreen(
             }
         }
 
-        // Active Lesson / Next Dive Mission Hero Cockpit Card
+        // Modernized Diver Dashboard & Study Unit Hero Card
         item {
             val diverRank = remember(currentUser, readiness) {
                 val cert = currentUser?.certLevel ?: ""
                 when {
-                    cert.contains("AOWD", ignoreCase = true) -> "AOWD"
-                    cert.contains("OWD", ignoreCase = true) -> "OWD"
-                    cert.isNotBlank() -> cert.take(8).uppercase()
-                    readiness >= 80 -> "AOWD CADET"
-                    else -> "OWD CADET"
+                    cert.contains("AOWD", ignoreCase = true) -> "AOWD Taucher"
+                    cert.contains("OWD", ignoreCase = true) -> "OWD Taucher"
+                    cert.isNotBlank() -> cert.take(12)
+                    readiness >= 80 -> "AOWD Kandidat"
+                    else -> "OWD Schüler"
                 }
             }
 
@@ -225,95 +227,94 @@ fun HomeScreen(
                     .testTag("diver_header_card"),
                 shape = RoundedCornerShape(22.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
                 border = BorderStroke(
                     1.dp,
-                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                    MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Top Telemetry Bar: Status Badge & Streak Pill
+                    // Top Bar: Welcome + Rank Pill + Streak Badge
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = SeaGreen.copy(alpha = 0.12f),
-                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f))
+                            shape = RoundedCornerShape(10.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(8.dp)
+                                        .size(7.dp)
                                         .background(SeaGreen, CircleShape)
                                 )
                                 Text(
-                                    text = "MISSION // DIVER ONLINE",
+                                    text = diverRank,
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 9.sp,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp,
-                                    color = AquaCyan
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                         }
 
-                        // Glowing Study Streak Flame Badge
+                        // Soft Study Streak Flame Badge
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = SandGold.copy(alpha = 0.14f),
-                            border = BorderStroke(1.dp, SandGold.copy(alpha = 0.5f))
+                            shape = RoundedCornerShape(10.dp),
+                            color = SandGold.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, SandGold.copy(alpha = 0.3f))
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     Icons.Rounded.LocalFireDepartment,
                                     contentDescription = strings.studyStreak,
                                     tint = SandGold,
-                                    modifier = Modifier.size(14.dp)
+                                    modifier = Modifier.size(15.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "${progress?.studyStreakDays ?: 1}d ${strings.studyStreak.uppercase()}",
+                                    text = "${progress?.studyStreakDays ?: 1}d ${if (currentLanguage == AppLanguage.DE) "Serie" else "Streak"}",
                                     fontWeight = FontWeight.Bold,
                                     color = SandGold,
-                                    fontSize = 10.sp
+                                    fontSize = 11.sp
                                 )
                             }
                         }
                     }
 
-                    // Diver Pilot Profile Row (Clean, tap-to-edit name)
+                    // Diver Profile Row (Clean, tap-to-edit name)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            modifier = Modifier.size(50.dp),
+                            modifier = Modifier.size(48.dp),
                             shape = CircleShape,
-                            color = DepthNavy,
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
                             border = BorderStroke(
-                                2.dp,
-                                Brush.sweepGradient(listOf(AquaCyan, OceanPrimary, SeaGreen, AquaCyan))
+                                1.5.dp,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                             )
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(text = "🤿", fontSize = 26.sp)
+                                Text(text = "🤿", fontSize = 24.sp)
                             }
                         }
 
@@ -334,75 +335,78 @@ fun HomeScreen(
                                 Text(
                                     text = studentName,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Black,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Icon(
                                     Icons.Rounded.DriveFileRenameOutline,
                                     contentDescription = strings.updateStudentName,
-                                    tint = AquaCyan.copy(alpha = 0.8f),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                     modifier = Modifier.size(15.dp)
                                 )
                             }
 
                             Spacer(modifier = Modifier.height(2.dp))
 
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = AquaCyan.copy(alpha = 0.15f),
-                                    border = BorderStroke(1.dp, AquaCyan.copy(alpha = 0.4f))
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            Icons.Rounded.Shield,
-                                            contentDescription = null,
-                                            tint = AquaCyan,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(3.dp))
-                                        Text(
-                                            text = diverRank,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Black,
-                                            color = AquaCyan
-                                        )
-                                    }
-                                }
-
-                                Text(
-                                    text = strings.studentEnvironmentCandidate,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 11.sp
-                                )
-                            }
+                            Text(
+                                text = "${progress?.totalStudyMinutes ?: 35} ${strings.minsUnit} gelernt • $readiness% Prüfungsreife",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 12.sp
+                            )
                         }
                     }
 
-                    // Active Lesson / Next Dive Mission Briefing Box
+                    // Progress Bar
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = if (currentLanguage == AppLanguage.DE) "Ausbildungsfortschritt" else "Certification Progress",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 11.sp
+                            )
+                            Text(
+                                text = "$readiness%",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 11.sp
+                            )
+                        }
+                        LinearProgressIndicator(
+                            progress = { (readiness / 100f).coerceIn(0f, 1f) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    }
+
+                    // Active Next Unit Box (Modern Card)
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        color = MaterialTheme.colorScheme.surfaceContainer,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.25f))
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp),
+                                .padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Surface(
-                                modifier = Modifier.size(38.dp),
-                                shape = CircleShape,
+                                modifier = Modifier.size(40.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 color = MaterialTheme.colorScheme.primaryContainer
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
@@ -410,33 +414,27 @@ fun HomeScreen(
                                         imageVector = Icons.Rounded.School,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(22.dp)
                                     )
                                 }
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = if (currentLanguage == AppLanguage.DE) "NÄCHSTE MISSION // AKTIVE EINHEIT" else "NEXT MISSION // ACTIVE UNIT",
+                                    text = if (currentLanguage == AppLanguage.DE) "NÄCHSTE LERNEINHEIT" else "NEXT STUDY UNIT",
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 9.sp,
+                                    fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.8.sp,
-                                    color = AquaCyan
+                                    letterSpacing = 0.5.sp,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = nextStudyUnit?.second?.let { AppLocalizer.localizePresentationTitle(it, currentLanguage == AppLanguage.DE) }
                                         ?: (if (currentLanguage == AppLanguage.DE) "Tauchgangsplanung & Sicherheitsgrenzen" else "Dive Planning & Safety Limits"),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     maxLines = 1
-                                )
-                                Text(
-                                    text = "${progress?.totalStudyMinutes ?: 35}m ${strings.minsUnit} absolviert • $readiness% ${if (currentLanguage == AppLanguage.DE) "Prüfungsreife" else "Readiness"}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 10.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -444,7 +442,7 @@ fun HomeScreen(
 
                     // ONE Prominent Full-Width 52dp Primary Button
                     ScubaPrimaryButton(
-                        text = if (currentLanguage == AppLanguage.DE) "Nächste Lerneinheit starten ▶" else "Start Next Study Unit ▶",
+                        text = if (currentLanguage == AppLanguage.DE) "Lerneinheit starten ▶" else "Start Study Unit ▶",
                         onClick = {
                             val unit = nextStudyUnit
                             if (unit != null) {
@@ -464,6 +462,214 @@ fun HomeScreen(
                         },
                         testTag = "start_next_lesson_hero_btn"
                     )
+                }
+            }
+        }
+
+        // Modern 4-Tool Quick Access Grid
+        item {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = if (currentLanguage == AppLanguage.DE) "Schnellzugriff" else "Quick Access",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                    modifier = Modifier.padding(start = 2.dp, bottom = 8.dp)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Tool 1: Planer & Gasrechner
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { onNavigateToPlanning() },
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(36.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.Explore,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Planer" else "Planner",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Gas & Nitrox" else "Gas & Nitrox",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    // Tool 2: Logbuch
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { onNavigateToLogbook() },
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(36.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                color = SeaGreen.copy(alpha = 0.15f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.MenuBook,
+                                        contentDescription = null,
+                                        tint = SeaGreen,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Logbuch" else "Logbook",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Einträge" else "Entries",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Tool 3: Handzeichen-Trainer
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { showHandSignalsTrainerDialog = true },
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(36.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                color = SandGold.copy(alpha = 0.15f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.FitnessCenter,
+                                        contentDescription = null,
+                                        tint = SandGold,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Handzeichen" else "Hand Signals",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Trainer" else "Drills",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+
+                    // Tool 4: Dokumente & Brevets
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { onNavigateToDocuments() },
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(36.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                color = OceanTertiary.copy(alpha = 0.15f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.Description,
+                                        contentDescription = null,
+                                        tint = OceanTertiary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Dokumente" else "Documents",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE) "Brevets & TTU" else "Cards & Medical",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -492,12 +698,12 @@ fun HomeScreen(
                     tabsList.forEach { (label, icon, index) ->
                         val isSelected = activeSubTab == index
                         val tabBgColor by animateColorAsState(
-                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
                             animationSpec = tween(200),
                             label = "tab_bg_$index"
                         )
                         val tabTextColor by animateColorAsState(
-                            targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                             animationSpec = tween(200),
                             label = "tab_text_$index"
                         )

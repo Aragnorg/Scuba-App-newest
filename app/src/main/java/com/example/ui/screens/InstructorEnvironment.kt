@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.Upload
@@ -147,6 +149,22 @@ fun InstructorEnvironment(
                     }
                 },
                 actions = {
+                    // Modern 1-Tap Dark / Light Mode Toggle
+                    val isDarkMode by viewModel.isDarkMode.collectAsState()
+                    IconButton(
+                        onClick = { viewModel.setDarkModeEnabled(!isDarkMode) },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .testTag("instructor_theme_toggle_btn")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
+                            contentDescription = if (isDarkMode) "Light Mode" else "Dark Mode",
+                            tint = if (isDarkMode) Color(0xFFFBBF24) else MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
                     // Workspace / Organization Switcher
                     WorkspaceSwitcherPill(
                         viewModel = viewModel,

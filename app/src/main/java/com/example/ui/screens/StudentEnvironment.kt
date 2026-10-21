@@ -17,9 +17,11 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.DirectionsBoat
 import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.School
@@ -167,6 +169,22 @@ fun StudentEnvironment(
                     }
                 },
                 actions = {
+                    // Modern 1-Tap Dark / Light Mode Toggle
+                    val isDarkMode by viewModel.isDarkMode.collectAsState()
+                    IconButton(
+                        onClick = { viewModel.setDarkModeEnabled(!isDarkMode) },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .testTag("student_theme_toggle_btn")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
+                            contentDescription = if (isDarkMode) "Light Mode" else "Dark Mode",
+                            tint = if (isDarkMode) Color(0xFFFBBF24) else MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
                     // Quick Profile & Documents Button (Standardized 40.dp with 20.dp icon)
                     IconButton(
                         onClick = { showProfileModal = true },
@@ -177,7 +195,7 @@ fun StudentEnvironment(
                         Icon(
                             imageVector = Icons.Rounded.Person,
                             contentDescription = strings.profileTitle,
-                            tint = AquaCyan,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -199,24 +217,24 @@ fun StudentEnvironment(
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Logout,
                             contentDescription = strings.signOut,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             modifier = Modifier.size(20.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
             )
         },
         bottomBar = {
             val navItemColors = NavigationBarItemDefaults.colors(
-                indicatorColor = AquaCyan.copy(alpha = 0.22f),
-                selectedIconColor = AquaCyan,
-                selectedTextColor = AquaCyan,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
+                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
             )
 
             Box(
@@ -227,10 +245,10 @@ fun StudentEnvironment(
             ) {
                 Surface(
                     shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                    tonalElevation = 6.dp,
-                    shadowElevation = 8.dp,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f)),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 3.dp,
+                    shadowElevation = 6.dp,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     NavigationBar(
@@ -291,7 +309,9 @@ fun StudentEnvironment(
                 when (tab) {
                     0 -> HomeScreen(
                         viewModel = viewModel,
-                        onNavigateToDocuments = { showProfileModal = true }
+                        onNavigateToDocuments = { showProfileModal = true },
+                        onNavigateToPlanning = { selectedTab = 2 },
+                        onNavigateToLogbook = { selectedTab = 3 }
                     )
                     1 -> DiverExcursionsScreen(viewModel = viewModel)
                     2 -> DivePlanningScreen(viewModel = viewModel)

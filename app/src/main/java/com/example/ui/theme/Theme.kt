@@ -21,44 +21,46 @@ val ScubaShapes = Shapes(
     extraLarge = RoundedCornerShape(20.dp) // Canonical ScubaCard
 )
 
+// Softer, modern Dark Color Scheme (Midnight Slate - pleasant on the eyes, no harsh neon or pitch black)
 private val DarkColorScheme = darkColorScheme(
-    primary = AquaBioluminescentCyan, // High-Tech Electric Cyan (#00F2FE)
-    onPrimary = Color(0xFF002733),
-    primaryContainer = AquaElectricAzure, // High-Tech Electric Azure (#0284C7)
-    onPrimaryContainer = Color(0xFFE0F2FE),
-    secondary = EmeraldSafeGlow,
-    onSecondary = Color(0xFF002A19),
-    secondaryContainer = Color(0xFF0B4636),
-    onSecondaryContainer = Color(0xFFA7F3D0),
-    tertiary = TacticalAmber,
-    onTertiary = Color(0xFF451A03),
-    tertiaryContainer = Color(0xFF78350F),
-    onTertiaryContainer = Color(0xFFFEF3C7),
-    background = AquaSurfaceBase,       // Base (#070D18)
-    onBackground = Color(0xFFE2E8F0),
-    surface = AquaSurfaceLow,           // SurfaceLow (#0F172A)
-    onSurface = Color(0xFFF8FAFC),
-    surfaceVariant = AquaSurfaceDefault, // SurfaceDefault (#142036)
-    onSurfaceVariant = Color(0xFF94A3B8),
-    outline = AquaOutline,              // Outline (#334155)
-    outlineVariant = AquaOutlineVariant, // OutlineVariant (#1E2D44)
-    surfaceContainerLowest = AquaSurfaceBase,       // #070D18
-    surfaceContainerLow = AquaSurfaceLow,           // #0F172A
-    surfaceContainer = AquaSurfaceDefault,         // #142036
-    surfaceContainerHigh = AquaSurfaceHigh,         // #1C2B46
-    surfaceContainerHighest = AquaSurfaceHighest,   // #25395A
-    error = SafetyStopCoral,
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFF5A1212),
-    onErrorContainer = Color(0xFFFFDAD6)
+    primary = AquaBioluminescentCyan,        // Soft Electric Sky (#38BDF8)
+    onPrimary = Color(0xFF082F49),          // Deep Sky Text (#082F49)
+    primaryContainer = Color(0xFF0369A1),   // Sky 700 (#0369A1)
+    onPrimaryContainer = Color(0xFFE0F2FE), // Soft Sky Tint (#E0F2FE)
+    secondary = Color(0xFF2DD4BF),          // Soft Marine Teal (#2DD4BF)
+    onSecondary = Color(0xFF042F2E),
+    secondaryContainer = Color(0xFF115E59),
+    onSecondaryContainer = Color(0xFFCCFBF1),
+    tertiary = Color(0xFFFB923C),           // Soft Warm Coral (#FB923C)
+    onTertiary = Color(0xFF431407),
+    tertiaryContainer = Color(0xFF9A3412),
+    onTertiaryContainer = Color(0xFFFFEDD5),
+    background = AquaSurfaceBase,           // Soothing Midnight Slate (#0B1120)
+    onBackground = Color(0xFFE2E8F0),       // Soft off-white Slate 200
+    surface = AquaSurfaceLow,               // Elevated Slate (#111C2E)
+    onSurface = Color(0xFFF1F5F9),          // Clean Slate 100
+    surfaceVariant = AquaSurfaceDefault,    // Card Surface (#18263E)
+    onSurfaceVariant = Color(0xFF94A3B8),   // Muted Slate 400
+    outline = AquaOutline,                  // Subtle Hairline (#2C3E5E)
+    outlineVariant = AquaOutlineVariant,    // Container Outline (#1D2C44)
+    surfaceContainerLowest = AquaSurfaceBase,       // #0B1120
+    surfaceContainerLow = AquaSurfaceLow,           // #111C2E
+    surfaceContainer = AquaSurfaceDefault,         // #18263E
+    surfaceContainerHigh = AquaSurfaceHigh,         // #22324E
+    surfaceContainerHighest = AquaSurfaceHighest,   // #2C3E5E
+    error = Color(0xFFF87171),             // Soft Coral Red (#F87171)
+    onError = Color(0xFF450A0A),
+    errorContainer = Color(0xFF7F1D1D),
+    onErrorContainer = Color(0xFFFEE2E2)
 )
 
+// Clean, modern Light Color Scheme (Slate Minimalism - no stark black on white)
 private val LightColorScheme = lightColorScheme(
-    primary = OceanPrimary,
-    onPrimary = OceanOnPrimary,
-    primaryContainer = OceanPrimaryContainer,
-    onPrimaryContainer = OceanOnPrimaryContainer,
-    secondary = OceanSecondary,
+    primary = OceanPrimary,                 // Ocean Azure (#0284C7)
+    onPrimary = OceanOnPrimary,             // #FFFFFF
+    primaryContainer = OceanPrimaryContainer, // #E0F2FE
+    onPrimaryContainer = OceanOnPrimaryContainer, // #0369A1
+    secondary = OceanSecondary,             // Marine Teal (#0F766E)
     onSecondary = Color(0xFFFFFFFF),
     secondaryContainer = OceanSecondaryContainer,
     onSecondaryContainer = OceanOnSecondaryContainer,
@@ -66,27 +68,27 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color(0xFFFFFFFF),
     tertiaryContainer = OceanTertiaryContainer,
     onTertiaryContainer = OceanOnTertiaryContainer,
-    background = OceanBackgroundLight,
-    onBackground = Color(0xFF0F172A),
-    surface = OceanSurfaceLight,
-    onSurface = Color(0xFF0F172A),
-    surfaceVariant = OceanSurfaceVariantLight,
-    onSurfaceVariant = Color(0xFF475569),
-    outline = OceanOutlineLight,
-    outlineVariant = OceanOutlineVariantLight,
+    background = OceanBackgroundLight,      // Soft Slate 50 (#F8FAFC)
+    onBackground = Color(0xFF1E293B),       // Gentle Slate 800 (#1E293B - softer than pure black)
+    surface = OceanSurfaceLight,            // Pure White Card (#FFFFFF)
+    onSurface = Color(0xFF1E293B),          // Gentle Slate 800
+    surfaceVariant = OceanSurfaceVariantLight, // Slate 100 (#F1F5F9)
+    onSurfaceVariant = Color(0xFF64748B),   // Slate 500 (#64748B)
+    outline = OceanOutlineLight,            // Hairline Slate 300 (#CBD5E1)
+    outlineVariant = OceanOutlineVariantLight, // Hairline Slate 200 (#E2E8F0)
     surfaceContainerLowest = OceanSurfaceContainerLowestLight,
     surfaceContainerLow = OceanSurfaceContainerLowLight,
     surfaceContainer = OceanSurfaceContainerLight,
     surfaceContainerHigh = OceanSurfaceContainerHighLight,
     surfaceContainerHighest = OceanSurfaceContainerHighestLight,
-    error = CoralAlert,
+    error = Color(0xFFDC2626),
     onError = Color(0xFFFFFFFF)
 )
 
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Preserve oceanic brand identity
+    dynamicColor: Boolean = false, // Preserve brand identity
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
