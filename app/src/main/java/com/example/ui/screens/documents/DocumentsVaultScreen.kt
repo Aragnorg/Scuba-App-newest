@@ -156,7 +156,7 @@ fun DocumentsVaultScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header Vault Card
@@ -820,7 +820,9 @@ private fun StatCounterCard(
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                maxLines = 2,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }

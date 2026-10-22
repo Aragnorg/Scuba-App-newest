@@ -168,7 +168,7 @@ fun HomeScreen(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         // Expiration Alert Banner for near expiration / expired documents
@@ -214,11 +214,11 @@ fun HomeScreen(
             val diverRank = remember(currentUser, readiness) {
                 val cert = currentUser?.certLevel ?: ""
                 when {
-                    cert.contains("AOWD", ignoreCase = true) -> "AOWD Taucher"
-                    cert.contains("OWD", ignoreCase = true) -> "OWD Taucher"
-                    cert.isNotBlank() -> cert.take(12)
-                    readiness >= 80 -> "AOWD Kandidat"
-                    else -> "OWD Schüler"
+                    cert.contains("AOWD", ignoreCase = true) -> if (currentLanguage == AppLanguage.DE) "AOWD Taucher" else "AOWD Diver"
+                    cert.contains("OWD", ignoreCase = true) || cert.contains("Open Water", ignoreCase = true) -> if (currentLanguage == AppLanguage.DE) "Open Water Diver" else "Open Water Diver"
+                    cert.isNotBlank() -> cert
+                    readiness >= 80 -> if (currentLanguage == AppLanguage.DE) "AOWD Kandidat" else "AOWD Candidate"
+                    else -> if (currentLanguage == AppLanguage.DE) "OWD Schüler" else "OWD Student"
                 }
             }
 

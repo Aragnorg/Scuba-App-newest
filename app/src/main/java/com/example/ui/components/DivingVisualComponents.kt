@@ -624,7 +624,7 @@ fun TacticalPill(
             Text(
                 text = label.uppercase(Locale.US),
                 style = HudTagStyle,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                color = Color.White
             )
             if (value != null) {
                 Text(

@@ -172,6 +172,7 @@ fun InstructorQrApprovalDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.94f)
+                .fillMaxHeight(0.92f)
                 .clip(RoundedCornerShape(24.dp))
                 .testTag("instructor_qr_approval_dialog"),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -180,6 +181,7 @@ fun InstructorQrApprovalDialog(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(20.dp)
                     .verticalScroll(rememberScrollState())
             ) {
@@ -307,29 +309,35 @@ fun InstructorQrApprovalDialog(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.QrCodeScanner,
-                            contentDescription = null,
-                            tint = SeaGreen,
-                            modifier = Modifier.size(42.dp)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = strings.alignQrInFrame,
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = strings.pointCameraInstruction,
-                            color = Color.LightGray,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 10.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
+                        if (!hasCameraPermission) {
+                            Icon(
+                                imageVector = Icons.Rounded.QrCodeScanner,
+                                contentDescription = null,
+                                tint = SeaGreen,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = strings.alignQrInFrame,
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Text(
+                                text = strings.pointCameraInstruction,
+                                color = Color.LightGray,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontSize = 10.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                         if (!hasCameraPermission) {
                             Button(
                                 onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },

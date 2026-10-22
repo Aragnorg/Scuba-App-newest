@@ -430,7 +430,7 @@ private fun DiveSpotsListTab(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         // Search bar & Add Custom Spot Action Header
@@ -470,7 +470,7 @@ private fun DiveSpotsListTab(
                     )
 
                     ScubaCompactButton(
-                        text = if (isGerman) "+ Eigener Spot" else "+ Add Spot",
+                        text = if (isGerman) "Eigener Spot" else "Add Spot",
                         icon = Icons.Rounded.Add,
                         onClick = onAddCustomSpotClick,
                         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),

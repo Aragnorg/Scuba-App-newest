@@ -16,8 +16,8 @@ android {
     applicationId = "com.aistudio.aqualearn.vqdpmr"
     minSdk = 24
     targetSdk = 36
-    versionCode = 11
-    versionName = "4.5"
+    versionCode = 12
+    versionName = "4.6"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

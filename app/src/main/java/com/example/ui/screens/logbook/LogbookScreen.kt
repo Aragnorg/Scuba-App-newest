@@ -325,7 +325,7 @@ fun LogbookScreen(
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 90.dp)
+                contentPadding = PaddingValues(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 120.dp)
             ) {
                 // HERO STATS BANNER
                 item {
@@ -1150,8 +1150,10 @@ private fun LogbookAnalyticsBreakdownCard(
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
-                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = if (isGerman) "Tippen zum Öffnen" else "Tap to expand",
                         style = MaterialTheme.typography.labelSmall,

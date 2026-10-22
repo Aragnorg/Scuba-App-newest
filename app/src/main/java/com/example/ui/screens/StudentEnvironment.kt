@@ -101,9 +101,7 @@ fun StudentEnvironment(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
+                modifier = Modifier.fillMaxWidth(),
                 navigationIcon = {
                     Box(
                         modifier = Modifier
