@@ -449,6 +449,33 @@ class DivingRepository(private val divingDao: DivingDao) {
         )
     }
 
+    suspend fun approveWithEmail(
+        id: String,
+        approvedBy: String,
+        stampCode: String,
+        note: String
+    ) {
+        divingDao.approveWithEmail(
+            id = id,
+            approvedBy = approvedBy,
+            timestamp = System.currentTimeMillis(),
+            stampCode = stampCode,
+            note = note
+        )
+    }
+
+    suspend fun markPendingEmailApproval(
+        id: String,
+        buddyEmail: String,
+        buddyName: String
+    ) {
+        divingDao.markPendingEmailApproval(
+            id = id,
+            buddyEmail = buddyEmail,
+            buddyName = buddyName
+        )
+    }
+
     fun getPresentationsForModule(moduleId: String): Flow<List<PresentationDeckEntity>> =
         divingDao.getPresentationsForModule(moduleId)
 

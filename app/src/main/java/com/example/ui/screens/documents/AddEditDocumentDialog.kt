@@ -283,7 +283,7 @@ fun AddEditDocumentDialog(
                         },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Document Category") },
+                        label = { Text(strings.documentCategoryLabel.ifBlank { "Dokumenten-Kategorie" }) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryDropdownExpanded) },
                         modifier = Modifier
                             .menuAnchor()

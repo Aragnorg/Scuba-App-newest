@@ -481,7 +481,7 @@ fun DocumentApprovalDialog(
                                 ) {
                                     Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Kamerazugriff erlauben", fontSize = 11.sp, color = Color(0xFF00382E), fontWeight = FontWeight.Bold)
+                                    Text(strings.enableCamera.ifBlank { "Kamerazugriff erlauben" }, fontSize = 11.sp, color = Color(0xFF00382E), fontWeight = FontWeight.Bold)
                                 }
                             } else {
                                 Surface(
@@ -675,7 +675,7 @@ fun DocumentApprovalDialog(
                         ) {
                             Icon(Icons.Rounded.Verified, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Per QR-Code verifizieren", fontWeight = FontWeight.Bold)
+                            Text(strings.verifyByQrCode.ifBlank { "Per QR-Code verifizieren" }, fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {
@@ -829,7 +829,7 @@ fun DocumentApprovalDialog(
                             ) {
                                 Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Clear", fontSize = 12.sp)
+                                Text(strings.clearSignature.ifBlank { "Löschen" }, fontSize = 12.sp)
                             }
                         }
                     }

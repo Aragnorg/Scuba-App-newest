@@ -296,7 +296,7 @@ fun DocumentsVaultScreen(
                     if (alertDocuments.isNotEmpty()) {
                         item {
                             FilterChip(
-                                title = "âš ï¸ ${strings.filterAlertsOnly} (${alertDocuments.size})",
+                                title = "⚠️ ${strings.filterAlertsOnly} (${alertDocuments.size})",
                                 isSelected = categoryFilter == "ALERTS",
                                 onClick = { viewModel.setDocumentCategoryFilter("ALERTS") }
                             )
@@ -318,14 +318,14 @@ fun DocumentsVaultScreen(
                     }
                     item {
                         FilterChip(
-                            title = "🛡️ï¸ ${strings.filterInsurance}",
+                            title = "🛡️ ${strings.filterInsurance}",
                             isSelected = categoryFilter == "INSURANCE",
                             onClick = { viewModel.setDocumentCategoryFilter("INSURANCE") }
                         )
                     }
                     item {
                         FilterChip(
-                            title = "ðŸ“ ${strings.filterWaivers}",
+                            title = "📑 ${strings.filterWaivers}",
                             isSelected = categoryFilter == "LIABILITY_WAIVER",
                             onClick = { viewModel.setDocumentCategoryFilter("LIABILITY_WAIVER") }
                         )
@@ -679,7 +679,7 @@ fun DocumentVaultCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (isExpired) "â›”" else "âš ï¸",
+                                text = if (isExpired) "⛔" else "⚠️",
                                 fontSize = 12.sp
                             )
                             Spacer(modifier = Modifier.width(6.dp))

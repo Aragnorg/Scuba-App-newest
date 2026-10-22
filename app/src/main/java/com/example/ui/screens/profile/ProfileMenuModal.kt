@@ -533,7 +533,7 @@ fun ProfileMenuModal(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                                 Text(
-                                                    text = "🛡️ï¸ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
+                                                    text = "🛡️ ${currentUser?.insuranceProvider?.takeIf { it.isNotBlank() } ?: "DAN Europe"}",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -576,7 +576,7 @@ fun ProfileMenuModal(
                                         ) {
                                             Column(modifier = Modifier.padding(10.dp)) {
                                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    Text("ðŸ¢", fontSize = 14.sp)
+                                                    Text("🏢", fontSize = 14.sp)
                                                     Spacer(modifier = Modifier.width(6.dp))
                                                     Text(
                                                         text = "Leitungs- & Ausbilder-Akte",
@@ -751,9 +751,9 @@ fun ProfileMenuModal(
                                             )
                                             Text(
                                                 text = if (isImperial) {
-                                                    if (currentLanguage == AppLanguage.DE) "Imperial (ft, PSI, Â°F, lbs)" else "Imperial (ft, PSI, Â°F, lbs)"
+                                                    if (currentLanguage == AppLanguage.DE) "Imperial (ft, PSI, °F, lbs)" else "Imperial (ft, PSI, °F, lbs)"
                                                 } else {
-                                                    if (currentLanguage == AppLanguage.DE) "Metrisch (m, bar, Â°C, kg)" else "Metric (m, bar, Â°C, kg)"
+                                                    if (currentLanguage == AppLanguage.DE) "Metrisch (m, bar, °C, kg)" else "Metric (m, bar, °C, kg)"
                                                 },
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -973,7 +973,7 @@ fun ProfileMenuModal(
                             if (alertDocuments.isNotEmpty()) {
                                 item {
                                     ProfileFilterChip(
-                                        title = "âš ï¸ ${strings.filterAlertsOnly} (${alertDocuments.size})",
+                                        title = "⚠️ ${strings.filterAlertsOnly} (${alertDocuments.size})",
                                         isSelected = categoryFilter == "ALERTS",
                                         onClick = { viewModel.setDocumentCategoryFilter("ALERTS") }
                                     )
@@ -995,7 +995,7 @@ fun ProfileMenuModal(
                             }
                             item {
                                 ProfileFilterChip(
-                                    title = "🛡️ï¸ ${strings.filterInsurance}",
+                                    title = "🛡️ ${strings.filterInsurance}",
                                     isSelected = categoryFilter == "INSURANCE",
                                     onClick = { viewModel.setDocumentCategoryFilter("INSURANCE") }
                                 )
@@ -1028,7 +1028,7 @@ fun ProfileMenuModal(
                                         .padding(28.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    Text(text = "🗂️ï¸", fontSize = 36.sp)
+                                    Text(text = "🗂️", fontSize = 36.sp)
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Text(
                                         text = strings.noDocumentsFound,

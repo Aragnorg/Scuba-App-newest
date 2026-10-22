@@ -269,6 +269,22 @@ interface DivingDao {
         buddyName: String
     )
 
+    @Query("UPDATE dive_logs SET approvalStatus = 'APPROVED_BY_EMAIL', approvalMethod = 'EMAIL_VERIFICATION', approvedBy = :approvedBy, approvalTimestamp = :timestamp, qrStampCode = :stampCode, buddyApprovalNote = :note WHERE id = :id")
+    suspend fun approveWithEmail(
+        id: String,
+        approvedBy: String,
+        timestamp: Long,
+        stampCode: String,
+        note: String
+    )
+
+    @Query("UPDATE dive_logs SET approvalStatus = 'PENDING_EMAIL', buddyEmail = :buddyEmail, buddyName = :buddyName WHERE id = :id")
+    suspend fun markPendingEmailApproval(
+        id: String,
+        buddyEmail: String,
+        buddyName: String
+    )
+
     // --- Diver Documents & Certifications Vault ---
     @Query("SELECT * FROM diver_documents ORDER BY createdAt DESC")
     fun getAllDocuments(): Flow<List<DiverDocumentEntity>>

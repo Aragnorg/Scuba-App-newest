@@ -1348,6 +1348,10 @@ fun CreateQuizDialog(
         )
     }
 
+    val strings = com.example.ui.i18n.LocalAppStrings.current
+    val currentLanguage = com.example.ui.i18n.LocalCurrentLanguage.current
+    val isGerman = currentLanguage == com.example.ui.i18n.AppLanguage.DE
+
     // Temporary inputs for new question
     var newQText by remember { mutableStateOf("") }
     var newOpt0 by remember { mutableStateOf("") }
@@ -1363,7 +1367,7 @@ fun CreateQuizDialog(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(
-                text = "Quiz oder Probeprüfung erstellen",
+                text = if (isGerman) "Quiz oder Probeprüfung erstellen" else "Create Quiz or Mock Exam",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -1378,8 +1382,8 @@ fun CreateQuizDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Quiz-Titel") },
-                    placeholder = { Text("z.B. Navigation & Kompass-Quiz") },
+                    label = { Text(strings.quizTitleLabel.ifBlank { "Quiz-Titel" }) },
+                    placeholder = { Text(strings.quizTitlePlaceholder.ifBlank { "z.B. Navigation & Kompass-Quiz" }) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("quiz_title_input"),
@@ -1399,7 +1403,7 @@ fun CreateQuizDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Offizieller Probeprüfungs-Modus", fontWeight = FontWeight.Bold)
+                    Text(strings.officialMockExamMode.ifBlank { "Offizieller Probeprüfungs-Modus" }, fontWeight = FontWeight.Bold)
                     Switch(
                         checked = isMockExam,
                         onCheckedChange = { isMockExam = it }
@@ -1409,7 +1413,7 @@ fun CreateQuizDialog(
                 OutlinedTextField(
                     value = passScoreText,
                     onValueChange = { passScoreText = it },
-                    label = { Text("Bestehensgrenze (%)") },
+                    label = { Text(strings.passingMarkPercentLabel.ifBlank { "Bestehensgrenze (%)" }) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp)
                 )
@@ -1423,7 +1427,7 @@ fun CreateQuizDialog(
                         value = modules.find { it.id == selectedModuleId }?.title ?: "Modul auswählen",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Kursmodul") },
+                        label = { Text(strings.courseModuleLabel.ifBlank { "Kursmodul" }) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -1501,40 +1505,40 @@ fun CreateQuizDialog(
                         OutlinedTextField(
                             value = newQText,
                             onValueChange = { newQText = it },
-                            label = { Text("Fragentext") },
+                            label = { Text(strings.questionTextLabel.ifBlank { "Fragentext" }) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt0,
                             onValueChange = { newOpt0 = it },
-                            label = { Text("Option A") },
+                            label = { Text(strings.optionALabel.ifBlank { "Option A" }) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt1,
                             onValueChange = { newOpt1 = it },
-                            label = { Text("Option B") },
+                            label = { Text(strings.optionBLabel.ifBlank { "Option B" }) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt2,
                             onValueChange = { newOpt2 = it },
-                            label = { Text("Option C") },
+                            label = { Text(strings.optionCLabel.ifBlank { "Option C" }) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         )
                         OutlinedTextField(
                             value = newOpt3,
                             onValueChange = { newOpt3 = it },
-                            label = { Text("Option D") },
+                            label = { Text(strings.optionDLabel.ifBlank { "Option D" }) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         )
 
-                        Text("Richtige Option auswählen:", style = MaterialTheme.typography.labelMedium)
+                        Text(strings.selectCorrectOptionPrompt.ifBlank { "Richtige Option auswählen:" }, style = MaterialTheme.typography.labelMedium)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             listOf("A", "B", "C", "D").forEachIndexed { idx, letter ->
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1550,7 +1554,7 @@ fun CreateQuizDialog(
                         OutlinedTextField(
                             value = newExpl,
                             onValueChange = { newExpl = it },
-                            label = { Text("Erklärung für Schüler / Prüflinge") },
+                            label = { Text(strings.explanationForCandidatesLabel.ifBlank { "Erklärung für Schüler / Prüflinge" }) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(14.dp)
                         )
@@ -1589,7 +1593,7 @@ fun CreateQuizDialog(
                         ) {
                             Icon(Icons.Rounded.Add, contentDescription = "Add")
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Frage hinzufügen")
+                            Text(strings.insertQuestionButton.ifBlank { "Frage hinzufügen" })
                         }
                     }
                 }
@@ -1613,7 +1617,7 @@ fun CreateQuizDialog(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 modifier = Modifier.testTag("save_quiz_button")
             ) {
-                Text("Quiz veröffentlichen")
+                Text(strings.publishQuizButton.ifBlank { "Quiz veröffentlichen" })
             }
         },
         dismissButton = {
@@ -1621,7 +1625,7 @@ fun CreateQuizDialog(
                 onClick = onDismiss,
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Abbrechen")
+                Text(strings.cancel.ifBlank { "Abbrechen" })
             }
         }
     )

@@ -254,7 +254,7 @@ fun StudentEnvironment(
                     NavigationBar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp)
+                            .height(80.dp)
                             .testTag("student_navigation_bar"),
                         containerColor = Color.Transparent,
                         tonalElevation = 0.dp

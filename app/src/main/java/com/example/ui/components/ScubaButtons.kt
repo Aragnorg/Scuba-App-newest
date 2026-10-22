@@ -179,13 +179,13 @@ fun ScubaCompactButton(
         color = finalContainerColor,
         border = finalBorder,
         modifier = modifier
-            .height(36.dp)
+            .heightIn(min = 38.dp)
             .clip(RoundedCornerShape(10.dp))
             .clickable { onClick() }
             .then(if (testTag != null) Modifier.testTag(testTag) else Modifier)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -204,7 +204,8 @@ fun ScubaCompactButton(
                 fontWeight = FontWeight.Bold,
                 fontSize = 11.sp,
                 color = finalContentColor,
-                maxLines = 1
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }

@@ -275,6 +275,23 @@ data class VerificationEmailMessage(
     val emailHtmlBody: String
 )
 
+data class DiveApprovalEmailMessage(
+    val emailId: String = java.util.UUID.randomUUID().toString(),
+    val diveId: String,
+    val diveNumber: Int,
+    val siteName: String,
+    val diverName: String,
+    val diverEmail: String,
+    val recipientEmail: String = "adrian.scheid01@gmail.com",
+    val recipientName: String = "Adrian Scheid",
+    val subject: String,
+    val verificationCode: String,
+    val telemetrySummary: String,
+    val emailBodyText: String,
+    val sentTimestamp: Long = System.currentTimeMillis(),
+    val isApproved: Boolean = false
+)
+
 @Entity(tableName = "student_roster")
 data class StudentRosterEntity(
     @PrimaryKey val id: String,

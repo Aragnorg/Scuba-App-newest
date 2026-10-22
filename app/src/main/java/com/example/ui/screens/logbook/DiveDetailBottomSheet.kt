@@ -23,7 +23,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Air
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.MarkEmailRead
 import androidx.compose.material.icons.rounded.Draw
 import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material.icons.rounded.NotificationsActive
@@ -87,6 +91,7 @@ fun shareDiveLog(context: Context, dive: DiveLogEntity, isImperial: Boolean = fa
         "APPROVED_BY_INSTRUCTOR" -> "Verified by Instructor (${dive.instructorName.ifBlank { "Instructor" }})"
         "APPROVED_BY_BUDDY_SIGNATURE" -> "Verified by Buddy Signature (${dive.approvedBy.ifBlank { dive.buddyName }})"
         "APPROVED_BY_BUDDY_PUSH" -> "Verified by Buddy Push (${dive.approvedBy.ifBlank { dive.buddyName }})"
+        "APPROVED_BY_EMAIL" -> "Verified by Email (${dive.approvedBy.ifBlank { "Adrian Scheid" }})"
         else -> "Pending Verification"
     }
 
@@ -129,6 +134,7 @@ fun DiveDetailDialog(
     onApproveWithQrClick: () -> Unit,
     onApproveWithBuddyClick: () -> Unit,
     onSimulatePushClick: () -> Unit,
+    onApproveWithEmailClick: (() -> Unit)? = null,
     onDeleteClick: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -392,6 +398,69 @@ fun DiveDetailDialog(
                         }
                     }
 
+                    "APPROVED_BY_EMAIL" -> {
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = SeaGreen.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.35f)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("approved_email_banner")
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .background(SeaGreen.copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.MarkEmailRead,
+                                        contentDescription = null,
+                                        tint = SeaGreen,
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = strings.verifiedByEmailBadge.ifBlank { "Offiziell per E-Mail bestätigt" },
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = SeaGreen
+                                    )
+                                    Text(
+                                        text = "${strings.verifiedByLabel}: ${dive.approvedBy.ifBlank { "Adrian Scheid (adrian.scheid01@gmail.com)" }}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    if (dive.instructorStampCode.isNotBlank()) {
+                                        Text(
+                                            text = "Code: ${dive.instructorStampCode}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 10.sp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                    if (dive.buddyApprovalNote.isNotBlank()) {
+                                        Text(
+                                            text = "\"${dive.buddyApprovalNote}\"",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     "APPROVED_BY_BUDDY_PUSH" -> {
                         Surface(
                             shape = RoundedCornerShape(16.dp),
@@ -489,8 +558,10 @@ fun DiveDetailDialog(
                                         onClick = onApproveWithQrClick,
                                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                         shape = RoundedCornerShape(12.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
                                         modifier = Modifier
                                             .weight(1f)
+                                            .heightIn(min = 40.dp)
                                             .testTag("action_approve_qr")
                                     ) {
                                         Icon(Icons.Rounded.QrCodeScanner, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -498,19 +569,52 @@ fun DiveDetailDialog(
                                         Text(strings.scanCenterQrButton, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                     }
 
-                                    // 2. Buddy Approval (Signature or Push message)
+                                    // 2. Buddy Approval (Email, Signature or Push message)
                                     Button(
                                         onClick = onApproveWithBuddyClick,
                                         colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
                                         shape = RoundedCornerShape(12.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
                                         modifier = Modifier
                                             .weight(1f)
+                                            .heightIn(min = 40.dp)
                                             .testTag("action_approve_buddy")
                                     ) {
                                         Icon(Icons.Rounded.People, contentDescription = null, tint = Color(0xFF00382E), modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(strings.buddyApproveButton, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF00382E))
                                     }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // 3. Direct Email Approval Button to Adrian Scheid
+                                Button(
+                                    onClick = {
+                                        if (onApproveWithEmailClick != null) {
+                                            onApproveWithEmailClick()
+                                        } else {
+                                            onApproveWithBuddyClick()
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                    ),
+                                    shape = RoundedCornerShape(12.dp),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(min = 40.dp)
+                                        .testTag("action_approve_email")
+                                ) {
+                                    Icon(Icons.Rounded.Email, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (isGerman) "✉️ E-Mail-Bestätigung (adrian.scheid01@gmail.com)" else "✉️ Email Verification (adrian.scheid01@gmail.com)",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
 
                                 Spacer(modifier = Modifier.height(6.dp))

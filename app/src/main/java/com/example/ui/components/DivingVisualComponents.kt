@@ -248,7 +248,7 @@ fun ScubaCompactButton(
 
     Surface(
         onClick = onClick,
-        modifier = modifier.height(36.dp),
+        modifier = modifier.heightIn(min = 38.dp),
         shape = shape,
         color = containerColor,
         border = border
@@ -256,7 +256,7 @@ fun ScubaCompactButton(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(horizontal = 14.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             if (icon != null) {
                 Icon(
@@ -271,7 +271,9 @@ fun ScubaCompactButton(
                 text = text,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = textColor
+                color = textColor,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }

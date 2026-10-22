@@ -122,13 +122,17 @@ fun LogbookScreen(
     viewModel: AquaViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val dives by viewModel.allDiveLogs.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
     val activePush by viewModel.activePushNotification.collectAsState()
+    val activeEmailVerification by viewModel.activeEmailVerification.collectAsState()
     val isImperial by viewModel.isImperial.collectAsState()
     val strings = LocalAppStrings.current
     val currentLanguage = LocalCurrentLanguage.current
     val isGerman = currentLanguage == AppLanguage.DE
+
+    var showEmailApprovalDialog by remember { mutableStateOf(false) }
 
     // Dialog & Inspection State
     var showAddDiveDialog by remember { mutableStateOf(false) }
@@ -226,6 +230,87 @@ fun LogbookScreen(
                 },
                 onDismiss = { viewModel.dismissPushNotification() }
             )
+
+            // Heads-up real-time Email Approval Banner (Target: Adrian Scheid)
+            activeEmailVerification?.let { emailMsg ->
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .testTag("email_approval_banner")
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Email,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "✉️ E-Mail-Freigabe: ${emailMsg.recipientName}",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "TG #${emailMsg.diveNumber} (${emailMsg.siteName}) • ${emailMsg.recipientEmail}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { showEmailApprovalDialog = true },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier
+                                .heightIn(min = 36.dp)
+                                .testTag("review_email_approval_btn")
+                        ) {
+                            Text(
+                                text = if (isGerman) "Freigeben" else "Approve",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        IconButton(
+                            onClick = { viewModel.dismissEmailVerification() },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = strings.close,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -530,6 +615,10 @@ fun LogbookScreen(
                 selectedDiveForInspection = null
                 diveForBuddyApproval = dive
             },
+            onApproveWithEmailClick = {
+                selectedDiveForInspection = null
+                diveForBuddyApproval = dive
+            },
             onSimulatePushClick = {
                 viewModel.triggerSimulatedPushForDemo(dive)
             },
@@ -552,7 +641,7 @@ fun LogbookScreen(
         )
     }
 
-    // 4. Buddy Approval Dialog (Hand Signature or Push Message)
+    // 4. Buddy Approval Dialog (Email, Hand Signature or Push Message)
     diveForBuddyApproval?.let { dive ->
         BuddyApprovalDialog(
             dive = dive,
@@ -564,8 +653,120 @@ fun LogbookScreen(
                 viewModel.sendDiveToBuddyForApproval(diveId, buddyEmail, buddyName)
                 diveForBuddyApproval = null
             },
+            onSendEmail = { diveId, email, name, note ->
+                viewModel.sendDiveForEmailApproval(context, diveId, email, name, note)
+                diveForBuddyApproval = null
+            },
             onDismiss = { diveForBuddyApproval = null }
         )
+    }
+
+    // 4b. Incoming Email Review Dialog (Adrian Scheid 1-Tap Verification)
+    if (showEmailApprovalDialog && activeEmailVerification != null) {
+        val emailMsg = activeEmailVerification!!
+        Dialog(
+            onDismissRequest = { showEmailApprovalDialog = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.92f)
+                    .clip(RoundedCornerShape(20.dp))
+                    .testTag("email_approval_dialog"),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Rounded.MarkEmailRead, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isGerman) "E-Mail-Freigabe prüfen" else "Review Email Approval",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        IconButton(onClick = { showEmailApprovalDialog = false }) {
+                            Icon(Icons.Rounded.Close, contentDescription = strings.close)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Von: ${emailMsg.diverName} (${emailMsg.diverEmail})",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "An: ${emailMsg.recipientName} (${emailMsg.recipientEmail})",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Betreff: ${emailMsg.subject}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = emailMsg.emailBodyText,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            viewModel.approveDiveViaEmail(
+                                diveId = emailMsg.diveId,
+                                approverName = emailMsg.recipientName,
+                                approverEmail = emailMsg.recipientEmail,
+                                note = "Offiziell freigegeben per E-Mail an ${emailMsg.recipientEmail} von Adrian Scheid."
+                            )
+                            showEmailApprovalDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 46.dp)
+                            .testTag("confirm_email_approval_btn")
+                    ) {
+                        Icon(Icons.Rounded.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (isGerman) "✓ Als Adrian Scheid freigeben" else "✓ Approve as Adrian Scheid",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
     }
 
     // 5. Incoming Push Review Dialog
@@ -1060,26 +1261,26 @@ private fun HeroStatItem(
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = label,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 10.sp,
-                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
-                Text(
-                    text = subLabel,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = accentColor,
-                    fontSize = 8.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                )
+                if (subLabel.isNotBlank()) {
+                    Text(
+                        text = subLabel,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = accentColor,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }

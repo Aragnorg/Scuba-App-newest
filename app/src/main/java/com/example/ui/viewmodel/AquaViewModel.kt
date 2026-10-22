@@ -2,6 +2,9 @@ package com.example.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import com.example.data.model.DiveApprovalEmailMessage
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.AndroidViewModel
@@ -2310,6 +2313,127 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                 _selectedDiveForDetails.value = updated
             }
         }
+    }
+
+    // --- Dive Approval via Email (Target: adrian.scheid01@gmail.com) ---
+    private val _activeEmailVerification = MutableStateFlow<DiveApprovalEmailMessage?>(null)
+    val activeEmailVerification: StateFlow<DiveApprovalEmailMessage?> = _activeEmailVerification.asStateFlow()
+
+    fun sendDiveForEmailApproval(
+        context: Context?,
+        diveId: String,
+        recipientEmail: String = "adrian.scheid01@gmail.com",
+        recipientName: String = "Adrian Scheid",
+        userNote: String = ""
+    ) {
+        viewModelScope.launch {
+            repository.markPendingEmailApproval(
+                id = diveId,
+                buddyEmail = recipientEmail,
+                buddyName = recipientName
+            )
+            val dive = repository.getDiveLogByIdDirect(diveId) ?: return@launch
+            _selectedDiveForDetails.value = dive
+
+            val randomCode = (100000 + (Math.random() * 900000).toInt()).toString()
+            val verifCode = "AQUA-EMAIL-OWD-$randomCode"
+            val subject = "[AquaLearn Pro] Tauchgang #${dive.diveNumber} Bestätigung: ${dive.siteName}"
+
+            val plainBody = buildString {
+                appendLine("Hallo $recipientName,")
+                appendLine()
+                appendLine("Tauchschüler ${dive.diverName.ifBlank { "Leo Chen" }} (${dive.diverEmail.ifBlank { "leo.chen@diver.com" }}) bittet um deine offizielle Tauchgangsbestätigung:")
+                appendLine()
+                appendLine("══════════════════════════════════════════════════")
+                appendLine("TAUCHGANG #${dive.diveNumber} - DETAILS & TELEMETRIE")
+                appendLine("══════════════════════════════════════════════════")
+                appendLine("• Datum: ${dive.date} • Uhrzeit: ${dive.timeIn}")
+                appendLine("• Tauchplatz: ${dive.siteName}")
+                appendLine("• Ort & Gewässer: ${dive.location} (${dive.bodyOfWater})")
+                appendLine("• Einstieg: ${dive.entryType}")
+                appendLine("• Maximaltiefe: ${dive.maxDepthMeters} m (Ø ${dive.avgDepthMeters} m)")
+                appendLine("• Tauchzeit: ${dive.durationMinutes} min")
+                appendLine("• Wassertemperatur: ${dive.waterTempCelsius} °C (Luft: ${dive.airTempCelsius} °C)")
+                appendLine("• Sichtweite: ${dive.visibilityMeters} m")
+                appendLine("• Gas & Flasche: ${dive.gasType} (${dive.tankType})")
+                appendLine("• Druck: Start ${dive.pressureInBar} bar ➔ Ende ${dive.pressureOutBar} bar (Verbrauch: ${dive.pressureInBar - dive.pressureOutBar} bar)")
+                appendLine("• Ausrüstung: ${dive.suitType} • Blei: ${dive.weightKg} kg")
+                appendLine("• Sicherheitsstopp: ${dive.safetyStopMinutes} min auf ${dive.safetyStopDepthMeters} m (Erfolgreich absolviert ✓)")
+                if (dive.sightings.isNotBlank()) appendLine("• Sichtungen: ${dive.sightings}")
+                if (dive.notes.isNotBlank()) appendLine("• Notizen: ${dive.notes}")
+                if (userNote.isNotBlank()) appendLine("• Nachricht des Tauchers: $userNote")
+                appendLine()
+                appendLine("══════════════════════════════════════════════════")
+                appendLine("OFFIZIELLER FREIGABE-CODE: $verifCode")
+                appendLine("══════════════════════════════════════════════════")
+                appendLine("Bestätigung in der AquaLearn Pro App:")
+                appendLine("Öffne das Logbuch und tippe auf 'Per E-Mail bestätigen' oder nutze diesen Code.")
+                appendLine()
+                appendLine("Mit sportlichen Grüßen,")
+                appendLine("AquaLearn Pro Scuba Diving Academy")
+            }
+
+            val emailMsg = DiveApprovalEmailMessage(
+                diveId = dive.id,
+                diveNumber = dive.diveNumber,
+                siteName = dive.siteName,
+                diverName = dive.diverName.ifBlank { "Leo Chen" },
+                diverEmail = dive.diverEmail.ifBlank { "leo.chen@diver.com" },
+                recipientEmail = recipientEmail,
+                recipientName = recipientName,
+                subject = subject,
+                verificationCode = verifCode,
+                telemetrySummary = "Max ${dive.maxDepthMeters}m • ${dive.durationMinutes} min • ${dive.gasType}",
+                emailBodyText = plainBody
+            )
+
+            _activeEmailVerification.value = emailMsg
+
+            // Trigger real Android mail intent if context available
+            context?.let { ctx ->
+                try {
+                    val mailUri = Uri.parse("mailto:$recipientEmail" +
+                            "?subject=" + Uri.encode(subject) +
+                            "&body=" + Uri.encode(plainBody))
+                    val intent = Intent(Intent.ACTION_SENDTO, mailUri).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    val chooser = Intent.createChooser(intent, "Bestätigungs-E-Mail senden an $recipientEmail...")
+                    chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    ctx.startActivity(chooser)
+                } catch (_: Exception) {
+                    // Fallback to in-app simulated mail if no email app installed
+                }
+            }
+        }
+    }
+
+    fun approveDiveViaEmail(
+        diveId: String,
+        approverName: String = "Adrian Scheid",
+        approverEmail: String = "adrian.scheid01@gmail.com",
+        note: String = "Per E-Mail verifizierter Tauchgang. Profil, Tauchzeit und Sicherheitsstopp bestätigt."
+    ) {
+        viewModelScope.launch {
+            val stampCode = "AQUALEARN-EMAIL-VERIF-" + UUID.randomUUID().toString().take(8).uppercase()
+            repository.approveWithEmail(
+                id = diveId,
+                approvedBy = "$approverName ($approverEmail)",
+                stampCode = stampCode,
+                note = note
+            )
+            val updated = repository.getDiveLogByIdDirect(diveId)
+            if (updated != null) {
+                _selectedDiveForDetails.value = updated
+            }
+            if (_activeEmailVerification.value?.diveId == diveId) {
+                _activeEmailVerification.value = null
+            }
+        }
+    }
+
+    fun dismissEmailVerification() {
+        _activeEmailVerification.value = null
     }
 
     fun sendDiveToBuddyForApproval(

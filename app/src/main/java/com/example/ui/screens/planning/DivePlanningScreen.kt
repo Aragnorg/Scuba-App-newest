@@ -224,11 +224,11 @@ fun DivePlanningScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Sub-Tabs for Dive Planning (Segmented Pill Style)
+                    // Sub-Tabs for Dive Planning (Scrollable Pill Style preventing any text squishing)
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(44.dp),
+                            .heightIn(min = 44.dp),
                         shape = RoundedCornerShape(14.dp),
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
@@ -236,8 +236,10 @@ fun DivePlanningScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(3.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = 6.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             val planningTabs = listOf(
                                 Triple(0, strings.subTabDiveSpots, Icons.Rounded.LocationOn to "tab_planning_spots"),
@@ -250,17 +252,16 @@ fun DivePlanningScreen(
                                 val isSelected = selectedSubTab == index
                                 Surface(
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                        .clip(RoundedCornerShape(11.dp))
+                                        .height(36.dp)
+                                        .clip(RoundedCornerShape(10.dp))
                                         .clickable { selectedSubTab = index }
                                         .testTag(tag),
-                                    shape = RoundedCornerShape(11.dp),
+                                    shape = RoundedCornerShape(10.dp),
                                     color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
                                     border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)) else null
                                 ) {
                                     Row(
-                                        modifier = Modifier.padding(horizontal = 4.dp),
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -270,15 +271,14 @@ fun DivePlanningScreen(
                                             modifier = Modifier.size(15.dp),
                                             tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                         )
-                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(
                                             text = title,
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontSize = 10.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                             color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                            maxLines = 1
                                         )
                                     }
                                 }
@@ -607,25 +607,25 @@ private fun DiveSpotSummaryCard(
     }
 
     val (difficultyColor, difficultyLabel) = when (spot.difficulty.uppercase()) {
-        "BEGINNER" -> Pair(SeaGreen, if (isGerman) "ðŸŸ¢ EINSTEIGER" else "ðŸŸ¢ BEGINNER")
-        "INTERMEDIATE" -> Pair(MaterialTheme.colorScheme.primary, if (isGerman) "ðŸ”µ FORTGESCHRITTEN" else "ðŸ”µ INTERMEDIATE")
-        "ADVANCED" -> Pair(SandGold, if (isGerman) "ðŸŸ¡ ERFAHREN" else "ðŸŸ¡ ADVANCED")
-        else -> Pair(CoralAlert, if (isGerman) "ðŸ”´ TECHNISCH / EXPERTE" else "ðŸ”´ TECHNICAL / EXPERT")
+        "BEGINNER" -> Pair(SeaGreen, if (isGerman) "🟢 EINSTEIGER" else "🟢 BEGINNER")
+        "INTERMEDIATE" -> Pair(MaterialTheme.colorScheme.primary, if (isGerman) "🔵 FORTGESCHRITTEN" else "🔵 INTERMEDIATE")
+        "ADVANCED" -> Pair(SandGold, if (isGerman) "🟡 ERFAHREN" else "🟡 ADVANCED")
+        else -> Pair(CoralAlert, if (isGerman) "🔴 TECHNISCH / EXPERTE" else "🔴 TECHNICAL / EXPERT")
     }
 
     val entryTypeIcon = when {
         spot.entryType.contains("BOAT", ignoreCase = true) -> "🚤"
-        spot.entryType.contains("SHORE", ignoreCase = true) || spot.entryType.contains("BEACH", ignoreCase = true) -> "ðŸ–ï¸"
+        spot.entryType.contains("SHORE", ignoreCase = true) || spot.entryType.contains("BEACH", ignoreCase = true) -> "🏖️"
         spot.entryType.contains("DRIFT", ignoreCase = true) -> "🌊"
         else -> "🤿"
     }
 
     val spotTypeIcon = when {
-        spot.spotType.contains("WRECK", ignoreCase = true) -> "âš“"
-        spot.spotType.contains("REEF", ignoreCase = true) -> "ðŸª¸"
-        spot.spotType.contains("CAVE", ignoreCase = true) || spot.spotType.contains("CAVERN", ignoreCase = true) -> "ðŸ•³ï¸"
-        spot.spotType.contains("WALL", ignoreCase = true) -> "ðŸ§±"
-        else -> "ðŸ“"
+        spot.spotType.contains("WRECK", ignoreCase = true) -> "⚓"
+        spot.spotType.contains("REEF", ignoreCase = true) -> "🪸"
+        spot.spotType.contains("CAVE", ignoreCase = true) || spot.spotType.contains("CAVERN", ignoreCase = true) -> "🕳️"
+        spot.spotType.contains("WALL", ignoreCase = true) -> "🧱"
+        else -> "📍"
     }
 
     Card(
@@ -675,7 +675,7 @@ private fun DiveSpotSummaryCard(
                                 border = BorderStroke(1.dp, SandGold.copy(alpha = 0.6f))
                             ) {
                                 Text(
-                                    text = "â­ " + if (isGerman) "EIGENER SPOT" else "CUSTOM SPOT",
+                                    text = "⭐ " + if (isGerman) "EIGENER SPOT" else "CUSTOM SPOT",
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.5.sp,
                                     fontWeight = FontWeight.Black,
@@ -783,7 +783,7 @@ private fun DiveSpotSummaryCard(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "â¬‡ $depthLabel",
+                            text = "⬇️ $depthLabel",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Black,
                             color = MaterialTheme.colorScheme.onSurface
@@ -990,7 +990,7 @@ private fun DiveSpotDetailDialog(
                                 )
                             }
                             Text(
-                                text = "${String.format("%.4f", spot.latitude)}Â° N, ${String.format("%.4f", spot.longitude)}Â° E",
+                                text = "${String.format("%.4f", spot.latitude)}° N, ${String.format("%.4f", spot.longitude)}° E",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -1645,13 +1645,13 @@ private fun EmergencyInfoDossierTab(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "ðŸ¥ ${emergency.nearestChamberName}",
+                        text = "🏥 ${emergency.nearestChamberName}",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "ðŸ“» ${emergency.coastGuardVHF}",
+                        text = "📻 ${emergency.coastGuardVHF}",
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1730,12 +1730,12 @@ private fun GasAndModCalculatorTab(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 3-Way Tactical Calculator Tool Switcher (Uniform 44dp height)
+        // 3-Way Tactical Calculator Tool Switcher (Uniform height & anti-clipping padding)
         item {
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .heightIn(min = 44.dp)
                     .testTag("calculator_tool_switcher"),
                 shape = RoundedCornerShape(14.dp),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -1744,8 +1744,10 @@ private fun GasAndModCalculatorTab(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     val calcOptions = listOf(
                         Triple(0, if (isGerman) "MOD Computer" else "MOD Computer", Icons.Rounded.Calculate),
@@ -2880,7 +2882,7 @@ private fun AddCustomDiveSpotDialog(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            listOf("BOAT" to "🚤 Boat", "SHORE" to "ðŸ–ï¸ Shore").forEach { (type, label) ->
+                            listOf("BOAT" to "🚤 Boat", "SHORE" to "🏖️ Shore").forEach { (type, label) ->
                                 val isSelected = entryType == type
                                 Surface(
                                     modifier = Modifier
