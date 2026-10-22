@@ -564,6 +564,9 @@ class DivingRepository(private val divingDao: DivingDao) {
     suspend fun getAccountByEmailDirect(email: String): UserAccountEntity? =
         divingDao.getAccountByEmailDirect(email.trim().lowercase())
 
+    suspend fun getUserAccountByEmail(email: String): UserAccountEntity? =
+        divingDao.getAccountByEmailDirect(email.trim().lowercase())
+
     suspend fun registerUser(
         email: String,
         passwordPlain: String,

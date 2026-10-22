@@ -109,7 +109,8 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
             } else {
                 // Showcase Edition v4.3: Auto-login to showcase candidate account on fresh launch
                 val showcaseUser = repository.getUserAccountById("usr_leo_student")
-                    ?: repository.getUserAccountByEmail("leo.chen@diver.com")
+                    ?: repository.getAccountByEmailDirect("leo.chen@diver.com")
+                    ?: repository.getInitialAccount()
                 if (showcaseUser != null) {
                     prefs.edit().putString("logged_in_user_id", showcaseUser.id).apply()
                     _currentUser.value = showcaseUser
