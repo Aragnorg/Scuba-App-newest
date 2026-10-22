@@ -1348,7 +1348,6 @@ fun CreateQuizDialog(
         )
     }
 
-    val strings = com.example.ui.i18n.LocalAppStrings.current
     val currentLanguage = com.example.ui.i18n.LocalCurrentLanguage.current
     val isGerman = currentLanguage == com.example.ui.i18n.AppLanguage.DE
 

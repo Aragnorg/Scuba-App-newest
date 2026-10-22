@@ -439,9 +439,9 @@ fun DiveDetailDialog(
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
-                                    if (dive.instructorStampCode.isNotBlank()) {
+                                    if (dive.qrStampCode.isNotBlank()) {
                                         Text(
-                                            text = "Code: ${dive.instructorStampCode}",
+                                            text = "Code: ${dive.qrStampCode}",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontSize = 10.sp,
                                             color = MaterialTheme.colorScheme.primary,
