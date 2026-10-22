@@ -999,6 +999,8 @@ class DivingRepository(private val divingDao: DivingDao) {
         seedDiveLogsIfEmpty()
         seedDocumentsIfEmpty()
         seedOrganizationsIfEmpty()
+        seedDiveEventsIfEmpty()
+        ensureShowcaseContentPopulated()
     }
 
     private suspend fun ensureCorePresentationsAndQuizzesSeeded() {
@@ -1439,9 +1441,9 @@ class DivingRepository(private val divingDao: DivingDao) {
             val initialDocs = listOf(
                 DiverDocumentEntity(
                     id = "doc_cert_ow",
-                    diverId = "usr_student",
-                    diverName = "Alex Rivera",
-                    diverEmail = "alex.rivera@example.com",
+                    diverId = "usr_leo_student",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
                     title = "Open Water Diver (18m / 60ft)",
                     category = "CERTIFICATION",
                     documentNumber = "OWD-884920-CH",
@@ -1462,9 +1464,9 @@ class DivingRepository(private val divingDao: DivingDao) {
                 ),
                 DiverDocumentEntity(
                     id = "doc_med_fitness",
-                    diverId = "usr_student",
-                    diverName = "Alex Rivera",
-                    diverEmail = "alex.rivera@example.com",
+                    diverId = "usr_leo_student",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
                     title = "RSTC Medical Statement & Diving Fitness Assessment",
                     category = "MEDICAL_FORM",
                     documentNumber = "MED-2026-DR-9941",
@@ -1486,9 +1488,9 @@ class DivingRepository(private val divingDao: DivingDao) {
                 ),
                 DiverDocumentEntity(
                     id = "doc_dan_insurance",
-                    diverId = "usr_student",
-                    diverName = "Alex Rivera",
-                    diverEmail = "alex.rivera@example.com",
+                    diverId = "usr_leo_student",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
                     title = "DAN Europe Diving Accident Insurance (Sport Silver)",
                     category = "INSURANCE",
                     documentNumber = "DAN-EUR-883921",
@@ -1509,9 +1511,9 @@ class DivingRepository(private val divingDao: DivingDao) {
                 ),
                 DiverDocumentEntity(
                     id = "doc_regulator_service",
-                    diverId = "usr_student",
-                    diverName = "Alex Rivera",
-                    diverEmail = "alex.rivera@example.com",
+                    diverId = "usr_leo_student",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
                     title = "Scuba Regulator & BCD Annual Hydro / Service Certificate",
                     category = "EQUIPMENT_RECORD",
                     documentNumber = "SVC-APX-7739",
@@ -1532,9 +1534,9 @@ class DivingRepository(private val divingDao: DivingDao) {
                 ),
                 DiverDocumentEntity(
                     id = "doc_nitrox_specialty",
-                    diverId = "usr_student",
-                    diverName = "Alex Rivera",
-                    diverEmail = "alex.rivera@example.com",
+                    diverId = "usr_leo_student",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
                     title = "Enriched Air Nitrox Diver (EANx 40%)",
                     category = "CERTIFICATION",
                     documentNumber = "NITROX-994012-APP",
@@ -1555,9 +1557,9 @@ class DivingRepository(private val divingDao: DivingDao) {
                 ),
                 DiverDocumentEntity(
                     id = "doc_liability_waiver",
-                    diverId = "usr_student",
-                    diverName = "Alex Rivera",
-                    diverEmail = "alex.rivera@example.com",
+                    diverId = "usr_leo_student",
+                    diverName = "Leo Chen",
+                    diverEmail = "leo.chen@diver.com",
                     title = "General Diving Liability Release & Safe Diving Practices",
                     category = "LIABILITY_WAIVER",
                     documentNumber = "WAIV-2026-AQUA-01",
@@ -1713,6 +1715,135 @@ class DivingRepository(private val divingDao: DivingDao) {
                     qrStampCode = "",
                     buddySignaturePathJson = "",
                     buddyApprovalNote = ""
+                ),
+                DiveLogEntity(
+                    id = "dive_004",
+                    diveNumber = 4,
+                    date = "2026-10-04",
+                    timeIn = "10:15 AM",
+                    timeOut = "11:00 AM",
+                    durationMinutes = 45,
+                    siteName = "Kreidesee Hemmoor (Rüttler & Flugzeug)",
+                    location = "Hemmoor, Niedersachsen, Deutschland",
+                    bodyOfWater = "Lake",
+                    entryType = "Shore",
+                    maxDepthMeters = 17.5f,
+                    avgDepthMeters = 11.2f,
+                    waterTempCelsius = 9.0f,
+                    airTempCelsius = 14.0f,
+                    visibilityMeters = 15.0f,
+                    gasType = "Air 21%",
+                    tankType = "12L Steel",
+                    pressureInBar = 200,
+                    pressureOutBar = 60,
+                    suitType = "7mm Semi-Dry + Eisweste",
+                    weightKg = 8.5f,
+                    safetyStopMinutes = 3,
+                    safetyStopDepthMeters = 5.0f,
+                    safetyStopCompleted = true,
+                    sightings = "Große Forellen, versenktes Piper-Flugzeugwrack, historische Rüttler-Industrieanlage",
+                    notes = "Kaltwassertauchgang im Freiwasser! Perfekte Tarierung mit 7mm Neoprenanzug und Kopfhaube. Abstieg entlang der Rüttler-Wand bis zum Flugzeugwrack auf 17m. 3 Min Sicherheitsstopp auf 5m exakt eingehalten.",
+                    diverId = "usr_leo_student",
+                    diverEmail = "leo.chen@diver.com",
+                    diverName = "Leo Chen",
+                    buddyName = "Sarah Connor (Rescue Diver)",
+                    buddyEmail = "sarah.c@ocean.net",
+                    diveCenterName = "Tauchbasis Kreidesee Hemmoor",
+                    instructorName = "",
+                    instructorLicense = "",
+                    approvalStatus = "APPROVED_BY_BUDDY_SIGNATURE",
+                    approvalMethod = "BUDDY_SIGNATURE",
+                    approvedBy = "Sarah Connor",
+                    approvalTimestamp = System.currentTimeMillis() - (14 * 86400000L),
+                    qrStampCode = "",
+                    buddySignaturePathJson = """[{"x":30,"y":50},{"x":55,"y":30},{"x":80,"y":65},{"x":110,"y":35},{"x":140,"y":60},{"x":170,"y":45}]""",
+                    buddyApprovalNote = "Saubere Kaltwasser-Tarierung und exzellente Lampenkommunikation!"
+                ),
+                DiveLogEntity(
+                    id = "dive_005",
+                    diveNumber = 5,
+                    date = "2026-10-10",
+                    timeIn = "08:45 AM",
+                    timeOut = "09:37 AM",
+                    durationMinutes = 52,
+                    siteName = "Elphinstone Reef (North Plateau & Wall)",
+                    location = "Marsa Alam, Rotes Meer, Ägypten",
+                    bodyOfWater = "Ocean",
+                    entryType = "Boat",
+                    maxDepthMeters = 18.0f,
+                    avgDepthMeters = 13.5f,
+                    waterTempCelsius = 27.0f,
+                    airTempCelsius = 31.0f,
+                    visibilityMeters = 35.0f,
+                    gasType = "Nitrox 32% (EAN32)",
+                    tankType = "12L Aluminum",
+                    pressureInBar = 215,
+                    pressureOutBar = 65,
+                    suitType = "5mm Full Suit",
+                    weightKg = 5.0f,
+                    safetyStopMinutes = 3,
+                    safetyStopDepthMeters = 5.0f,
+                    safetyStopCompleted = true,
+                    sightings = "Weißspitzen-Hochseehai (Oceanic Whitetip), Barrakudaschwarm, Gorgonien-Fächerkorallen, Riffbarsche",
+                    notes = "Spektakulärer Strömungstauchgang am Nordplateau mit EAN32! MOD auf 33.7m berechnet, strikt bei 18.0m OWD-Limit geblieben. Majestätischer Weißspitzen-Hochseehai zog im Freiwasser vorbei. Sicherheitsstopp an der Strömungsboje (SMB).",
+                    diverId = "usr_leo_student",
+                    diverEmail = "leo.chen@diver.com",
+                    diverName = "Leo Chen",
+                    buddyName = "Alex Rivera",
+                    buddyEmail = "alex.rivera@divebuddy.org",
+                    diveCenterName = "AquaLearn Red Sea Expedition",
+                    instructorName = "Adrian Scheid",
+                    instructorLicense = "PADI OWSI #482910",
+                    approvalStatus = "APPROVED_BY_INSTRUCTOR",
+                    approvalMethod = "QR_CODE",
+                    approvedBy = "Adrian Scheid (Instructor)",
+                    approvalTimestamp = System.currentTimeMillis() - (8 * 86400000L),
+                    qrStampCode = "AQUALEARN-QR-STAMP-ADRIAN-OWSI482910-ELPHINSTONE",
+                    buddySignaturePathJson = "",
+                    buddyApprovalNote = "Hervorragende Gasanalyse (32.1% O2 verifiziert), perfekte Bojenbedienung und Bojensetzen im Blauwasser!"
+                ),
+                DiveLogEntity(
+                    id = "dive_006",
+                    diveNumber = 6,
+                    date = "2026-10-16",
+                    timeIn = "02:30 PM",
+                    timeOut = "03:19 PM",
+                    durationMinutes = 49,
+                    siteName = "Illes Medes - La Vaca & El Salpatxot",
+                    location = "L'Estartit, Costa Brava, Mittelmeer, Spanien",
+                    bodyOfWater = "Ocean",
+                    entryType = "Boat",
+                    maxDepthMeters = 16.8f,
+                    avgDepthMeters = 11.9f,
+                    waterTempCelsius = 21.0f,
+                    airTempCelsius = 24.0f,
+                    visibilityMeters = 20.0f,
+                    gasType = "Air 21%",
+                    tankType = "12L Steel",
+                    pressureInBar = 205,
+                    pressureOutBar = 55,
+                    suitType = "5mm Full Suit + Weste",
+                    weightKg = 6.5f,
+                    safetyStopMinutes = 3,
+                    safetyStopDepthMeters = 5.0f,
+                    safetyStopCompleted = true,
+                    sightings = "Große Braune Zackenbarsche (Epinephelus marginatus), Oktopusse, Meerraben, Nacktkiemer (Flabellina)",
+                    notes = "Wunderschönes Meeresschutzgebiet Medes-Inseln. Zahme Zackenbarsche kamen bis auf einen Meter heran. Durchquerung des großen Bogens bei La Vaca. Ruhiger Ausklang mit Sicherheitsstopp an der Ankerleine.",
+                    diverId = "usr_leo_student",
+                    diverEmail = "leo.chen@diver.com",
+                    diverName = "Leo Chen",
+                    buddyName = "Elena Rostova",
+                    buddyEmail = "elena.rostova@diver.com",
+                    diveCenterName = "Medes Diving Marine Reserve",
+                    instructorName = "",
+                    instructorLicense = "",
+                    approvalStatus = "APPROVED_BY_BUDDY_SIGNATURE",
+                    approvalMethod = "BUDDY_SIGNATURE",
+                    approvedBy = "Elena Rostova",
+                    approvalTimestamp = System.currentTimeMillis() - (2 * 86400000L),
+                    qrStampCode = "",
+                    buddySignaturePathJson = """[{"x":20,"y":60},{"x":45,"y":35},{"x":75,"y":65},{"x":105,"y":40},{"x":135,"y":70},{"x":165,"y":50},{"x":195,"y":65}]""",
+                    buddyApprovalNote = "Toller Buddy-Check nach BWRAF und vorbildliche Tarierung ohne Bodenberührung im Schutzgebiet."
                 )
             )
             divingDao.insertDiveLogs(initialDives)
@@ -1883,7 +2014,7 @@ class DivingRepository(private val divingDao: DivingDao) {
                 certLevel = "Open Water Diver (18m)",
                 certAgency = "SSI",
                 licenseNumber = "SSI-DIV-5512",
-                totalLoggedDives = 14,
+                totalLoggedDives = 6,
                 ttuExpiryDate = "2027-08-15",
                 ttuDoctorName = "Dr. med. Frank Meyer",
                 emergencyContactName = "Sarah Chen",
@@ -2752,6 +2883,269 @@ class DivingRepository(private val divingDao: DivingDao) {
             centerDocuments.forEach { divingDao.insertOrganizationDocument(it) }
             initialSignatures.forEach { divingDao.insertDocumentSignature(it) }
         }
+    }
+
+    private suspend fun seedDiveEventsIfEmpty() {
+        val existingEvents = divingDao.getAllUpcomingEvents().firstOrNull()
+        if (existingEvents.isNullOrEmpty()) {
+            val evt1 = DiveEventEntity(
+                id = "evt_elphinstone_safari",
+                orgId = "org_center_blue_horizon",
+                title = "Elphinstone Reef Early Morning Zodiac-Drift",
+                eventType = "BOAT_TRIP",
+                siteName = "Elphinstone Reef (North Plateau)",
+                location = "Marsa Alam, Rotes Meer, Ägypten",
+                eventDate = "2026-11-15",
+                meetingTime = "06:00",
+                departureTime = "06:30",
+                maxCapacity = 10,
+                registeredCount = 4,
+                leadGuideName = "Adrian Scheid",
+                leadGuideUserId = "usr_adrian_instructor",
+                maxDepthMeters = 30.0f,
+                requiredMinCert = "AOWD + Deep Diver",
+                emergencyBriefing = "Sauerstoffkoffer & AED an Bord des Zodiacs. Bei Strömungsabdrift sofort SMB setzen und zusammenbleiben.",
+                chamberName = "Port Ghalib Hyperbaric Medical Center",
+                chamberPhone = "+20 65 375 0100",
+                chamberDistanceTime = "35 Min Bootsfahrt / 25 km",
+                coastGuardVHF = "VHF Kanal 16 (Red Sea Coast Guard)",
+                emergencyNotes = "Direkte Evakuierung über Marsa Alam Hafen. Notfall-Helikopter verfügbar.",
+                entryExitInfo = "Negativer Einstieg rückwärts aus dem Zodiac ins Blauwasser. Aufstieg und Abholung per Oberflächenboje (DSMB) im Freiwasser.",
+                waterConditions = "Kräftige Nord-Süd-Strömung, Wassertemperatur 26°C, Sichtweite ca. 35m.",
+                turnPressureBar = 120,
+                equipmentRequirements = "12L/15L Alu DIN mit EAN32 (Nitrox), DSMB (Boje mit Spool obligatorisch), Tauchcomputer, Signalpfeife.",
+                hazardsAndRules = "Steilwand fällt auf über 100m ab. Keine Dekompressionstauchgänge! Tiefen- und Zeitlimits strikt einhalten.",
+                status = "CONFIRMED"
+            )
+
+            val evt2 = DiveEventEntity(
+                id = "evt_bodensee_steilufer",
+                orgId = "org_club_delphin",
+                title = "Überlinger Steilwand & Wrack Jura Club-Ausfahrt",
+                eventType = "CLUB_OUTING",
+                siteName = "Überlinger See / Steilufer Sipplingen",
+                location = "Bodensee, Überlingen, Deutschland",
+                eventDate = "2026-11-22",
+                meetingTime = "09:30",
+                departureTime = "10:00",
+                maxCapacity = 8,
+                registeredCount = 3,
+                leadGuideName = "Adrian Scheid",
+                leadGuideUserId = "usr_adrian_instructor",
+                maxDepthMeters = 18.0f,
+                requiredMinCert = "Open Water Diver",
+                emergencyBriefing = "Druckkammer Überlingen Helios-Spital 8 Min Fahrt. O2-Set im Vereinsbus.",
+                chamberName = "Druckkammerzentrum Überlingen (Helios Spital)",
+                chamberPhone = "+49 7551 8370",
+                chamberDistanceTime = "8 Min (4.5 km)",
+                coastGuardVHF = "Kanal 16 / Wasserschutzpolizei Bodensee (+49 7531 59020)",
+                emergencyNotes = "Notruf 112 (DLRG Wasserrettung Überlingen).",
+                entryExitInfo = "Bequemer Einstieg über Treppenrampe am Vereinsgelände.",
+                waterConditions = "Süßwasser, Sprungschicht bei 12m (oben 15°C, unten 8°C), Sichtweite 8-12m.",
+                turnPressureBar = 110,
+                equipmentRequirements = "7mm Halbtrocken mit Kopfhaube oder Trockentauchanzug, zwei getrennt absperrbare erste Stufen, Taucherlampe.",
+                hazardsAndRules = "Kaltwasser oberhalb/unterhalb der Sprungschicht. Kaltwasser-Atemregler-Vereisungsschutz beachten.",
+                status = "CONFIRMED"
+            )
+
+            divingDao.insertEvents(listOf(evt1, evt2))
+
+            // Seed sample participants for evt1
+            val p1 = DiveEventParticipantEntity(
+                id = "part_leo_01",
+                eventId = "evt_elphinstone_safari",
+                memberId = "usr_leo_student",
+                diverName = "Leo Chen",
+                diverEmail = "leo.chen@diver.com",
+                diverCertLevel = "Open Water Diver (18m)",
+                diverTotalDives = 6,
+                checkInStatus = "REGISTERED",
+                safetyGatePassed = true,
+                tankSelection = "12L Aluminum",
+                gasType = "Nitrox 32%",
+                modMeters = 33.7f
+            )
+            val p2 = DiveEventParticipantEntity(
+                id = "part_sarah_02",
+                eventId = "evt_elphinstone_safari",
+                memberId = "stu_sarah",
+                diverName = "Sarah Connor",
+                diverEmail = "sarah.c@ocean.net",
+                diverCertLevel = "Rescue Diver",
+                diverTotalDives = 85,
+                checkInStatus = "SAFETY_CHECKED",
+                safetyGatePassed = true,
+                tankSelection = "12L Aluminum",
+                gasType = "Nitrox 32%",
+                modMeters = 33.7f
+            )
+            divingDao.insertParticipants(listOf(p1, p2))
+        }
+    }
+
+    private suspend fun ensureShowcaseContentPopulated() {
+        // 1. Ensure all 6 showcase dives exist in database
+        val currentDives = divingDao.getAllDiveLogs().firstOrNull() ?: emptyList()
+        val dive4 = DiveLogEntity(
+            id = "dive_004",
+            diveNumber = 4,
+            date = "2026-10-04",
+            timeIn = "10:15 AM",
+            timeOut = "11:00 AM",
+            durationMinutes = 45,
+            siteName = "Kreidesee Hemmoor (Rüttler & Flugzeug)",
+            location = "Hemmoor, Niedersachsen, Deutschland",
+            bodyOfWater = "Lake",
+            entryType = "Shore",
+            maxDepthMeters = 17.5f,
+            avgDepthMeters = 11.2f,
+            waterTempCelsius = 9.0f,
+            airTempCelsius = 14.0f,
+            visibilityMeters = 15.0f,
+            gasType = "Air 21%",
+            tankType = "12L Steel",
+            pressureInBar = 200,
+            pressureOutBar = 60,
+            suitType = "7mm Semi-Dry + Eisweste",
+            weightKg = 8.5f,
+            safetyStopMinutes = 3,
+            safetyStopDepthMeters = 5.0f,
+            safetyStopCompleted = true,
+            sightings = "Große Forellen, versenktes Piper-Flugzeugwrack, historische Rüttler-Industrieanlage",
+            notes = "Kaltwassertauchgang im Freiwasser! Perfekte Tarierung mit 7mm Neoprenanzug und Kopfhaube. Abstieg entlang der Rüttler-Wand bis zum Flugzeugwrack auf 17m. 3 Min Sicherheitsstopp auf 5m exakt eingehalten.",
+            diverId = "usr_leo_student",
+            diverEmail = "leo.chen@diver.com",
+            diverName = "Leo Chen",
+            buddyName = "Sarah Connor (Rescue Diver)",
+            buddyEmail = "sarah.c@ocean.net",
+            diveCenterName = "Tauchbasis Kreidesee Hemmoor",
+            instructorName = "",
+            instructorLicense = "",
+            approvalStatus = "APPROVED_BY_BUDDY_SIGNATURE",
+            approvalMethod = "BUDDY_SIGNATURE",
+            approvedBy = "Sarah Connor",
+            approvalTimestamp = System.currentTimeMillis() - (14 * 86400000L),
+            qrStampCode = "",
+            buddySignaturePathJson = """[{"x":30,"y":50},{"x":55,"y":30},{"x":80,"y":65},{"x":110,"y":35},{"x":140,"y":60},{"x":170,"y":45}]""",
+            buddyApprovalNote = "Saubere Kaltwasser-Tarierung und exzellente Lampenkommunikation!"
+        )
+
+        val dive5 = DiveLogEntity(
+            id = "dive_005",
+            diveNumber = 5,
+            date = "2026-10-10",
+            timeIn = "08:45 AM",
+            timeOut = "09:37 AM",
+            durationMinutes = 52,
+            siteName = "Elphinstone Reef (North Plateau & Wall)",
+            location = "Marsa Alam, Rotes Meer, Ägypten",
+            bodyOfWater = "Ocean",
+            entryType = "Boat",
+            maxDepthMeters = 18.0f,
+            avgDepthMeters = 13.5f,
+            waterTempCelsius = 27.0f,
+            airTempCelsius = 31.0f,
+            visibilityMeters = 35.0f,
+            gasType = "Nitrox 32% (EAN32)",
+            tankType = "12L Aluminum",
+            pressureInBar = 215,
+            pressureOutBar = 65,
+            suitType = "5mm Full Suit",
+            weightKg = 5.0f,
+            safetyStopMinutes = 3,
+            safetyStopDepthMeters = 5.0f,
+            safetyStopCompleted = true,
+            sightings = "Weißspitzen-Hochseehai (Oceanic Whitetip), Barrakudaschwarm, Gorgonien-Fächerkorallen, Riffbarsche",
+            notes = "Spektakulärer Strömungstauchgang am Nordplateau mit EAN32! MOD auf 33.7m berechnet, strikt bei 18.0m OWD-Limit geblieben. Majestätischer Weißspitzen-Hochseehai zog im Freiwasser vorbei. Sicherheitsstopp an der Strömungsboje (SMB).",
+            diverId = "usr_leo_student",
+            diverEmail = "leo.chen@diver.com",
+            diverName = "Leo Chen",
+            buddyName = "Alex Rivera",
+            buddyEmail = "alex.rivera@divebuddy.org",
+            diveCenterName = "AquaLearn Red Sea Expedition",
+            instructorName = "Adrian Scheid",
+            instructorLicense = "PADI OWSI #482910",
+            approvalStatus = "APPROVED_BY_INSTRUCTOR",
+            approvalMethod = "QR_CODE",
+            approvedBy = "Adrian Scheid (Instructor)",
+            approvalTimestamp = System.currentTimeMillis() - (8 * 86400000L),
+            qrStampCode = "AQUALEARN-QR-STAMP-ADRIAN-OWSI482910-ELPHINSTONE",
+            buddySignaturePathJson = "",
+            buddyApprovalNote = "Hervorragende Gasanalyse (32.1% O2 verifiziert), perfekte Bojenbedienung und Bojensetzen im Blauwasser!"
+        )
+
+        val dive6 = DiveLogEntity(
+            id = "dive_006",
+            diveNumber = 6,
+            date = "2026-10-16",
+            timeIn = "02:30 PM",
+            timeOut = "03:19 PM",
+            durationMinutes = 49,
+            siteName = "Illes Medes - La Vaca & El Salpatxot",
+            location = "L'Estartit, Costa Brava, Mittelmeer, Spanien",
+            bodyOfWater = "Ocean",
+            entryType = "Boat",
+            maxDepthMeters = 16.8f,
+            avgDepthMeters = 11.9f,
+            waterTempCelsius = 21.0f,
+            airTempCelsius = 24.0f,
+            visibilityMeters = 20.0f,
+            gasType = "Air 21%",
+            tankType = "12L Steel",
+            pressureInBar = 205,
+            pressureOutBar = 55,
+            suitType = "5mm Full Suit + Weste",
+            weightKg = 6.5f,
+            safetyStopMinutes = 3,
+            safetyStopDepthMeters = 5.0f,
+            safetyStopCompleted = true,
+            sightings = "Große Braune Zackenbarsche (Epinephelus marginatus), Oktopusse, Meerraben, Nacktkiemer (Flabellina)",
+            notes = "Wunderschönes Meeresschutzgebiet Medes-Inseln. Zahme Zackenbarsche kamen bis auf einen Meter heran. Durchquerung des großen Bogens bei La Vaca. Ruhiger Ausklang mit Sicherheitsstopp an der Ankerleine.",
+            diverId = "usr_leo_student",
+            diverEmail = "leo.chen@diver.com",
+            diverName = "Leo Chen",
+            buddyName = "Elena Rostova",
+            buddyEmail = "elena.rostova@diver.com",
+            diveCenterName = "Medes Diving Marine Reserve",
+            instructorName = "",
+            instructorLicense = "",
+            approvalStatus = "APPROVED_BY_BUDDY_SIGNATURE",
+            approvalMethod = "BUDDY_SIGNATURE",
+            approvedBy = "Elena Rostova",
+            approvalTimestamp = System.currentTimeMillis() - (2 * 86400000L),
+            qrStampCode = "",
+            buddySignaturePathJson = """[{"x":20,"y":60},{"x":45,"y":35},{"x":75,"y":65},{"x":105,"y":40},{"x":135,"y":70},{"x":165,"y":50},{"x":195,"y":65}]""",
+            buddyApprovalNote = "Toller Buddy-Check nach BWRAF und vorbildliche Tarierung ohne Bodenberührung im Schutzgebiet."
+        )
+
+        val missingDives = mutableListOf<DiveLogEntity>()
+        if (currentDives.none { it.id == "dive_004" }) missingDives.add(dive4)
+        if (currentDives.none { it.id == "dive_005" }) missingDives.add(dive5)
+        if (currentDives.none { it.id == "dive_006" }) missingDives.add(dive6)
+        if (missingDives.isNotEmpty()) {
+            divingDao.insertDiveLogs(missingDives)
+        }
+
+        // 2. Ensure showcase study progress & streak
+        val currentProgress = divingDao.getUserProgress().firstOrNull()
+        val targetProgress = (currentProgress ?: UserProgressEntity(id = 1)).copy(
+            studentName = "Leo Chen",
+            studyStreakDays = 4,
+            totalStudyMinutes = 145,
+            lastActiveTimestamp = System.currentTimeMillis()
+        )
+        divingDao.insertOrUpdateProgress(targetProgress)
+
+        // 3. Mark Unit 1 & Unit 2 as passed/completed to showcase learning flow
+        divingDao.updatePresentationProgress("pres_physics_core", 5, true)
+        divingDao.updateVideoProgress("vid_equalization", 420, true)
+        divingDao.updateQuizResult("quiz_physics", 100, true, 1, System.currentTimeMillis() - 86400000L * 3)
+
+        divingDao.updatePresentationProgress("pres_equipment_core", 5, true)
+        divingDao.updateVideoProgress("vid_bwraf", 380, true)
+        divingDao.updateQuizResult("quiz_equipment", 85, true, 2, System.currentTimeMillis() - 86400000L * 2)
+
+        divingDao.updatePresentationProgress("pres_physiology_core", 4, true)
     }
 
     private suspend fun seedDatabase() {

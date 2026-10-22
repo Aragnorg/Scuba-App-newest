@@ -107,8 +107,17 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
                     _authState.value = AuthState.LoggedOut
                 }
             } else {
-                _currentUser.value = null
-                _authState.value = AuthState.LoggedOut
+                // Showcase Edition v4.3: Auto-login to showcase candidate account on fresh launch
+                val showcaseUser = repository.getUserAccountById("usr_leo_student")
+                    ?: repository.getUserAccountByEmail("leo.chen@diver.com")
+                if (showcaseUser != null) {
+                    prefs.edit().putString("logged_in_user_id", showcaseUser.id).apply()
+                    _currentUser.value = showcaseUser
+                    _authState.value = AuthState.Authenticated(showcaseUser)
+                } else {
+                    _currentUser.value = null
+                    _authState.value = AuthState.LoggedOut
+                }
             }
         }
     }
@@ -1878,20 +1887,19 @@ class AquaViewModel(application: Application) : AndroidViewModel(application) {
         allVideos,
         allQuizzes
     ) { presList, vidList, quizList ->
-        val owdQuizzes = quizList.filter { it.moduleId in listOf("mod_physics", "mod_equipment", "mod_planning") || it.isMockExam }
+        val owdQuizzes = quizList.filter { 
+            it.moduleId in listOf("mod_physics", "mod_equipment", "mod_physiology", "mod_emergencies", "mod_planning") || it.isMockExam 
+        }
         val targetQuizzes = if (owdQuizzes.isNotEmpty()) owdQuizzes else quizList
         if (targetQuizzes.isNotEmpty()) {
             val passedCount = targetQuizzes.count { it.isPassed }
-            when {
-                passedCount == 0 -> {
-                    val compPres = presList.count { it.isCompleted }
-                    if (compPres > 0) (compPres.toFloat() / presList.size.coerceAtLeast(1) * 20f).toInt().coerceIn(5, 20) else 0
-                }
-                passedCount == 1 -> 33
-                passedCount == 2 -> 66
-                passedCount >= targetQuizzes.size -> 100
-                else -> ((passedCount.toFloat() / targetQuizzes.size) * 100).toInt().coerceIn(0, 100)
-            }
+            val compPres = presList.count { it.isCompleted }
+            val compVids = vidList.count { it.isCompleted }
+            // Comprehensive readiness: 50% Quizzes, 30% Presentations, 20% Videos
+            val quizPct = (passedCount.toFloat() / targetQuizzes.size.coerceAtLeast(1)) * 50f
+            val presPct = (compPres.toFloat() / presList.size.coerceAtLeast(1)) * 30f
+            val vidPct = (compVids.toFloat() / vidList.size.coerceAtLeast(1)) * 20f
+            (quizPct + presPct + vidPct).toInt().coerceIn(0, 100)
         } else {
             0
         }
