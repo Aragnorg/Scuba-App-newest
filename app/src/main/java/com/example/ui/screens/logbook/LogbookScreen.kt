@@ -31,7 +31,6 @@ import androidx.compose.material.icons.rounded.Air
 import androidx.compose.material.icons.rounded.Analytics
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.rounded.CheckCircle
