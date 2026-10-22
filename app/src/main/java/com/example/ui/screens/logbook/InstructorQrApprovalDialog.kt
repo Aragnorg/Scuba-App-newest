@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
+import com.example.ui.components.LiveCameraPreviewView
 import com.example.data.model.DiveLogEntity
 import com.example.ui.i18n.LocalAppStrings
 import com.example.ui.theme.OceanPrimary
@@ -89,6 +90,13 @@ val authorizedDiveCenterStamps = listOf(
         licenseNumber = "PADI OWSI #482910",
         stampCode = "AQUALEARN-CERT-STAMP-ADRIAN-OWSI482910",
         location = "Official AquaLearn Diving Academy"
+    ),
+    AuthorizedDiveCenterStamp(
+        centerName = "Persönlicher Profil-Stempel (Adrian Scheid)",
+        instructorName = "Adrian Scheid (Instructor)",
+        licenseNumber = "PADI / CMAS OWSI",
+        stampCode = "AL-STAMP-ADRIAN-SCHEID-01",
+        location = "Persönlicher QR-Code (adrian.scheid01@gmail.com)"
     ),
     AuthorizedDiveCenterStamp(
         centerName = "Red Sea Explorers Dive Center",
@@ -249,17 +257,24 @@ fun InstructorQrApprovalDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // CAMERA SCANNER VIEWFINDER
+                // CAMERA SCANNER VIEWFINDER WITH LIVE CAMERA WINDOW
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(175.dp)
+                        .height(200.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(Color(0xFF0F1E29))
                         .border(2.dp, SeaGreen.copy(alpha = 0.6f), RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Scanner Target Reticle
+                    // 1. REAL LIVE CAMERA PREVIEW FEED
+                    if (hasCameraPermission) {
+                        LiveCameraPreviewView(
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    // 2. Scanner Target Reticle Overlay
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val w = size.width
                         val h = size.height
@@ -320,7 +335,7 @@ fun InstructorQrApprovalDialog(
                                 colors = ButtonDefaults.buttonColors(containerColor = SeaGreen),
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier
-                                    .height(32.dp)
+                                    .heightIn(min = 36.dp)
                                     .testTag("enable_camera_scan_button")
                             ) {
                                 Icon(Icons.Rounded.CameraAlt, contentDescription = null, modifier = Modifier.size(14.dp), tint = Color(0xFF00382E))
@@ -330,15 +345,27 @@ fun InstructorQrApprovalDialog(
                         } else {
                             Surface(
                                 shape = RoundedCornerShape(10.dp),
-                                color = SeaGreen.copy(alpha = 0.25f)
+                                color = Color(0xCC000000),
+                                border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.6f))
                             ) {
-                                Text(
-                                    text = strings.cameraActive,
-                                    color = SeaGreen,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .background(SeaGreen, CircleShape)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "🟢 Live-Kamera aktiv (Sucher aktiv)",
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp
+                                    )
+                                }
                             }
                         }
                     }

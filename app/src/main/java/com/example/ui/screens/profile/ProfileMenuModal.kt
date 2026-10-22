@@ -48,6 +48,7 @@ import androidx.compose.material.icons.rounded.LocalHospital
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material.icons.rounded.QrCode
+import com.example.ui.components.QrCodeRenderer
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Shield
@@ -633,6 +634,141 @@ fun ProfileMenuModal(
                                         )
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    // ==========================================
+                    // PERSONAL DIVE VERIFICATION QR CODE CARD
+                    // ==========================================
+                    item {
+                        val certAgencyDisplay = currentUser?.certAgency?.takeIf { it.isNotBlank() } ?: "VDST / CMAS"
+                        val licenseNumberDisplay = if (isInstructor) {
+                            currentUser?.instructorLicenseNumber?.takeIf { it.isNotBlank() } ?: currentUser?.licenseNumber?.takeIf { it.isNotBlank() } ?: "TL2-GER-9921"
+                        } else {
+                            currentUser?.licenseNumber?.takeIf { it.isNotBlank() } ?: "SSI-DIV-5512"
+                        }
+                        val verificationStampCode = remember(diverName, diverEmail) {
+                            "AL-STAMP-" + kotlin.math.abs((diverName + diverEmail).hashCode()).toString(16).uppercase().padStart(8, '0')
+                        }
+                        val personalQrPayload = "AQUALEARN-QR-STAMP:V1:NAME=$diverName:EMAIL=$diverEmail:STAMP=$verificationStampCode:LIC=$licenseNumberDisplay:ORG=$certAgencyDisplay"
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("personal_verification_qr_card"),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                            border = BorderStroke(1.dp, SeaGreen.copy(alpha = 0.5f)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(18.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(SeaGreen.copy(alpha = 0.15f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.QrCode,
+                                            contentDescription = null,
+                                            tint = SeaGreen,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = if (currentLanguage == AppLanguage.DE) "Tauchgangs-Bestätigungs-Code" else "Dive Verification QR Code",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = if (currentLanguage == AppLanguage.DE) "Vorzeigen zum Abzeichnen von Tauchgängen" else "Present to sign off buddy dives",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontSize = 11.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Centered High-Contrast QR Code View
+                                Surface(
+                                    shape = RoundedCornerShape(18.dp),
+                                    color = Color.White,
+                                    border = BorderStroke(2.dp, SeaGreen.copy(alpha = 0.35f)),
+                                    shadowElevation = 2.dp,
+                                    modifier = Modifier.padding(4.dp)
+                                ) {
+                                    Box(modifier = Modifier.padding(12.dp)) {
+                                        QrCodeRenderer(
+                                            content = personalQrPayload,
+                                            size = 180.dp,
+                                            qrColor = Color(0xFF0F1E29),
+                                            backgroundColor = Color.White
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(10.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Autorisierter Prüfer: $diverName",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = "E-Mail: $diverEmail • Lizenz: $licenseNumberDisplay",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontSize = 11.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Spacer(modifier = Modifier.height(3.dp))
+                                        Text(
+                                            text = "Stempel-Code: $verificationStampCode",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontSize = 10.sp,
+                                            color = SeaGreen,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = if (currentLanguage == AppLanguage.DE)
+                                        "💡 Dein Tauchpartner kann diesen QR-Code mit der Logbuch-Kamera scannen, um deinen Namen & Signatur direkt im Tauchgang zu hinterlegen."
+                                    else
+                                        "💡 Your dive buddy can scan this QR code with the logbook camera to verify and sign off their dive on the spot.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
                             }
                         }
                     }

@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
+import com.example.ui.components.LiveCameraPreviewView
 import com.example.data.model.DiverDocumentEntity
 import com.example.ui.components.InteractiveSignaturePad
 import com.example.ui.components.PaperStatementInspectDialog
@@ -409,13 +410,20 @@ fun DocumentApprovalDialog(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(180.dp)
+                            .height(200.dp)
                             .clip(RoundedCornerShape(20.dp))
                             .background(Color(0xFF0F1E29))
                             .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f), RoundedCornerShape(20.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Scanner Target Reticle
+                        // 1. Real Live Camera Preview Feed
+                        if (hasCameraPermission) {
+                            LiveCameraPreviewView(
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        // 2. Scanner Target Reticle
                         Canvas(modifier = Modifier.fillMaxSize()) {
                             val w = size.width
                             val h = size.height
